@@ -12,21 +12,21 @@ final class LaunchViewController: UIViewController {
     // MARK: - Properties
 
     private var launchLogoImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "LaunchLogo"))
+        let imageView: UIImageView = .init(image: UIImage(named: "LaunchLogo"))
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    
+
     private var adBannerImageView: UIImageView = {
-        let imageView = UIImageView()
+        let imageView: UIImageView = .init()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .beigeGray
         imageView.tintColor = .black
         return imageView
     }()
-    
+
     private var copyrightLabel: UILabel = {
-        let label = UILabel()
+        let label: UILabel = .init()
         label.text = "Copyright © 2025 Ourvoices. All Rights Reserved"
         label.font = UIFont(name: "Pretendard-Medium", size: 7)
         label.textColor = .black
@@ -104,7 +104,7 @@ final class LaunchViewController: UIViewController {
             if isLandingRecordScreen {
                 RecordingMainViewController()
             } else {
-                CommunityMainViewController()
+                RecordingMainViewController()
             }
 
         let transition: CATransition = .init()

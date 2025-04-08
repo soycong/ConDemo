@@ -5,88 +5,92 @@
 //  Created by 이명지 on 4/8/25.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 final class RecordingMainViewController: UIViewController {
+    // MARK: - Properties
+
     private var adBannerImageView: UIImageView = {
-        let imageView = UIImageView()
+        let imageView: UIImageView = .init()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .beigeGray
         imageView.tintColor = .black
         imageView.layer.cornerRadius = 14
         return imageView
     }()
-    
-    private var startButton = CircleButton(title: "Start")
-    
-    private var historyButton = CircleButton(title: "History")
-    
-    private var communityButton = CircleButton(title: "Community")
-    
+
+    private var startButton: CircleButton = .init(title: "Start")
+
+    private var historyButton: CircleButton = .init(title: "History")
+
+    private var communityButton: CircleButton = .init(title: "Community")
+
     private lazy var bottomButtonStackView = {
-        let stackView = UIStackView(arrangedSubviews: [historyButton, communityButton])
+        let stackView: UIStackView = .init(arrangedSubviews: [historyButton, communityButton])
         stackView.axis = .horizontal
         stackView.spacing = 21
         return stackView
     }()
-    
+
     private var copyrightLabel: UILabel = {
-        let label = UILabel()
+        let label: UILabel = .init()
         label.text = "Copyright © 2025 Ourvoices. All Rights Reserved"
         label.font = UIFont(name: "Pretendard-Medium", size: 7)
         label.textColor = .black
         return label
     }()
-    
+
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupSubviews()
         setupConstraints()
     }
-    
+
+    // MARK: - Functions
+
     private func setupView() {
-        self.view.backgroundColor = .white
+        view.backgroundColor = .white
     }
-    
+
     private func setupSubviews() {
-        [
-            adBannerImageView,
-            startButton,
-            bottomButtonStackView,
-            copyrightLabel
-        ].forEach {
+        [adBannerImageView,
+         startButton,
+         bottomButtonStackView,
+         copyrightLabel].forEach {
             self.view.addSubview($0)
         }
     }
-    
+
     private func setupConstraints() {
         adBannerImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(96)
             make.horizontalEdges.equalToSuperview().inset(13)
             make.height.equalTo(72)
         }
-        
+
         startButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
             make.size.equalTo(212)
         }
-        
+
         historyButton.snp.makeConstraints { make in
             make.size.equalTo(98)
         }
-        
+
         communityButton.snp.makeConstraints { make in
             make.size.equalTo(98)
         }
-        
+
         bottomButtonStackView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(startButton.snp.bottom).offset(55)
         }
-        
+
         copyrightLabel.snp.makeConstraints { make in
             make.bottom.equalToSuperview().offset(-34)
             make.centerX.equalToSuperview()
