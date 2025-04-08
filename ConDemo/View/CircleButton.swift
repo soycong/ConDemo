@@ -8,14 +8,12 @@
 import UIKit
 
 final class CircleButton: UIButton {
-    init(title: String, size: Int) {
+    init(title: String) {
         super.init(frame: .zero)
         
         self.setTitle(title, for: .normal)
-        self.titleLabel?.font = UIFont(name: "BricolageGrotesque-SemiBold.ttf", size: 14)
+        self.titleLabel?.font = UIFont(name: "BricolageGrotesque-SemiBold", size: 14)
         self.setTitleColor(.black, for: .normal)
-        self.layer.frame.size = CGSize(width: size, height: size)
-        self.layer.cornerRadius = self.layer.frame.size.width / 2
         self.backgroundColor = .clear
         self.layer.borderWidth = 0.5
         self.layer.borderColor = UIColor.black.cgColor
@@ -23,5 +21,12 @@ final class CircleButton: UIButton {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        self.layer.cornerRadius = self.frame.width / 2
+        self.clipsToBounds = true
     }
 }
