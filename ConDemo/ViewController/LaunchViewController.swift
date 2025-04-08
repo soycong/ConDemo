@@ -11,9 +11,27 @@ import UIKit
 final class LaunchViewController: UIViewController {
     // MARK: - Properties
 
-    private var launchLogoImageView: UIImageView = .init(image: UIImage(named: "LaunchLogo"))
-    private var adBannerImageView: UIImageView = .init()
-    private var copyrightLabel: UILabel = .init()
+    private var launchLogoImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "LaunchLogo"))
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
+    
+    private var adBannerImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = .beigeGray
+        imageView.tintColor = .black
+        return imageView
+    }()
+    
+    private var copyrightLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Copyright © 2025 Ourvoices. All Rights Reserved"
+        label.font = UIFont(name: "Pretendard-Medium", size: 7)
+        label.textColor = .black
+        return label
+    }()
 
     // MARK: - Lifecycle
 
@@ -33,16 +51,6 @@ final class LaunchViewController: UIViewController {
 
     private func setupLaunchScreen() {
         view.backgroundColor = .white
-        launchLogoImageView = UIImageView(image: UIImage(named: "LaunchLogo"))
-        launchLogoImageView.contentMode = .scaleAspectFit
-
-        adBannerImageView.contentMode = .scaleAspectFit
-        adBannerImageView.backgroundColor = .beigeGray
-        adBannerImageView.tintColor = .black
-
-        copyrightLabel.text = "Copyright © 2025 Ourvoices. All Rights Reserved"
-        copyrightLabel.font = UIFont(name: "Pretendard-Medium", size: 7)
-        copyrightLabel.textColor = .black
     }
 
     private func setupSubviews() {
