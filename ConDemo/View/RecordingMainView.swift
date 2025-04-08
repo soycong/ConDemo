@@ -7,6 +7,4 @@
 
 import UIKit
 
-final class RecordingMainView: UIView {
-    
-}
+final class RecordingMainView: UIView { }

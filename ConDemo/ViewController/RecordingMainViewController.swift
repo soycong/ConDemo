@@ -10,6 +10,6 @@ import UIKit
 final class RecordingMainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .red
+        view.backgroundColor = .red
     }
 }

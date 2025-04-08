@@ -72,10 +72,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B3A44E042DA4C37600C4872D /* Build configuration list for PBXNativeTarget "ConDemo" */;
 			buildPhases = (
+				0F6B420C2DA4C8A600BE9AF7 /* ShellScript */,
 				B3A44DEA2DA4C37500C4872D /* Sources */,
 				B3A44DEB2DA4C37500C4872D /* Frameworks */,
 				B3A44DEC2DA4C37500C4872D /* Resources */,
-				0F6B420C2DA4C8A600BE9AF7 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -157,7 +157,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nexport PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftformat > /dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftformat >/dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

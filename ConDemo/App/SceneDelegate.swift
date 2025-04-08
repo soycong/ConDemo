@@ -8,22 +8,27 @@
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    // MARK: - Properties
 
     var window: UIWindow?
 
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        
-        let window = UIWindow(windowScene: windowScene)
-        
+    // MARK: - Functions
+
+    func scene(_ scene: UIScene, willConnectTo _: UISceneSession,
+               options _: UIScene.ConnectionOptions) {
+        guard let windowScene = (scene as? UIWindowScene) else {
+            return
+        }
+
+        let window: UIWindow = .init(windowScene: windowScene)
+
         window.rootViewController = LaunchViewController()
         window.makeKeyAndVisible()
-        
+
         self.window = window
     }
 
-    func sceneDidEnterBackground(_ scene: UIScene) {
+    func sceneDidEnterBackground(_: UIScene) {
         (UIApplication.shared.delegate as? AppDelegate)?.saveContext()
     }
 }
-
