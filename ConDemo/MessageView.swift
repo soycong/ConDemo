@@ -25,12 +25,12 @@ final class MessageView: UIView {
     private let inputTextField: UITextField = {
         let textField = UITextField()
         
-        textField.placeholder = "검색"
+        textField.placeholder = "입력"
         textField.addLeftSystemImage(systemImageName: "magnifyingglass")
         
         textField.layer.cornerRadius = 20
         textField.layer.borderWidth = 1
-        textField.returnKeyType = .search
+        textField.returnKeyType = .send
         
         return textField
     }()
