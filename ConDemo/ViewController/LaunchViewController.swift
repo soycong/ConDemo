@@ -32,7 +32,7 @@ final class LaunchViewController: UIViewController {
         launchLogoImageView.contentMode = .scaleAspectFit
         
         adBannerImageView.contentMode = .scaleAspectFit
-        adBannerImageView.backgroundColor = UIColor(red: 249/255.0, green: 245/255.0, blue: 242/255.0, alpha: 1.0)
+        adBannerImageView.backgroundColor = .beigeGray
         adBannerImageView.tintColor = .black
         
         
