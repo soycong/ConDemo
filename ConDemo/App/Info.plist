@@ -13,6 +13,13 @@
 		<string>Pretendard-Regular.otf</string>
 		<string>Pretendard-SemiBold.otf</string>
 		<string>Pretendard-Thin.otf</string>
+		<string>BricolageGrotesque-Bold.ttf</string>
+		<string>BricolageGrotesque-ExtraBold.ttf</string>
+		<string>BricolageGrotesque-ExtraLight.ttf</string>
+		<string>BricolageGrotesque-Light.ttf</string>
+		<string>BricolageGrotesque-Medium.ttf</string>
+		<string>BricolageGrotesque-Regular.ttf</string>
+		<string>BricolageGrotesque-SemiBold.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
