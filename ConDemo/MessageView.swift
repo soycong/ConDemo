@@ -14,11 +14,11 @@ final class MessageView: UIView {
         let textField = UITextField()
         
         textField.placeholder = "검색"
+        textField.addLeftSystemImage(systemImageName: "magnifyingglass")
+        
         textField.layer.cornerRadius = 20
         textField.layer.borderWidth = 1
         
-        textField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 1))
-        textField.leftViewMode = .always
 
         return textField
     }()
