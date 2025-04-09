@@ -12,15 +12,7 @@ final class MessageView: UIView {
     
     var messages: [Message] = Message.dummyMessages
     
-    private var messageTableView: UITableView = {
-        let tableView = UITableView()
-        
-        tableView.separatorStyle = .none
-        tableView.register(MessageBubbleCell.self, forCellReuseIdentifier: MessageBubbleCell.id)
-        tableView.transform = CGAffineTransform(scaleX: 1, y: -1) // y: -1 -> 뷰를 수직으로 뒤집음
-        
-        return tableView
-    }()
+    private var messageBubbleTableView = MessageBubbleTableView()
     
     private let inputTextField: UITextField = {
         let textField = UITextField()
@@ -36,7 +28,7 @@ final class MessageView: UIView {
     }()
 
     private lazy var messageStackView = {
-        let stackView = UIStackView(arrangedSubviews: [messageTableView, inputTextField])
+        let stackView = UIStackView(arrangedSubviews: [messageBubbleTableView, inputTextField])
         
         stackView.axis = .vertical
         stackView.spacing = 10
@@ -59,8 +51,8 @@ final class MessageView: UIView {
     }
 
     private func setUpTableView() {
-        messageTableView.delegate = self
-        messageTableView.dataSource = self
+        messageBubbleTableView.delegate = self
+        messageBubbleTableView.dataSource = self
     }
     
     private func configureUI(){
@@ -72,7 +64,7 @@ final class MessageView: UIView {
             make.centerX.equalToSuperview()
         }
         
-        messageTableView.snp.makeConstraints { make in
+        messageBubbleTableView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(inputTextField.snp.top).offset(-10)
         }
@@ -102,7 +94,7 @@ extension MessageView: UITableViewDataSource {
         let message = messages[indexPath.row]
         cell.configure(with: message)
         
-        cell.transform = CGAffineTransform(scaleX: 1, y: -1) // 아래부터 보여야하므로 셀 뒤집기
+        // cell.transform = CGAffineTransform(scaleX: 1, y: -1) // 아래부터 보여야하므로 셀 뒤집기
         
         return cell
     }
@@ -115,8 +107,8 @@ extension MessageView: UITextFieldDelegate {
         guard string != "\n" else {
             guard let text = inputTextField.text, !text.isEmpty else { return true }
             
-            messages.insert(Message(text: text, isFromCurrentUser: true, timestamp: Date().addingTimeInterval(-3600 * 3)), at: 0)
-            messageTableView.reloadData()
+            messages.append(Message(text: text, isFromCurrentUser: true, timestamp: Date().addingTimeInterval(-3600 * 3)))
+            messageBubbleTableView.reloadData()
             inputTextField.text = ""
 
             return false
