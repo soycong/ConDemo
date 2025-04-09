@@ -10,7 +10,7 @@ import SnapKit
 
 final class MessageView: UIView {
     
-    var messages: [Message] = []
+    var messages: [Message] = Message.dummyMessages
     
     private var messageTableView: UITableView = {
         let tableView = UITableView()
