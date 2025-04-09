@@ -11,23 +11,27 @@ final class RecordingMainViewController: UIViewController {
     // MARK: - Properties
 
     private let recordingMainView: RecordingMainView = .init()
+    private let stopwatch: Stopwatch = .init()
 
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view = recordingMainView
-        setNavigationBar()
+        setupNavigationBar()
+        setupStopwatch()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupCurrentTime()
+        stopwatch.reset()
+        stopwatch.start()
     }
 
     // MARK: - Functions
 
-    private func setNavigationBar() {
+    private func setupNavigationBar() {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
 
@@ -43,6 +47,10 @@ final class RecordingMainViewController: UIViewController {
                              action: #selector(calendarButtonTapped))]
     }
 
+    private func setupStopwatch() {
+        stopwatch.delegate = self
+    }
+
     @objc
     private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
@@ -53,8 +61,14 @@ final class RecordingMainViewController: UIViewController {
 
     @objc
     private func profileButtonTapped() { }
-    
+
     private func setupCurrentTime() {
         recordingMainView.dateLabel.text = Date().toKoreaFormat().description
+    }
+}
+
+extension RecordingMainViewController: StopwatchDelegate {
+    func stopwatchDidUpdate(_: Stopwatch, elapsedTime: TimeInterval) {
+        recordingMainView.timeLabel.text = elapsedTime.formatTime()
     }
 }

@@ -46,7 +46,7 @@ final class RecordingMainView: UIView {
         return label
     }()
 
-    private let timeLabel: UILabel = {
+    private(set) var timeLabel: UILabel = {
         let label: UILabel = .init()
         label.textColor = .label
         label.font = UIFont(name: "Pretendard-SemiBold", size: 26)
@@ -87,8 +87,6 @@ final class RecordingMainView: UIView {
         super.layoutSubviews()
         layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
-    
-    
 
     // MARK: - Functions
 
