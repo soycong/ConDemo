@@ -1,5 +1,5 @@
 //
-//  RecordingMainViewController.swift
+//  RecordingLandingViewController.swift
 //  ConDemo
 //
 //  Created by 이명지 on 4/8/25.
@@ -8,15 +8,15 @@
 import SnapKit
 import UIKit
 
-final class RecordingMainViewController: UIViewController {
+final class RecordingLandingViewController: UIViewController {
     // MARK: - Properties
 
-    private var recordingMainView: RecordingMainView = .init()
+    private var recordingLandingView: RecordingLandingView = .init()
 
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view = recordingMainView
+        view = recordingLandingView
     }
 }

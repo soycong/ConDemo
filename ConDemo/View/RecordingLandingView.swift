@@ -1,5 +1,5 @@
 //
-//  RecordingMainView.swift
+//  RecordingLandingView..swift
 //  ConDemo
 //
 //  Created by 이명지 on 4/8/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class RecordingMainView: UIView {
+final class RecordingLandingView: UIView {
     // MARK: - Properties
 
     private(set) var startButton: CircleButton = .init(title: "Start")
