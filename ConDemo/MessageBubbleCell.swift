@@ -51,18 +51,6 @@ final class MessageBubbleCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
-//    }
-    
-//    override func prepareForReuse() {
-//        super.prepareForReuse()
-//        
-//        bubbleBackgroundView.snp.removeConstraints()
-//        messageLabel.snp.removeConstraints()
-//    }
-    
     private func configureUI() {
         contentView.addSubview(bubbleBackgroundView)
         bubbleBackgroundView.addSubview(messageLabel)
@@ -74,11 +62,6 @@ final class MessageBubbleCell: UITableViewCell {
         messageLabel.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
         }
-        
-//        messageLabel.snp.makeConstraints { make in
-//            make.horizontalEdges.equalToSuperview().inset(16)
-//            make.centerY.equalToSuperview()
-//        }
     }
     
     //    func configure(with message: Message, nickname: String, date: Date) {
@@ -100,6 +83,7 @@ final class MessageBubbleCell: UITableViewCell {
     
     func configure(with message: Message, searchText: String = "") {
         messageLabel.text = message.text
+        bubbleBackgroundView.snp.removeConstraints()
         
         if message.isFromCurrentUser {
             messageLabel.textColor = .white
@@ -140,13 +124,7 @@ final class MessageBubbleCell: UITableViewCell {
                 make.top.bottom.equalToSuperview().inset(4)
             }
         }
-        
-        //        let attributedText = NSMutableAttributedString(string: message.text)
-        //        let range = (message.text as NSString).range(of: searchText)
-        //        attributedText.addAttributes([.foregroundColor: UIColor.green], range: range)
-        //        messageLabel.attributedText = attributedText
-        
-        let messageLabelText = messageLabel.attributedText?.string
-        messageLabel.attributedText = messageLabelText?.makeAttributedString(searchText, font: messageLabel.font, color: .red)
+
+        messageLabel.attributedText = message.text.makeAttributedString(searchText, font: messageLabel.font, color: .red)
     }
 }
