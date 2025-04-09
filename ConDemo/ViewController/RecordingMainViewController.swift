@@ -19,14 +19,13 @@ final class RecordingMainViewController: UIViewController {
         super.viewDidLoad()
         view = recordingMainView
         setupNavigationBar()
-        setupStopwatch()
+        setupAddTargets()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupCurrentTime()
-        stopwatch.reset()
-        stopwatch.start()
+        setupStopwatch()
     }
 
     // MARK: - Functions
@@ -49,11 +48,25 @@ final class RecordingMainViewController: UIViewController {
 
     private func setupStopwatch() {
         stopwatch.delegate = self
+        stopwatch.reset()
+        stopwatch.start()
+        updateRecordButtonImage()
+    }
+
+    private func setupAddTargets() {
+        recordingMainView.recordButton.addTarget(self, action: #selector(recordButtonTapped),
+                                                 for: .touchUpInside)
+    }
+
+    private func setupCurrentTime() {
+        recordingMainView.dateLabel.text = Date().toKoreaFormat().description
     }
 
     @objc
     private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+        showAlert(title: "녹음을 중단하시겠습니까?") { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }
     }
 
     @objc
@@ -62,13 +75,34 @@ final class RecordingMainViewController: UIViewController {
     @objc
     private func profileButtonTapped() { }
 
-    private func setupCurrentTime() {
-        recordingMainView.dateLabel.text = Date().toKoreaFormat().description
+    @objc
+    private func recordButtonTapped() {
+        stopwatch.toggle()
+        updateRecordButtonImage()
+    }
+
+    private func updateRecordButtonImage() {
+        let image = stopwatch
+            .isRunning ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
+        recordingMainView.recordButton.setImage(image, for: .normal)
     }
 }
 
 extension RecordingMainViewController: StopwatchDelegate {
     func stopwatchDidUpdate(_: Stopwatch, elapsedTime: TimeInterval) {
         recordingMainView.timeLabel.text = elapsedTime.formatTime()
+    }
+}
+
+extension RecordingMainViewController {
+    func showAlert(title: String, completion: @escaping () -> Void) {
+        let alert: UIAlertController = .init(title: title,
+                                             message: nil,
+                                             preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .destructive) { _ in
+            completion()
+        })
+        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+        present(alert, animated: true)
     }
 }
