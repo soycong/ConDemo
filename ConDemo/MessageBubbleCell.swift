@@ -51,21 +51,29 @@ final class MessageBubbleCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        bubbleBackgroundView.snp.removeConstraints()
+        messageLabel.snp.removeConstraints()
+    }
+    
     private func configureUI() {
         contentView.addSubview(bubbleBackgroundView)
         bubbleBackgroundView.addSubview(messageLabel)
         
-        messageLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
+        contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
-        bubbleBackgroundView.snp.makeConstraints { make in
-            make.verticalEdges.equalToSuperview().inset(10)
-            make.height.equalTo(30)
-//            make.leading.equalTo(contentView.snp.leading).inset(50)
-//            make.trailing.equalTo(contentView.snp.trailing).inset(10)
-        }
+//        messageLabel.snp.makeConstraints { make in
+//            make.horizontalEdges.equalToSuperview().inset(16)
+//            make.centerY.equalToSuperview()
+//        }
     }
     
     //    func configure(with message: Message, nickname: String, date: Date) {
@@ -85,9 +93,9 @@ final class MessageBubbleCell: UITableViewCell {
     //        }
     //    }
     
-    func configure(with message: Message) {
+    func configure(with message: Message, searchText: String = "") {
         messageLabel.text = message.text
-
+        
         if message.isFromCurrentUser {
             messageLabel.textColor = .white
             messageLabel.textAlignment = .right
@@ -102,11 +110,16 @@ final class MessageBubbleCell: UITableViewCell {
                 .layerMinXMaxYCorner // 왼쪽 상단
             ]
             
+            messageLabel.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16)
+                make.centerY.equalToSuperview()
+                // make.top.bottom.equalToSuperview().inset(4)
+                make.top.equalToSuperview().offset(10)
+            }
+            
             bubbleBackgroundView.snp.makeConstraints { make in
-                make.verticalEdges.equalToSuperview().inset(10)
-                make.height.equalTo(30)
-    //            make.leading.equalTo(contentView.snp.leading).inset(50)
-                make.trailing.equalTo(contentView.snp.trailing).inset(10)
+                make.trailing.equalToSuperview().inset(10)
+                make.leading.greaterThanOrEqualTo(contentView.snp.leading).offset(50)
             }
         } else {
             messageLabel.textColor = .white
@@ -122,12 +135,28 @@ final class MessageBubbleCell: UITableViewCell {
                 .layerMaxXMaxYCorner // 오른쪽 상단
             ]
             
+            messageLabel.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16)
+                make.centerY.equalToSuperview()
+                make.top.equalToSuperview().offset(10)
+                // make.top.bottom.equalToSuperview().inset(4)
+                make.height.greaterThanOrEqualTo(20)
+            }
+            
             bubbleBackgroundView.snp.makeConstraints { make in
-                make.verticalEdges.equalToSuperview().inset(10)
-                make.height.equalTo(30)
-    //            make.leading.equalTo(contentView.snp.leading).inset(50)
-    //            make.trailing.equalTo(contentView.snp.trailing).inset(10)
+                make.leading.equalToSuperview().inset(10)
+                make.trailing.lessThanOrEqualTo(contentView.snp.trailing).offset(-50)
             }
         }
+        
+        let attributedText = NSMutableAttributedString(string: message.text)
+        let range = (message.text as NSString).range(of: searchText)
+        attributedText.addAttributes([.foregroundColor: UIColor.green], range: range)
+        messageLabel.attributedText = attributedText
+        
+        //            let messageLabelText = messageLabel.attributedText?.string
+        //            messageLabel.attributedText = messageLabelText?.makeAttributedString(searchText, font: messageLabel.font, color: .red)
+        
+        // print(messageLabelText)
     }
 }
