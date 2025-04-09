@@ -102,7 +102,7 @@ final class MessageBubbleCell: UITableViewCell {
             bubbleBackgroundView.snp.makeConstraints { make in
                 make.trailing.equalToSuperview().inset(10)
                 make.leading.greaterThanOrEqualTo(contentView.snp.leading).offset(50)
-                make.top.bottom.equalToSuperview().inset(4)
+                make.top.bottom.equalToSuperview().inset(12)
             }
         } else {
             messageLabel.textColor = .black
@@ -121,7 +121,7 @@ final class MessageBubbleCell: UITableViewCell {
             bubbleBackgroundView.snp.makeConstraints { make in
                 make.leading.equalToSuperview().inset(10)
                 make.trailing.lessThanOrEqualTo(contentView.snp.trailing).offset(-50)
-                make.top.bottom.equalToSuperview().inset(4)
+                make.top.bottom.equalToSuperview().inset(12)
             }
         }
 
