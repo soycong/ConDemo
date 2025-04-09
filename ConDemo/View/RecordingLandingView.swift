@@ -36,7 +36,7 @@ final class RecordingLandingView: UIView {
         let label: UILabel = .init()
         label.text = "Copyright © 2025 Ourvoices. All Rights Reserved"
         label.font = UIFont(name: "Pretendard-Medium", size: 7)
-        label.textColor = .black
+        label.textColor = .label
         return label
     }()
 
