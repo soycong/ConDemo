@@ -11,17 +11,13 @@ import UIKit
 final class LaunchViewController: UIViewController {
     // MARK: - Properties
 
-    private var launchLogoImageView: UIImageView = .init(image: UIImage(named: "LaunchLogo"))
-    private var adBannerImageView: UIImageView = .init()
-    private var copyrightLabel: UILabel = .init()
+    private var launchView: LaunchView = .init()
 
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupLaunchScreen()
-        setupSubviews()
-        setupConstraints()
+        view = launchView
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -31,50 +27,9 @@ final class LaunchViewController: UIViewController {
 
     // MARK: - Functions
 
-    private func setupLaunchScreen() {
-        view.backgroundColor = .white
-        launchLogoImageView = UIImageView(image: UIImage(named: "LaunchLogo"))
-        launchLogoImageView.contentMode = .scaleAspectFit
-
-        adBannerImageView.contentMode = .scaleAspectFit
-        adBannerImageView.backgroundColor = .beigeGray
-        adBannerImageView.tintColor = .black
-
-        copyrightLabel.text = "Copyright © 2025 Ourvoices. All Rights Reserved"
-        copyrightLabel.font = UIFont(name: "Pretendard-Medium", size: 7)
-        copyrightLabel.textColor = .black
-    }
-
-    private func setupSubviews() {
-        [launchLogoImageView,
-         adBannerImageView,
-         copyrightLabel].forEach {
-            self.view.addSubview($0)
-        }
-    }
-
-    private func setupConstraints() {
-        launchLogoImageView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview()
-            make.size.equalTo(130)
-        }
-
-        copyrightLabel.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().offset(-34)
-            make.centerX.equalToSuperview()
-        }
-
-        adBannerImageView.snp.makeConstraints { make in
-            make.top.equalTo(launchLogoImageView.snp.bottom).offset(30)
-            make.horizontalEdges.equalToSuperview().inset(13)
-            make.bottom.equalTo(copyrightLabel.snp.top).offset(-30)
-        }
-    }
-
     private func animateLaunchLogo() {
         UIView.animate(withDuration: 1.0, delay: 0.5, options: .curveEaseInOut, animations: {
-            self.launchLogoImageView.transform = CGAffineTransform(rotationAngle: .pi)
+            self.launchView.launchLogoImageView.transform = CGAffineTransform(rotationAngle: .pi)
         }, completion: { _ in
             self.fadeOutLogo()
         })
@@ -82,7 +37,7 @@ final class LaunchViewController: UIViewController {
 
     private func fadeOutLogo() {
         UIView.animate(withDuration: 0.8, animations: {
-            self.launchLogoImageView.alpha = 0
+            self.launchView.launchLogoImageView.alpha = 0
         }, completion: { _ in
             self.navigateToMain()
         })
@@ -96,7 +51,7 @@ final class LaunchViewController: UIViewController {
             if isLandingRecordScreen {
                 RecordingMainViewController()
             } else {
-                CommunityMainViewController()
+                RecordingMainViewController()
             }
 
         let transition: CATransition = .init()
