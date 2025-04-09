@@ -41,7 +41,7 @@ final class VoiceNoteView: UIView {
     }()
     
     private lazy var messageStackView = {
-        let stackView = UIStackView(arrangedSubviews: [messageBubbleTableView, voiceNoteSearchBar])
+        let stackView = UIStackView(arrangedSubviews: [messageBubbleTableView, searchStackView])
         
         stackView.axis = .vertical
         stackView.spacing = 10
@@ -62,13 +62,28 @@ final class VoiceNoteView: UIView {
         return stackView
     }()
     
+    private lazy var searchStackView = {
+        let stackView = UIStackView(arrangedSubviews: [voiceNoteSearchBar, systemButtonStackView])
+        
+        stackView.axis = .horizontal
+        stackView.spacing = 10
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        
+        return stackView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .white
         
         setUpTableView()
         setUpSearchBar()
+        setSearchModeButtons()
+        
         configureUI()
+
+        hideSearchModeButtons()
     }
     
     required init?(coder: NSCoder) {
@@ -84,6 +99,46 @@ final class VoiceNoteView: UIView {
         voiceNoteSearchBar.delegate = self
     }
     
+    private func setSearchModeButtons() {
+        upButton.addTarget(self, action: #selector(upButtonTapped), for: .touchUpInside)
+        downButton.addTarget(self, action: #selector(downButtonTapped), for: .touchUpInside)
+        cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+    }
+    
+    // 버튼 표시/숨김
+    private func showSearchModeButtons() {
+        systemButtonStackView.isHidden = false
+
+        UIView.animate(withDuration: 0.3) {
+            self.systemButtonStackView.alpha = 1.0
+        }
+    }
+
+    private func hideSearchModeButtons() {
+        UIView.animate(withDuration: 0.3, animations: {
+            self.systemButtonStackView.alpha = 0.0
+        }) { _ in
+            self.systemButtonStackView.isHidden = true
+        }
+    }
+
+    @objc private func upButtonTapped() {
+        print("Up button tapped")
+    }
+
+    @objc private func downButtonTapped() {
+        print("Down button tapped")
+    }
+
+    @objc private func cancelButtonTapped() {
+        voiceNoteSearchBar.text = nil
+        voiceNoteSearchBar.resignFirstResponder()
+        highlightText = ""
+        messageBubbleTableView.reloadData()
+
+        hideSearchModeButtons()
+    }
+    
     private func configureUI(){
         addSubview(messageStackView)
         
@@ -96,12 +151,6 @@ final class VoiceNoteView: UIView {
         messageBubbleTableView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(voiceNoteSearchBar.snp.top).offset(-10)
-        }
-        
-        voiceNoteSearchBar.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.height.equalTo(38)
         }
     }
 }
@@ -136,6 +185,8 @@ extension VoiceNoteView: UISearchBarDelegate {
         
         messageBubbleTableView.reloadData()
         voiceNoteSearchBar.resignFirstResponder()
+        
+        showSearchModeButtons()
     }
     
     // 유저가 텍스트 입력했을 때
@@ -144,10 +195,9 @@ extension VoiceNoteView: UISearchBarDelegate {
 //        messageBubbleTableView.reloadData()
 //    }
     
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        voiceNoteSearchBar.text = nil
-        voiceNoteSearchBar.resignFirstResponder() // 키보드 내림
-        highlightText = ""
-        messageBubbleTableView.reloadData()
-    }
+//    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+//        voiceNoteSearchBar.text = nil
+//        voiceNoteSearchBar.resignFirstResponder() // 키보드 내림
+//        highlightText = ""
+//    }
 }
