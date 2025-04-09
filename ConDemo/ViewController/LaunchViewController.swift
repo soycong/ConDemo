@@ -49,9 +49,9 @@ final class LaunchViewController: UIViewController {
 
         let newRootViewController: UIViewController =
             if isLandingRecordScreen {
-                RecordingMainViewController()
+                RecordingLandingViewController()
             } else {
-                RecordingMainViewController()
+                RecordingLandingViewController()
             }
 
         let transition: CATransition = .init()
@@ -60,12 +60,16 @@ final class LaunchViewController: UIViewController {
 
         if let window = UIApplication.shared.windows.first {
             window.layer.add(transition, forKey: kCATransition)
-            window.rootViewController = newRootViewController
+            window
+                .rootViewController =
+                UINavigationController(rootViewController: newRootViewController)
             window.makeKeyAndVisible()
         } else if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first {
             window.layer.add(transition, forKey: kCATransition)
-            window.rootViewController = newRootViewController
+            window
+                .rootViewController =
+                UINavigationController(rootViewController: newRootViewController)
             window.makeKeyAndVisible()
         }
     }
