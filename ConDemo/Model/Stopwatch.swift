@@ -72,6 +72,14 @@ final class Stopwatch {
         delegate?.stopwatchDidUpdate(self, elapsedTime: 0)
     }
 
+    func toggle() {
+        if isRunning {
+            pause()
+        } else {
+            start()
+        }
+    }
+
     @objc
     private func update() {
         delegate?.stopwatchDidUpdate(self, elapsedTime: elapsedTime)
