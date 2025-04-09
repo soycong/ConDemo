@@ -143,7 +143,7 @@ final class VoiceNoteView: UIView {
         addSubview(messageStackView)
         
         messageStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(8)
             make.verticalEdges.equalTo(safeAreaLayoutGuide)
             make.centerX.equalToSuperview()
         }
