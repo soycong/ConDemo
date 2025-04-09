@@ -14,12 +14,14 @@ final class VoiceNoteSearchBar: UISearchBar {
 
         searchBarStyle = .minimal
 
-        searchTextField.backgroundColor = .beigeGray
+        searchTextField.backgroundColor = .backgroundGray
         searchTextField.layer.cornerRadius = 20
         searchTextField.clipsToBounds = true
         
         searchTextField.layer.borderWidth = 1.0
         searchTextField.layer.borderColor = UIColor.gray.cgColor
+        
+        placeholder = "대화 내용 검색"
     }
     
     required init?(coder: NSCoder) {
