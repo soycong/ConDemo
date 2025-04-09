@@ -19,7 +19,7 @@ final class MessageView: UIView {
         
         textField.placeholder = "입력"
         textField.addLeftPadding()
-
+        
         return textField
     }()
     
@@ -45,7 +45,7 @@ final class MessageView: UIView {
         
         return view
     }()
-
+    
     private lazy var messageStackView = {
         let stackView = UIStackView(arrangedSubviews: [messageBubbleTableView, containerView])
         
@@ -61,14 +61,16 @@ final class MessageView: UIView {
         super.init(frame: frame)
         self.backgroundColor = .white
         inputTextField.delegate = self
+        
         setUpTableView()
         configureUI()
+        setActions()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func setUpTableView() {
         messageBubbleTableView.delegate = self
         messageBubbleTableView.dataSource = self
@@ -90,23 +92,46 @@ final class MessageView: UIView {
             make.top.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(inputTextField.snp.top).offset(-10)
         }
-
+        
         containerView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.height.equalTo(40)
         }
-
+        
         inputTextField.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(10)
             make.verticalEdges.equalToSuperview()
             make.trailing.equalTo(sendButton.snp.leading)
         }
-
+        
         sendButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
             make.centerY.equalToSuperview()
             make.width.height.equalTo(40)
         }
+    }
+    
+    private func setActions() {
+        sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func sendButtonTapped() {
+        sendMessage()
+    }
+    
+    private func sendMessage() {
+        guard let text = inputTextField.text, !text.isEmpty else { return }
+        
+        messages.append(Message(text: text, isFromCurrentUser: true, timestamp: Date()))
+        
+        messageBubbleTableView.reloadData()
+        
+        if !messages.isEmpty {
+            let indexPath = IndexPath(row: messages.count - 1, section: 0)
+            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
+        
+        inputTextField.text = ""
     }
 }
 
@@ -136,17 +161,17 @@ extension MessageView: UITableViewDataSource {
 extension MessageView: UITextFieldDelegate {
     // return 버튼 눌렀을 때 메세지 보내지기
     // ViewController로 분리 해야함
-    func textField( _ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard string != "\n" else {
-            guard let text = inputTextField.text, !text.isEmpty else { return true }
-            
-            messages.append(Message(text: text, isFromCurrentUser: true, timestamp: Date().addingTimeInterval(-3600 * 3)))
-            messageBubbleTableView.reloadData()
-            inputTextField.text = ""
-
-            return false
-        }
-        
-        return true
-    }
+//    func textField( _ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+//        guard string != "\n" else {
+//            guard let text = inputTextField.text, !text.isEmpty else { return true }
+//            
+//            messages.append(Message(text: text, isFromCurrentUser: true, timestamp: Date().addingTimeInterval(-3600 * 3)))
+//            messageBubbleTableView.reloadData()
+//            inputTextField.text = ""
+//
+//            return false
+//        }
+//        
+//        return true
+//    }
 }
