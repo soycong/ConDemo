@@ -17,7 +17,6 @@ final class RecordingMainViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view = recordingMainView
     }
 }
