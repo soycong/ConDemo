@@ -17,7 +17,6 @@ final class RecordingMainView: UIView {
         button.tintColor = .label
         button.layer.cornerRadius = 18
         button.layer.borderWidth = 1
-        button.layer.borderColor = UIColor.label.cgColor
         button.backgroundColor = .clear
         return button
     }()
@@ -84,10 +83,17 @@ final class RecordingMainView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
+    }
+
     // MARK: - Functions
 
     private func setupView() {
         backgroundColor = .systemBackground
+        recordButton.layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
 
     private func setupSubviews() {

@@ -16,7 +16,7 @@ final class CircleButton: UIButton {
         setTitleColor(.label, for: .normal)
         backgroundColor = .clear
         layer.borderWidth = 0.5
-        layer.borderColor = UIColor.label.cgColor
+        layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
 
     @available(*, unavailable)
@@ -29,5 +29,7 @@ final class CircleButton: UIButton {
 
         layer.cornerRadius = frame.width / 2
         clipsToBounds = true
+
+        layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
 }
