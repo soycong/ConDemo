@@ -8,14 +8,21 @@
 import UIKit
 
 final class RecordingMainView: UIView {
-    
-    
+    // MARK: - Lifecycle
+
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupView()
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
+    // MARK: - Functions
+
+    private func setupView() {
+        backgroundColor = .systemBackground
+    }
 }

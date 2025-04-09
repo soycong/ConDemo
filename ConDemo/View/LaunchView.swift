@@ -20,7 +20,7 @@ final class LaunchView: UIView {
         let imageView: UIImageView = .init()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .beigeGray
-        imageView.tintColor = .black
+        imageView.tintColor = .label
         return imageView
     }()
 
@@ -50,7 +50,7 @@ final class LaunchView: UIView {
     // MARK: - Functions
 
     private func setupLaunchScreen() {
-        backgroundColor = .white
+        backgroundColor = .systemBackground
     }
 
     private func setupSubviews() {

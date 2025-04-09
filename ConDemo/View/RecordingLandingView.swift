@@ -1,5 +1,5 @@
 //
-//  RecordingLandingView..swift
+//  RecordingLandingView.swift
 //  ConDemo
 //
 //  Created by 이명지 on 4/8/25.
@@ -20,7 +20,7 @@ final class RecordingLandingView: UIView {
         let imageView: UIImageView = .init()
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .beigeGray
-        imageView.tintColor = .black
+        imageView.tintColor = .label
         imageView.layer.cornerRadius = 14
         return imageView
     }()
@@ -58,7 +58,7 @@ final class RecordingLandingView: UIView {
     // MARK: - Functions
 
     private func setupView() {
-        backgroundColor = .white
+        backgroundColor = .systemBackground
     }
 
     private func setupSubviews() {
