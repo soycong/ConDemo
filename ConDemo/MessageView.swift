@@ -18,17 +18,36 @@ final class MessageView: UIView {
         let textField = UITextField()
         
         textField.placeholder = "입력"
-        textField.addLeftSystemImage(systemImageName: "magnifyingglass")
-        
-        textField.layer.cornerRadius = 20
-        textField.layer.borderWidth = 1
-        textField.returnKeyType = .send
-        
+        textField.addLeftPadding()
+
         return textField
+    }()
+    
+    private let sendButton: UIButton = {
+        let button = UIButton()
+        
+        let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
+        let image = UIImage(systemName: "arrow.up.circle.fill", withConfiguration: config)
+        
+        button.setImage(image, for: .normal)
+        button.tintColor = .pointBlue
+        
+        return button
+    }()
+    
+    private let containerView: UIView = {
+        let view = UIView()
+        
+        view.backgroundColor = .white
+        view.clipsToBounds = true
+        view.layer.cornerRadius = 20
+        view.layer.borderWidth = 1
+        
+        return view
     }()
 
     private lazy var messageStackView = {
-        let stackView = UIStackView(arrangedSubviews: [messageBubbleTableView, inputTextField])
+        let stackView = UIStackView(arrangedSubviews: [messageBubbleTableView, containerView])
         
         stackView.axis = .vertical
         stackView.spacing = 10
@@ -58,6 +77,9 @@ final class MessageView: UIView {
     private func configureUI(){
         addSubview(messageStackView)
         
+        containerView.addSubview(inputTextField)
+        containerView.addSubview(sendButton)
+        
         messageStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.verticalEdges.equalTo(safeAreaLayoutGuide)
@@ -68,11 +90,22 @@ final class MessageView: UIView {
             make.top.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(inputTextField.snp.top).offset(-10)
         }
-        
+
+        containerView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(40)
+        }
+
         inputTextField.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.height.equalTo(38)
+            make.leading.equalToSuperview().offset(10)
+            make.verticalEdges.equalToSuperview()
+            make.trailing.equalTo(sendButton.snp.leading)
+        }
+
+        sendButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview()
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(40)
         }
     }
 }
