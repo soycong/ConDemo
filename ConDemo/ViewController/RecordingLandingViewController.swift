@@ -21,12 +21,16 @@ final class RecordingLandingViewController: UIViewController {
         view = recordingLandingView
         setAddTargets()
     }
-    
+
+    // MARK: - Functions
+
     private func setAddTargets() {
-        recordingLandingView.startButton.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
+        recordingLandingView.startButton.addTarget(self, action: #selector(startButtonTapped),
+                                                   for: .touchUpInside)
     }
-    
-    @objc private func startButtonTapped() {
-        self.navigationController?.pushViewController(recordingMainViewController, animated: true)
+
+    @objc
+    private func startButtonTapped() {
+        navigationController?.pushViewController(recordingMainViewController, animated: true)
     }
 }
