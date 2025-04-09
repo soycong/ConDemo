@@ -12,6 +12,28 @@ final class MessageView: UIView {
     
     var messages: [Message] = Message.dummyMessages
     
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        
+        label.font = .systemFont(ofSize: 24, weight: .bold)
+        label.textColor = .black
+        label.textAlignment = .left
+        label.text = "팩트 체크하기"
+        
+        return label
+    }()
+    
+    private let addButton: UIButton = {
+        let button = UIButton()
+        
+        button.setTitle("Add", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .pointBlue
+        button.layer.cornerRadius = 4
+        
+        return button
+    }()
+    
     private var messageBubbleTableView = MessageBubbleTableView()
     
     private let inputTextField: UITextField = {
@@ -46,8 +68,19 @@ final class MessageView: UIView {
         return view
     }()
     
+    private lazy var titleStackView = {
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, addButton])
+        
+        stackView.axis = .horizontal
+        stackView.spacing = 10
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        
+        return stackView
+    }()
+    
     private lazy var messageStackView = {
-        let stackView = UIStackView(arrangedSubviews: [messageBubbleTableView, containerView])
+        let stackView = UIStackView(arrangedSubviews: [titleStackView, messageBubbleTableView, containerView])
         
         stackView.axis = .vertical
         stackView.spacing = 10
@@ -88,8 +121,24 @@ final class MessageView: UIView {
             make.centerX.equalToSuperview()
         }
         
+        titleStackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(10)
+            make.horizontalEdges.equalToSuperview().inset(10)
+            make.height.equalTo(30)
+        }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.height.equalTo(30)
+        }
+        
+        addButton.snp.makeConstraints { make in
+            make.height.equalTo(30)
+            make.width.equalTo(80)
+        }
+        
         messageBubbleTableView.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(titleStackView.snp.bottom).offset(10)
             make.bottom.equalTo(inputTextField.snp.top).offset(-10)
         }
         
