@@ -19,6 +19,11 @@ final class RecordingMainViewController: UIViewController {
         view = recordingMainView
         setNavigationBar()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupCurrentTime()
+    }
 
     // MARK: - Functions
 
@@ -48,4 +53,8 @@ final class RecordingMainViewController: UIViewController {
 
     @objc
     private func profileButtonTapped() { }
+    
+    private func setupCurrentTime() {
+        recordingMainView.dateLabel.text = Date().toKoreaFormat().description
+    }
 }

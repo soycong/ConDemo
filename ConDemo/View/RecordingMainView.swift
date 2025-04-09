@@ -39,7 +39,7 @@ final class RecordingMainView: UIView {
         return button
     }()
 
-    private let dateLabel: UILabel = {
+    private(set) var dateLabel: UILabel = {
         let label: UILabel = .init()
         label.textColor = .label
         label.font = UIFont(name: "Pretendard-Medium", size: 14)
@@ -75,7 +75,7 @@ final class RecordingMainView: UIView {
         setupView()
         setupSubviews()
         setupConstraints()
-        setupTest()
+        setupTime()
     }
 
     @available(*, unavailable)
@@ -85,9 +85,10 @@ final class RecordingMainView: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-
         layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
+    
+    
 
     // MARK: - Functions
 
@@ -132,8 +133,7 @@ final class RecordingMainView: UIView {
         }
     }
 
-    private func setupTest() {
-        dateLabel.text = "2025.04.07 오후 14:20"
+    private func setupTime() {
         timeLabel.text = "00:38:02"
     }
 }
