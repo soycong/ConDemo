@@ -31,14 +31,6 @@ final class LaunchViewController: UIViewController {
         UIView.animate(withDuration: 1.0, delay: 0.5, options: .curveEaseInOut, animations: {
             self.launchView.launchLogoImageView.transform = CGAffineTransform(rotationAngle: .pi)
         }, completion: { _ in
-            self.fadeOutLogo()
-        })
-    }
-
-    private func fadeOutLogo() {
-        UIView.animate(withDuration: 0.8, animations: {
-            self.launchView.launchLogoImageView.alpha = 0
-        }, completion: { _ in
             self.navigateToMain()
         })
     }
