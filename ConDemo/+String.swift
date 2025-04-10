@@ -17,17 +17,26 @@ extension String {
     ///   - isAll: 모든 동일한 텍스트 변경 여부 (default = true)
     /// - Returns: 속성이 적용된 NSAttributedString
 
-    func makeAttributedString(_ searchText: String, font: UIFont, color: UIColor, isAll: Bool = true) -> NSAttributedString {
+    func makeAttributedString(_ searchText: String, font: UIFont? = UIFont.systemFont(ofSize: 14), backgroundColor: UIColor? = nil, isAll: Bool = true) -> NSAttributedString {
         let attributedText = NSMutableAttributedString(string: self)
         if let regex = try? NSRegularExpression(pattern: searchText, options: .caseInsensitive) {
             let range = NSRange(self.startIndex..., in: self)
             let matches = regex.matches(in: self, options: [], range: range)
+            
             if isAll {
                 matches.forEach {
-                    attributedText.addAttributes([.font: font, .foregroundColor: color], range: $0.range)
+                    var attributes: [NSAttributedString.Key: Any] = [.font: font]
+                    if let backgroundColor = backgroundColor {
+                        attributes[.backgroundColor] = backgroundColor
+                    }
+                    attributedText.addAttributes(attributes, range: $0.range)
                 }
             } else if let firstItem = matches.first {
-                attributedText.addAttributes([.font: font, .foregroundColor: color], range: firstItem.range)
+                var attributes: [NSAttributedString.Key: Any] = [.font: font]
+                if let backgroundColor = backgroundColor {
+                    attributes[.backgroundColor] = backgroundColor
+                }
+                attributedText.addAttributes(attributes, range: firstItem.range)
             }
         }
         return attributedText
