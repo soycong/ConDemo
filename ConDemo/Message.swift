@@ -14,13 +14,17 @@ struct Message {
     let isFromCurrentUser: Bool
     let timestamp: Date
     let image: UIImage?
+    let audioURL: URL?
+    let audioData: Data?
     
-    init(id: String = UUID().uuidString, text: String, isFromCurrentUser: Bool, timestamp: Date = Date(), image: UIImage? = nil) {
+    init(id: String = UUID().uuidString, text: String, isFromCurrentUser: Bool, timestamp: Date = Date(), image: UIImage? = nil, audioURL: URL? = nil, audioData: Data? = nil) {
         self.id = id
         self.text = text
         self.isFromCurrentUser = isFromCurrentUser
         self.timestamp = timestamp
         self.image = image
+        self.audioURL = audioURL
+        self.audioData = audioData
     }
 }
 
