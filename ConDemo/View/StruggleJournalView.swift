@@ -10,6 +10,7 @@ import UIKit
 final class StruggleJournalView: UIView {
     
     private var isConfirmed = false
+    private let placeholderText = "왜 싸웠나요? \n\n어떤 게 제일 화가 났나요? \n\n하지 말아야 했던 말은 없었나요? \n\n듣고 싶었던 말은 무엇이었나요? \n\n상대에게 미안한 것은 무엇인가요? \n\n어떤 걸 고쳐나가고 싶나요?"
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -34,7 +35,7 @@ final class StruggleJournalView: UIView {
         
         return button
     }()
- 
+    
     private let dateLabel: UILabel = {
         let label = UILabel()
         
@@ -52,7 +53,6 @@ final class StruggleJournalView: UIView {
         textView.layer.cornerRadius = 10
         textView.backgroundColor = .white
         
-        textView.text = "왜 싸웠나요? \n\n어떤 게 제일 화가 났나요? \n\n하지 말아야 했던 말은 없었나요? \n\n듣고 싶었던 말은 무엇이었나요? \n\n상대에게 미안한 것은 무엇인가요? \n\n어떤 걸 고쳐나가고 싶나요?"
         textView.textColor = UIColor.lightGray
         textView.font = UIFont(name: "Pretendard-Medium", size: 14)
         
@@ -86,6 +86,7 @@ final class StruggleJournalView: UIView {
         self.backgroundColor = .white
         
         configureUI()
+        setupTextView()
         setupActions()
     }
     
@@ -95,7 +96,7 @@ final class StruggleJournalView: UIView {
     
     private func configureUI(){
         addSubview(journalStackView)
-
+        
         journalStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.verticalEdges.equalTo(safeAreaLayoutGuide)
@@ -130,19 +131,56 @@ final class StruggleJournalView: UIView {
         }
     }
     
+    private func setupTextView() {
+        journalTextView.delegate = self
+        journalTextView.text = placeholderText
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(textViewTapped))
+        journalTextView.addGestureRecognizer(tapGesture)
+        journalTextView.isUserInteractionEnabled = true
+    }
+    
     private func setupActions(){
         confirmButton.addTarget(self, action: #selector(confirmButtonTapped), for: .touchUpInside)
     }
     
     @objc private func confirmButtonTapped() {
-        isConfirmed.toggle()
+        if confirmButton.backgroundColor == UIColor.gray {
+            return
+        }
         
-        if isConfirmed {
+        journalTextView.resignFirstResponder()
+        confirmButton.backgroundColor = .gray
+        isConfirmed = false
+    }
+    
+    @objc private func textViewTapped() {
+        journalTextView.becomeFirstResponder() // 편집 모드
+    }
+}
+
+extension StruggleJournalView: UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.text == placeholderText {
+            textView.text = ""
+            textView.textColor = .black
+        }
+        
+        confirmButton.backgroundColor = .pointBlue
+        isConfirmed = true
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView.text.isEmpty {
+            textView.text = placeholderText
+            textView.textColor = .lightGray
+        }
+    }
+    
+    func textViewDidChange(_ textView: UITextView) {
+        if !textView.text.isEmpty && textView.text != placeholderText {
             confirmButton.backgroundColor = .pointBlue
-
-        } else {
-            confirmButton.backgroundColor = .gray
-
+            isConfirmed = true
         }
     }
 }
