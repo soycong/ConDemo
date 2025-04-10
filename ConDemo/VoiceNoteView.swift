@@ -82,7 +82,7 @@ final class VoiceNoteView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .white
+        self.backgroundColor = .backgroundGray
         
         setupKeyboardNotifications()
         setUpTableView()
@@ -121,6 +121,8 @@ final class VoiceNoteView: UIView {
     private func setUpTableView() {
         messageBubbleTableView.delegate = self
         messageBubbleTableView.dataSource = self
+        
+        messageBubbleTableView.backgroundColor = .backgroundGray
     }
     
     private func setUpSearchBar() {
