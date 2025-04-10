@@ -13,11 +13,15 @@ final class RecordingMainViewController: UIViewController {
     private let recordingMainView: RecordingMainView = .init()
     private let stopwatch: Stopwatch = .init()
 
+    private var originalBrightness: CGFloat = 0
+    private var brightnessTimer: Timer?
+
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view = recordingMainView
+        originalBrightness = UIScreen.main.brightness
         setupNavigationBar()
         setupAddTargets()
     }
@@ -26,6 +30,42 @@ final class RecordingMainViewController: UIViewController {
         super.viewWillAppear(animated)
         setupCurrentTime()
         setupStopwatch()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        setupBrightnessTimer()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        resetBrightnessTimer()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if recordingMainView.dimLayer.isHidden {
+            self.recordingMainView.recordButton.layer.borderColor = UIColor.label.resolvedColor(with: self.traitCollection).cgColor
+        } else {
+            self.recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue.resolvedColor(with: self.traitCollection).cgColor
+        }
+        // dimLayer가 있을 때 -> 버튼 무조건 파란색
+        // dimLayer가 없을 때 -> .label
+    }
+
+    // MARK: - Overridden Functions
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+
+        UIView.animate(withDuration: 0.3, animations: { [weak self] in
+            self?.recordingMainView.dimLayer.alpha = 0
+        }, completion: { [weak self] _ in
+            self?.recordingMainView.dimLayer.isHidden = true
+        })
+
+        setupBrightnessTimer()
     }
 
     // MARK: - Functions
@@ -60,6 +100,39 @@ final class RecordingMainViewController: UIViewController {
 
     private func setupCurrentTime() {
         recordingMainView.dateLabel.text = Date().toKoreaFormat().description
+    }
+
+    private func setupBrightnessTimer() {
+        resetBrightnessTimer()
+
+        brightnessTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false,
+                                               block: { [weak self] _ in
+                                                   self?.reduceBrightness()
+                                               })
+    }
+
+    private func resetBrightnessTimer() {
+        brightnessTimer?.invalidate()
+        brightnessTimer = nil
+
+        UIView.animate(withDuration: 0.3, animations: { [weak self] in
+            self?.recordingMainView.dimLayer.alpha = 0
+            self?.recordingMainView.recordButton.layer.borderColor = UIColor.label.resolvedColor(with: self!.traitCollection).cgColor
+            self?.recordingMainView.recordButton.tintColor = .label
+        }, completion: { [weak self] _ in
+            self?.recordingMainView.dimLayer.isHidden = true
+        })
+    }
+
+    private func reduceBrightness() {
+        recordingMainView.dimLayer.alpha = 0
+        recordingMainView.dimLayer.isHidden = false
+
+        UIView.animate(withDuration: 1.0) { [weak self] in
+            self?.recordingMainView.dimLayer.alpha = 0.6
+            self?.recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue.resolvedColor(with: self!.traitCollection).cgColor
+            self?.recordingMainView.recordButton.tintColor = .systemBlue
+        }
     }
 
     @objc
