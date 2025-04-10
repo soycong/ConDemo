@@ -7,14 +7,14 @@
 
 import UIKit
 
-final class PollCreateViewController: UIViewController {
+final class PollRecommendViewController: UIViewController {
     
-    private let pollCreateView = PollCreateView()
+    private let pollRecommendView = PollRecommendView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view = pollCreateView
+        self.view = pollRecommendView
         
         setupNavigationBar()
     }
