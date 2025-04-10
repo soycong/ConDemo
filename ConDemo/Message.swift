@@ -6,18 +6,21 @@
 //
 
 import Foundation
+import UIKit
 
 struct Message {
     let id: String
     let text: String
     let isFromCurrentUser: Bool
     let timestamp: Date
+    let image: UIImage?
     
-    init(id: String = UUID().uuidString, text: String, isFromCurrentUser: Bool, timestamp: Date = Date()) {
+    init(id: String = UUID().uuidString, text: String, isFromCurrentUser: Bool, timestamp: Date = Date(), image: UIImage? = nil) {
         self.id = id
         self.text = text
         self.isFromCurrentUser = isFromCurrentUser
         self.timestamp = timestamp
+        self.image = image
     }
 }
 
