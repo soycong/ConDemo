@@ -48,6 +48,16 @@ final class MessageBubbleCell: UITableViewCell {
         return imageView
     }()
     
+    private let audioButton: UIButton = {
+        let button = UIButton()
+        
+        button.setImage(UIImage(systemName: "play.circle.fill"), for: .normal)
+        button.tintColor = .white
+        button.isHidden = true
+        
+        return button
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
@@ -63,6 +73,7 @@ final class MessageBubbleCell: UITableViewCell {
         contentView.addSubview(bubbleBackgroundView)
         bubbleBackgroundView.addSubview(messageLabel)
         bubbleBackgroundView.addSubview(messageImageView)
+        bubbleBackgroundView.addSubview(audioButton)
         
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -70,6 +81,12 @@ final class MessageBubbleCell: UITableViewCell {
         
         messageLabel.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
+        }
+        
+        audioButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview().offset(16)
+            make.width.height.equalTo(30)
         }
     }
     
@@ -136,10 +153,13 @@ final class MessageBubbleCell: UITableViewCell {
         
         messageLabel.attributedText = message.text.makeAttributedString(searchText, font: messageLabel.font, color: .red)
         
+        messageLabel.isHidden = true
+        messageImageView.isHidden = true
+        audioButton.isHidden = true
+        
         if let image = message.image { // 이미지만 표시
             messageImageView.isHidden = false
             messageImageView.image = image
-            messageLabel.isHidden = true
             
             messageImageView.snp.removeConstraints()
             
@@ -150,8 +170,16 @@ final class MessageBubbleCell: UITableViewCell {
             
             messageImageView.clipsToBounds = true
             
+        } else if message.audioURL != nil { // 오디오 버튼 표시
+            audioButton.isHidden = false
+            
+            if message.isFromCurrentUser {
+                audioButton.tintColor = .white
+            } else {
+                audioButton.tintColor = .black
+            }
+            
         } else { // 텍스트만 표시
-            messageImageView.isHidden = true
             messageLabel.isHidden = false
             messageLabel.text = message.text
         }
