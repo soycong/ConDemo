@@ -11,23 +11,24 @@ final class RecordingMainViewController: UIViewController {
     // MARK: - Properties
 
     private let viewModel: RecordingMainViewModel
-    
+
     private let recordingMainView: RecordingMainView = .init()
     private let stopwatch: Stopwatch = .init()
 
     private var originalBrightness: CGFloat = 0
     private var brightnessTimer: Timer?
-    
+
+    // MARK: - Lifecycle
+
     init(_ viewModel: RecordingMainViewModel) {
         self.viewModel = viewModel
-        super.init()
+        super.init(nibName: nil, bundle: nil)
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +40,7 @@ final class RecordingMainViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        viewModel.startRecording()
         setupCurrentTime()
         setupStopwatch()
     }
@@ -153,6 +155,7 @@ final class RecordingMainViewController: UIViewController {
     @objc
     private func backButtonTapped() {
         showAlert(title: "녹음을 중단하시겠습니까?") { [weak self] in
+            self?.viewModel.stopRecording()
             self?.navigationController?.popViewController(animated: true)
         }
     }
@@ -165,6 +168,7 @@ final class RecordingMainViewController: UIViewController {
 
     @objc
     private func recordButtonTapped() {
+        viewModel.recordToggle()
         stopwatch.toggle()
         updateRecordButtonImage()
     }
@@ -183,7 +187,7 @@ extension RecordingMainViewController: StopwatchDelegate {
 }
 
 extension RecordingMainViewController {
-    func showAlert(title: String, completion: @escaping () -> Void) {
+    private func showAlert(title: String, completion: @escaping () -> Void) {
         let alert: UIAlertController = .init(title: title,
                                              message: nil,
                                              preferredStyle: .alert)

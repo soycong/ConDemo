@@ -6,41 +6,46 @@
 //
 
 final class RecordingMainViewModel {
-    private let audioRecorder = AudioRecorder()
+    private let audioRecorder: AudioRecorder = .init()
     private var isRecording = false
-    private var isRecordingPaused = false
-    
+
     private var isPlaying = false
-    private var isPlayingPaused = false
-    
+    private var isPaused = false
 }
 
 extension RecordingMainViewModel {
     func startRecording() {
         audioRecorder.startRecording()
-        
-        self.isRecording = true
+        isRecording = true
+        print("녹음 시작")
     }
-    
+
     func pauseRecording() {
-        guard isRecording else { return }
-        
         audioRecorder.pauseRecording()
-        self.isRecordingPaused = true
+        isRecording = false
+        print("녹음 일시정지")
     }
-    
+
     func restartRecording() {
-        guard isRecording else { return }
-        
         audioRecorder.restartRecording()
-        self.isRecordingPaused = false
+        isRecording = true
+        print("녹음 재시작")
     }
-    
+
     func stopRecording() {
-        guard isRecording else { return }
-        
         audioRecorder.stopRecording()
-        self.isRecording = false
-        self.isRecordingPaused = false
+        isRecording = false
+        print("녹음 종료")
+    }
+
+    func recordToggle() {
+        // 녹음중이 아니다 -> 녹음 재시작
+        if !isRecording {
+            restartRecording()
+        }
+        // 녹음중이다 -> 녹음 일시정지
+        else {
+            pauseRecording()
+        }
     }
 }
