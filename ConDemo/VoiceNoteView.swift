@@ -6,16 +6,19 @@
 //
 
 import UIKit
+import SnapKit
 
 final class VoiceNoteView: UIView {
     
     var messages: [Message] = Message.dummyMessages
     var highlightText = ""
     
+    private var messageStackViewBottomConstraint: Constraint?
+    
     // 매칭 구현
     private var matchedWordIndexPaths: [IndexPath] = []
     private var currentMatchIndex: Int = -1
-        
+    
     private var messageBubbleTableView = MessageBubbleTableView()
     
     private var voiceNoteSearchBar = VoiceNoteSearchBar()
@@ -81,17 +84,38 @@ final class VoiceNoteView: UIView {
         super.init(frame: frame)
         self.backgroundColor = .white
         
+        setupKeyboardNotifications()
         setUpTableView()
         setUpSearchBar()
         setSearchModeButtons()
         
         configureUI()
-
+        
         hideSearchModeButtons()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        
+        // 테이블뷰 탭하면 키보드 내리기
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        messageBubbleTableView.addGestureRecognizer(tapGesture)
     }
     
     private func setUpTableView() {
@@ -112,12 +136,12 @@ final class VoiceNoteView: UIView {
     // 버튼 표시/숨김
     private func showSearchModeButtons() {
         systemButtonStackView.isHidden = false
-
+        
         UIView.animate(withDuration: 0.3) {
             self.systemButtonStackView.alpha = 1.0
         }
     }
-
+    
     private func hideSearchModeButtons() {
         UIView.animate(withDuration: 0.3, animations: {
             self.systemButtonStackView.alpha = 0.0
@@ -125,7 +149,23 @@ final class VoiceNoteView: UIView {
             self.systemButtonStackView.isHidden = true
         }
     }
-
+    
+    private func configureUI(){
+        addSubview(messageStackView)
+        
+        messageStackView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(8)
+            make.top.equalTo(safeAreaLayoutGuide)
+            self.messageStackViewBottomConstraint = make.bottom.equalToSuperview().inset(30).constraint
+        }
+        
+        messageBubbleTableView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(voiceNoteSearchBar.snp.top).offset(-10)
+            make.top.equalToSuperview().offset(20)
+        }
+    }
+    
     @objc private func upButtonTapped() {
         guard !matchedWordIndexPaths.isEmpty else { return }
         
@@ -135,7 +175,7 @@ final class VoiceNoteView: UIView {
         
         updateMatchCounter()
     }
-
+    
     @objc private func downButtonTapped() {
         guard !matchedWordIndexPaths.isEmpty else { return }
         
@@ -145,30 +185,47 @@ final class VoiceNoteView: UIView {
         
         updateMatchCounter()
     }
-
+    
     @objc private func cancelButtonTapped() {
         voiceNoteSearchBar.text = nil
         voiceNoteSearchBar.resignFirstResponder()
         highlightText = ""
         messageBubbleTableView.reloadData()
-
+        
         hideSearchModeButtons()
     }
     
-    private func configureUI(){
-        addSubview(messageStackView)
-        
-        messageStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(8)
-            make.verticalEdges.equalTo(safeAreaLayoutGuide)
-            make.centerX.equalToSuperview()
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
         }
         
-        messageBubbleTableView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(voiceNoteSearchBar.snp.top).offset(-10)
-            make.top.equalToSuperview().offset(20)
+        let keyboardHeight = keyboardFrame.height
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        messageStackViewBottomConstraint?.update(inset: keyboardHeight + 10)
+        
+        UIView.animate(withDuration: duration) {
+            self.layoutIfNeeded()
         }
+    }
+    
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        messageStackViewBottomConstraint?.update(inset: 30)
+        
+        UIView.animate(withDuration: duration) {
+            self.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func dismissKeyboard() {
+        endEditing(true)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
