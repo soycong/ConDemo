@@ -10,6 +10,7 @@ import SnapKit
 
 final class MessageView: UIView {
     
+    private weak var audioDelegate: MessageBubbleCellDelegate?
     private var messageStackViewBottomConstraint: Constraint?
     var messages: [Message] = Message.dummyMessages
     
@@ -116,6 +117,10 @@ final class MessageView: UIView {
         
         messageBubbleTableView.showsVerticalScrollIndicator = false
         messageBubbleTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 4, right: 0)
+    }
+    
+    func setAudioDelegate(_ delegate: MessageBubbleCellDelegate) {
+        self.audioDelegate = delegate
     }
     
     private func configureUI(){
@@ -304,6 +309,7 @@ extension MessageView: UITableViewDataSource {
         
         let message = messages[indexPath.row]
         cell.configure(with: message)
+        cell.delegate = audioDelegate
         
         // cell.transform = CGAffineTransform(scaleX: 1, y: -1) // 아래부터 보여야하므로 셀 뒤집기
         
