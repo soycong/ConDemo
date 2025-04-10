@@ -24,7 +24,7 @@ final class AudioRecorder {
 extension AudioRecorder {
     /// 녹음 시작
     func startRecording() {
-        let fileURL = getDocumentDirectory()
+        let fileURL = getSharedDocumentsDirectory()
             .appendingPathComponent("OurVoices-\(Date().timeIntervalSince1970).m4a")
         let settings = [AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
                         AVSampleRateKey: 12000,
@@ -53,6 +53,7 @@ extension AudioRecorder {
     func stopRecording() {
         audioRecorder?.stop()
         recordedURLs.append(audioRecorder!.url)
+        print("녹음 파일 위치: \(audioRecorder!.url)")
     }
 }
 
@@ -68,8 +69,22 @@ extension AudioRecorder {
         }
     }
 
-    private func getDocumentDirectory() -> URL {
+    private func getSharedDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths[0]
+        let documentsDirectory = paths[0]
+
+        let directoryPath = documentsDirectory.appendingPathComponent("Audio")
+
+        // 폴더가 없으면 생성
+        if !FileManager.default.fileExists(atPath: directoryPath.path) {
+            do {
+                try FileManager.default.createDirectory(at: directoryPath,
+                                                        withIntermediateDirectories: true)
+            } catch {
+                print("디렉토리 생성 실패: \(error)")
+            }
+        }
+
+        return directoryPath
     }
 }
