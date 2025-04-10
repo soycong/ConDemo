@@ -29,7 +29,9 @@ final class RecordingMainViewController: UIViewController {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
 
+extension RecordingMainViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view = recordingMainView
@@ -68,7 +70,9 @@ final class RecordingMainViewController: UIViewController {
         // dimLayer가 있을 때 -> 버튼 무조건 파란색
         // dimLayer가 없을 때 -> .label
     }
+}
 
+extension RecordingMainViewController {
     // MARK: - Overridden Functions
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -82,7 +86,9 @@ final class RecordingMainViewController: UIViewController {
 
         setupBrightnessTimer()
     }
+}
 
+extension RecordingMainViewController {
     // MARK: - Functions
 
     private func setupNavigationBar() {
@@ -111,12 +117,18 @@ final class RecordingMainViewController: UIViewController {
     private func setupAddTargets() {
         recordingMainView.recordButton.addTarget(self, action: #selector(recordButtonTapped),
                                                  for: .touchUpInside)
+        recordingMainView.saveButton.addTarget(self, action: #selector(saveButtonTapped),
+                                               for: .touchUpInside)
+        recordingMainView.completeButton.addTarget(self, action: #selector(completeButtonTapped),
+                                                   for: .touchUpInside)
     }
 
     private func setupCurrentTime() {
         recordingMainView.dateLabel.text = Date().toKoreaFormat().description
     }
+}
 
+extension RecordingMainViewController {
     private func setupBrightnessTimer() {
         resetBrightnessTimer()
 
@@ -151,13 +163,17 @@ final class RecordingMainViewController: UIViewController {
             self?.recordingMainView.recordButton.tintColor = .systemBlue
         }
     }
+}
 
+extension RecordingMainViewController {
     @objc
     private func backButtonTapped() {
-        showAlert(title: "녹음을 중단하시겠습니까?") { [weak self] in
-            self?.viewModel.stopRecording()
-            self?.navigationController?.popViewController(animated: true)
-        }
+        let customAlert: CustomAlertView = .init()
+        customAlert
+            .show(in: recordingMainView, message: "녹음을 중단하시겠습니까?") { [weak self] in
+                self?.viewModel.stopRecording()
+                self?.navigationController?.popViewController(animated: true)
+            }
     }
 
     @objc
@@ -165,7 +181,9 @@ final class RecordingMainViewController: UIViewController {
 
     @objc
     private func profileButtonTapped() { }
+}
 
+extension RecordingMainViewController {
     @objc
     private func recordButtonTapped() {
         viewModel.recordToggle()
@@ -178,23 +196,30 @@ final class RecordingMainViewController: UIViewController {
             .isRunning ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
         recordingMainView.recordButton.setImage(image, for: .normal)
     }
+
+    @objc
+    private func saveButtonTapped() {
+        let customAlert: CustomAlertView = .init()
+        customAlert
+            .show(in: recordingMainView, message: "녹음을 시작한 부분부터\n현재까지 저장합니다") { [weak self] in
+                self?.viewModel.stopRecording()
+                self?.navigationController?.popViewController(animated: true)
+            }
+    }
+
+    @objc
+    private func completeButtonTapped() {
+        let customAlert: CustomAlertView = .init()
+        customAlert
+            .show(in: recordingMainView, message: "녹음을 종료합니다") { [weak self] in
+                self?.viewModel.stopRecording()
+                self?.navigationController?.popViewController(animated: true)
+            }
+    }
 }
 
 extension RecordingMainViewController: StopwatchDelegate {
     func stopwatchDidUpdate(_: Stopwatch, elapsedTime: TimeInterval) {
         recordingMainView.timeLabel.text = elapsedTime.formatTime()
-    }
-}
-
-extension RecordingMainViewController {
-    private func showAlert(title: String, completion: @escaping () -> Void) {
-        let alert: UIAlertController = .init(title: title,
-                                             message: nil,
-                                             preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "확인", style: .destructive) { _ in
-            completion()
-        })
-        alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
-        present(alert, animated: true)
     }
 }
