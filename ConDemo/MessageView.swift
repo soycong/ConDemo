@@ -98,6 +98,10 @@ final class MessageView: UIView {
         setUpTableView()
         configureUI()
         setActions()
+        
+        DispatchQueue.main.async {
+            self.scrollToBottom()
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -107,6 +111,9 @@ final class MessageView: UIView {
     private func setUpTableView() {
         messageBubbleTableView.delegate = self
         messageBubbleTableView.dataSource = self
+        
+        messageBubbleTableView.showsVerticalScrollIndicator = false
+        messageBubbleTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 4, right: 0)
     }
     
     private func configureUI(){
@@ -160,6 +167,13 @@ final class MessageView: UIView {
         }
     }
     
+    private func scrollToBottom() {
+        guard !messages.isEmpty else { return }
+        
+        let index = IndexPath(row: messages.count - 1, section: 0)
+        messageBubbleTableView.scrollToRow(at: index, at: .bottom, animated: true)
+    }
+    
     private func setActions() {
         sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
     }
@@ -181,6 +195,8 @@ final class MessageView: UIView {
         }
         
         inputTextField.text = ""
+        
+        scrollToBottom()
     }
     
     func sendImage(image: UIImage) {
@@ -194,6 +210,21 @@ final class MessageView: UIView {
         }
         
         inputTextField.text = ""
+        
+        scrollToBottom()
+    }
+    
+    func sendAudioMessage(url: URL, data: Data) {
+        messages.append(Message(text: "오디오", isFromCurrentUser: true, timestamp: Date(), image: nil, audioURL: url, audioData: data))
+        
+        messageBubbleTableView.reloadData()
+        
+        if !messages.isEmpty {
+            let indexPath = IndexPath(row: messages.count - 1, section: 0)
+            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
+        
+        scrollToBottom()
     }
 }
 
