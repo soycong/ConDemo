@@ -18,7 +18,9 @@ final class LaunchView: UIView {
 
     private var adBannerImageView: UIImageView = {
         let imageView: UIImageView = .init()
-        imageView.contentMode = .scaleAspectFit
+        imageView.image = UIImage(named: "launchAD")
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
         imageView.backgroundColor = .beigeGray
         imageView.tintColor = .label
         return imageView
@@ -76,7 +78,7 @@ final class LaunchView: UIView {
         adBannerImageView.snp.makeConstraints { make in
             make.top.equalTo(launchLogoImageView.snp.bottom).offset(30)
             make.horizontalEdges.equalToSuperview().inset(13)
-            make.bottom.equalTo(copyrightLabel.snp.top).offset(-30)
+            make.height.equalTo(241)
         }
     }
 }
