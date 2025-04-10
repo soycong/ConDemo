@@ -108,19 +108,19 @@ final class MessageViewController: UIViewController {
     private func showAddOptions() {
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let cameraAction = UIAlertAction(title: "카메라", style: .default) { [weak self] _ in
+        let cameraAction = UIAlertAction(title: "Camera", style: .default) { [weak self] _ in
             if let camera = self?.camera {
                 self?.present(camera, animated: true)
             }
         }
         
-        let photoLibraryAction = UIAlertAction(title: "앨범에서 선택", style: .default) { [weak self] _ in
+        let photoLibraryAction = UIAlertAction(title: "Select Photo", style: .default) { [weak self] _ in
             if let picker = self?.picker {
                 self?.present(picker, animated: true)
             }
         }
         
-        let recordingAction = UIAlertAction(title: "녹음 앱에서 선택", style: .default) { [weak self] _ in
+        let recordingAction = UIAlertAction(title: "Select File", style: .default) { [weak self] _ in
             if let audioPicker = self?.audioPicker {
                 self?.present(audioPicker, animated: true)
             }
