@@ -10,6 +10,7 @@ import SnapKit
 
 final class MessageView: UIView {
     
+    private var messageStackViewBottomConstraint: Constraint?
     var messages: [Message] = Message.dummyMessages
     
     private let titleLabel: UILabel = {
@@ -97,7 +98,8 @@ final class MessageView: UIView {
         
         setUpTableView()
         configureUI()
-        setActions()
+        setupActions()
+        setupKeyboardNotifications()
         
         DispatchQueue.main.async {
             self.scrollToBottom()
@@ -124,8 +126,9 @@ final class MessageView: UIView {
         
         messageStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.verticalEdges.equalTo(safeAreaLayoutGuide)
+            make.top.equalTo(safeAreaLayoutGuide)
             make.centerX.equalToSuperview()
+            self.messageStackViewBottomConstraint = make.bottom.equalToSuperview().inset(30).constraint
         }
         
         titleStackView.snp.makeConstraints { make in
@@ -146,11 +149,11 @@ final class MessageView: UIView {
         messageBubbleTableView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(titleStackView.snp.bottom).offset(10)
-            make.bottom.equalTo(inputTextField.snp.top).offset(-10)
+            make.bottom.equalTo(containerView.snp.top).offset(-10)
         }
         
         containerView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(10)
             make.height.equalTo(40)
         }
         
@@ -174,8 +177,65 @@ final class MessageView: UIView {
         messageBubbleTableView.scrollToRow(at: index, at: .bottom, animated: true)
     }
     
-    private func setActions() {
+    private func setupActions() {
         sendButton.addTarget(self, action: #selector(sendButtonTapped), for: .touchUpInside)
+         
+        // 테이블뷰 탭하면 키보드 내리기
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        messageBubbleTableView.addGestureRecognizer(tapGesture)
+        // messageBubbleTableView.keyboardDismissMode = .interactive // 스크롤로도 키보드 내리기
+    }
+    
+    private func setupKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
+        
+        let keyboardHeight = keyboardFrame.height
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        messageStackViewBottomConstraint?.update(inset: keyboardHeight + 10)
+        
+        UIView.animate(withDuration: duration) {
+            self.layoutIfNeeded()
+        }
+        
+        // 맨 아래로 스크롤
+        scrollToBottom()
+    }
+    
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        messageStackViewBottomConstraint?.update(inset: 30)
+        
+        UIView.animate(withDuration: duration) {
+            self.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func dismissKeyboard() {
+        endEditing(true)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     @objc private func sendButtonTapped() {
