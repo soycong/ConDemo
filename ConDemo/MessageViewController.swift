@@ -16,6 +16,9 @@ final class MessageViewController: UIViewController {
     private var camera = UIImagePickerController()
     private var audioPicker: UIDocumentPickerViewController?
     private var audioPlayer: AVAudioPlayer?
+    private var isPlaying = false
+    private var currentPlayingCell: MessageBubbleCell?
+    private var updateTimer: Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,14 +29,21 @@ final class MessageViewController: UIViewController {
         setupPHPicker()
         setupImagePicker()
         setupAudioPicker()
+        setupAudio()
+        messageView.setAudioDelegate(self)
         
         setupActions()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        stopAudio() // 화면을 벗어나면 오디오 중지
     }
     
     private func setupNavigationBar() {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
-                
+        
         let backButton = UIBarButtonItem(image: UIImage(systemName: "chevron.left"),
                                          style: .plain,
                                          target: self,
@@ -122,11 +132,20 @@ final class MessageViewController: UIViewController {
         alertController.addAction(photoLibraryAction)
         alertController.addAction(recordingAction)
         alertController.addAction(cancelAction)
-
+        
         present(alertController, animated: true)
     }
     
-    func playAudio(data: Data) {
+    private func setupAudio() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("오디오 세션 설정 실패: \(error)")
+        }
+    }
+    
+    private func playAudio(data: Data) {
         do {
             audioPlayer = try AVAudioPlayer(data: data)
             audioPlayer?.prepareToPlay()
@@ -134,6 +153,83 @@ final class MessageViewController: UIViewController {
         } catch {
             print("오디오 재생 실패 \(error)")
         }
+    }
+    
+    // 오디오 재생 메서드
+    func playAudio(from cell: MessageBubbleCell, url: URL, data: Data?) {
+        // 이미 재생 중인 경우 중지
+        if isPlaying && currentPlayingCell == cell {
+            stopAudio()
+            return
+        }
+        
+        // 다른 오디오가 재생 중이면 중지
+        if isPlaying {
+            stopAudio()
+        }
+        
+        do {
+            if let data = data {
+                audioPlayer = try AVAudioPlayer(data: data)
+            } else {
+                audioPlayer = try AVAudioPlayer(contentsOf: url)
+            }
+            
+            audioPlayer?.delegate = self
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+            
+            isPlaying = true
+            currentPlayingCell = cell
+            
+            cell.updateAudioButtonIcon(isPlaying: true)
+            
+            // 초기 재생 시간 설정
+            let duration = formatTimeString(audioPlayer?.duration ?? 0)
+            let currentTime = formatTimeString(audioPlayer?.currentTime ?? 0)
+            cell.updateTimeLabel(current: currentTime, total: duration)
+            
+            // 타이머 시작 - 0.1초마다 시간 업데이트
+            updateTimer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateAudioTime), userInfo: nil, repeats: true)
+            
+        } catch {
+            print("오디오 재생 오류: \(error)")
+        }
+    }
+    
+    func stopAudio() {
+        audioPlayer?.stop()
+        audioPlayer = nil
+        isPlaying = false
+        
+        // 타이머 중지
+        updateTimer?.invalidate()
+        updateTimer = nil
+        
+        if let cell = currentPlayingCell {
+            cell.updateAudioButtonIcon(isPlaying: false)
+        }
+        
+        currentPlayingCell = nil
+    }
+    
+    @objc private func updateAudioTime() {
+        guard let player = audioPlayer, let cell = currentPlayingCell else {
+            updateTimer?.invalidate()
+            updateTimer = nil
+            return
+        }
+        
+        let currentTime = formatTimeString(player.currentTime)
+        let duration = formatTimeString(player.duration)
+        
+        cell.updateTimeLabel(current: currentTime, total: duration)
+    }
+    
+    private func formatTimeString(_ time: TimeInterval) -> String {
+        let minutes = Int(time) / 60
+        let seconds = Int(time) % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
 }
 
@@ -192,5 +288,22 @@ extension MessageViewController: UIDocumentPickerDelegate {
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
         controller.dismiss(animated: true)
+    }
+}
+
+extension MessageViewController: AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        if let cell = currentPlayingCell {
+            cell.updateAudioButtonIcon(isPlaying: false)
+        }
+        
+        isPlaying = false
+        currentPlayingCell = nil
+    }
+}
+
+extension MessageViewController: MessageBubbleCellDelegate {
+    func didTapAudioButton(in cell: MessageBubbleCell, audioURL: URL, audioData: Data?) {
+        playAudio(from: cell, url: audioURL, data: audioData)
     }
 }
