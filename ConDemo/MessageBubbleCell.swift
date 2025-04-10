@@ -40,6 +40,14 @@ final class MessageBubbleCell: UITableViewCell {
         return label
     }()
     
+    private let messageImageView: UIImageView = {
+        let imageView = UIImageView()
+        
+        imageView.contentMode = .scaleAspectFit
+        
+        return imageView
+    }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.selectionStyle = .none
@@ -54,6 +62,7 @@ final class MessageBubbleCell: UITableViewCell {
     private func configureUI() {
         contentView.addSubview(bubbleBackgroundView)
         bubbleBackgroundView.addSubview(messageLabel)
+        bubbleBackgroundView.addSubview(messageImageView)
         
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -124,7 +133,27 @@ final class MessageBubbleCell: UITableViewCell {
                 make.top.bottom.equalToSuperview().inset(12)
             }
         }
-
+        
         messageLabel.attributedText = message.text.makeAttributedString(searchText, font: messageLabel.font, color: .red)
+        
+        if let image = message.image { // 이미지만 표시
+            messageImageView.isHidden = false
+            messageImageView.image = image
+            messageLabel.isHidden = true
+            
+            messageImageView.snp.removeConstraints()
+            
+            messageImageView.snp.makeConstraints { make in
+                make.edges.equalToSuperview().inset(10)
+                make.width.height.lessThanOrEqualTo(200)
+            }
+            
+            messageImageView.clipsToBounds = true
+            
+        } else { // 텍스트만 표시
+            messageImageView.isHidden = true
+            messageLabel.isHidden = false
+            messageLabel.text = message.text
+        }
     }
 }
