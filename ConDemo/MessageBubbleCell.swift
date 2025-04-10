@@ -7,8 +7,16 @@
 
 import UIKit
 
+protocol MessageBubbleCellDelegate: AnyObject {
+    func didTapAudioButton(in cell: MessageBubbleCell, audioURL: URL, audioData: Data?)
+}
+
 final class MessageBubbleCell: UITableViewCell {
     static let id = "MessageBubbleCell"
+    
+    weak var delegate: MessageBubbleCellDelegate?
+    private var audioURL: URL?
+    private var audioData: Data?
     
     private var bubbleBackgroundView = UIView()
     
@@ -53,9 +61,19 @@ final class MessageBubbleCell: UITableViewCell {
         
         button.setImage(UIImage(systemName: "play.circle.fill"), for: .normal)
         button.tintColor = .white
-        button.isHidden = true
         
         return button
+    }()
+    
+    private let timeLabel: UILabel = {
+        let label = UILabel()
+        
+        label.font = .systemFont(ofSize: 12)
+        label.textColor = .white
+        label.text = "0:00 / 0:00"
+        label.textAlignment = .center
+        
+        return label
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -63,6 +81,7 @@ final class MessageBubbleCell: UITableViewCell {
         self.selectionStyle = .none
         
         configureUI()
+        setupAudio()
     }
     
     required init?(coder: NSCoder) {
@@ -74,6 +93,7 @@ final class MessageBubbleCell: UITableViewCell {
         bubbleBackgroundView.addSubview(messageLabel)
         bubbleBackgroundView.addSubview(messageImageView)
         bubbleBackgroundView.addSubview(audioButton)
+        bubbleBackgroundView.addSubview(timeLabel)
         
         contentView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -86,7 +106,23 @@ final class MessageBubbleCell: UITableViewCell {
         audioButton.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview().offset(16)
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(40)
+        }
+        
+        timeLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(audioButton.snp.trailing).offset(8)
+            make.trailing.lessThanOrEqualToSuperview().offset(-16)
+        }
+    }
+    
+    private func setupAudio() {
+        audioButton.addTarget(self, action: #selector(audioButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func audioButtonTapped() {
+        if let url = audioURL {
+            delegate?.didTapAudioButton(in: self, audioURL: url, audioData: audioData)
         }
     }
     
@@ -156,6 +192,7 @@ final class MessageBubbleCell: UITableViewCell {
         messageLabel.isHidden = true
         messageImageView.isHidden = true
         audioButton.isHidden = true
+        timeLabel.isHidden = true
         
         if let image = message.image { // 이미지만 표시
             messageImageView.isHidden = false
@@ -172,16 +209,33 @@ final class MessageBubbleCell: UITableViewCell {
             
         } else if message.audioURL != nil { // 오디오 버튼 표시
             audioButton.isHidden = false
+            timeLabel.isHidden = false
+            
+            timeLabel.text = "0:00 / 0:00"
+            
+            self.audioURL = message.audioURL
+            self.audioData = message.audioData
             
             if message.isFromCurrentUser {
                 audioButton.tintColor = .white
+                timeLabel.textColor = .white
             } else {
                 audioButton.tintColor = .black
+                timeLabel.textColor = .darkGray
             }
             
         } else { // 텍스트만 표시
             messageLabel.isHidden = false
             messageLabel.text = message.text
         }
+    }
+    
+    func updateAudioButtonIcon(isPlaying: Bool) {
+        let imageName = isPlaying ? "pause.circle.fill" : "play.circle.fill"
+        audioButton.setImage(UIImage(systemName: imageName), for: .normal)
+    }
+    
+    func updateTimeLabel(current: String, total: String) {
+        timeLabel.text = "\(current) / \(total)"
     }
 }
