@@ -7,12 +7,15 @@
 
 import UIKit
 import PhotosUI
+import AVFoundation
 
 final class MessageViewController: UIViewController {
     private let messageView = MessageView()
     
     private var picker: PHPickerViewController?
     private var camera = UIImagePickerController()
+    private var audioPicker: UIDocumentPickerViewController?
+    private var audioPlayer: AVAudioPlayer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +25,7 @@ final class MessageViewController: UIViewController {
         setupNavigationBar()
         setupPHPicker()
         setupImagePicker()
+        setupAudioPicker()
         
         setupActions()
     }
@@ -62,6 +66,26 @@ final class MessageViewController: UIViewController {
         camera.delegate = self
     }
     
+    private func setupAudioPicker() {
+        // 오디오 파일 타입 지정
+        let supportedTypes: [UTType] = [UTType.audio, UTType.mp3, UTType.wav, UTType.mpeg4Audio]
+        
+        // iOS 14 이상
+        if #available(iOS 14.0, *) {
+            let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.audio"], in: .import)
+            // let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: supportedTypes)
+            documentPicker.delegate = self
+            documentPicker.allowsMultipleSelection = false
+            self.audioPicker = documentPicker
+        } else {
+            // iOS 13
+            let documentPicker = UIDocumentPickerViewController(documentTypes: ["public.audio"], in: .import)
+            documentPicker.delegate = self
+            documentPicker.allowsMultipleSelection = false
+            self.audioPicker = documentPicker
+        }
+    }
+    
     @objc private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
@@ -87,6 +111,9 @@ final class MessageViewController: UIViewController {
         }
         
         let recordingAction = UIAlertAction(title: "녹음 앱에서 선택", style: .default) { [weak self] _ in
+            if let audioPicker = self?.audioPicker {
+                self?.present(audioPicker, animated: true)
+            }
         }
         
         let cancelAction = UIAlertAction(title: "취소", style: .cancel)
@@ -97,6 +124,16 @@ final class MessageViewController: UIViewController {
         alertController.addAction(cancelAction)
 
         present(alertController, animated: true)
+    }
+    
+    func playAudio(data: Data) {
+        do {
+            audioPlayer = try AVAudioPlayer(data: data)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch {
+            print("오디오 재생 실패 \(error)")
+        }
     }
 }
 
@@ -130,5 +167,30 @@ extension MessageViewController: UIImagePickerControllerDelegate, UINavigationCo
         }
         
         picker.dismiss(animated: true)
+    }
+}
+
+extension MessageViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else { return }
+        
+        // 권한 설정 plist에서 할 필요는 없는지?
+        let securityScoped = url.startAccessingSecurityScopedResource()
+        
+        do {
+            let audioData = try Data(contentsOf: url)
+            
+            messageView.sendAudioMessage(url: url, data: audioData)
+        } catch {
+            print("파일 로드 실패 \(error)")
+        }
+        
+        if securityScoped {
+            url.stopAccessingSecurityScopedResource()
+        }
+    }
+    
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        controller.dismiss(animated: true)
     }
 }
