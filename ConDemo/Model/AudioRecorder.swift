@@ -9,7 +9,7 @@ import AVFoundation
 
 final class AudioRecorder {
     // MARK: - Properties
-    
+
     private var audioRecorder: AVAudioRecorder?
     private var audioPlayer: AVAudioPlayer?
     private var recordedURLs: [URL] = []

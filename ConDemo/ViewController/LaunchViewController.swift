@@ -47,12 +47,14 @@ final class LaunchViewController: UIViewController {
         let userDefults: UserDefaults = .standard
         let isLandingRecordScreen = userDefults.bool(forKey: UserDefaultsKeys.landingRecordScreen)
 
+        // 테스트 코드
         let newRootViewController: UIViewController =
-            if isLandingRecordScreen {
-                RecordingLandingViewController()
-            } else {
-                RecordingLandingViewController()
-            }
+            RecordingLandingViewController(viewModel: RecordingLandingViewModel())
+//            if isLandingRecordScreen {
+//                RecordingLandingViewController(viewModel: RecordingLandingViewModel())
+//            } else {
+//                RecordingLandingViewController(viewModel: RecordingLandingViewModel())
+//            }
 
         let transition: CATransition = .init()
         transition.duration = 0.5
