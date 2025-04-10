@@ -9,17 +9,9 @@ import AVFoundation
 
 final class AudioRecorder {
     // MARK: - Properties
-
-    private var hasAudioSession: Bool?
-
+    
     private var audioRecorder: AVAudioRecorder?
-    private var isRecording = false
-    private var isRecordingPaused = false
-
     private var audioPlayer: AVAudioPlayer?
-    private var isPlaying = false
-    private var isPlayingPaused = false
-
     private var recordedURLs: [URL] = []
 
     // MARK: - Lifecycle
@@ -42,7 +34,6 @@ extension AudioRecorder {
         do {
             audioRecorder = try AVAudioRecorder(url: fileURL, settings: settings)
             audioRecorder?.record()
-            isRecording = true
         } catch {
             print("녹음 중 오류 발생: \(error)")
         }
@@ -50,35 +41,18 @@ extension AudioRecorder {
 
     /// 녹음 일시정지
     func pauseRecording() {
-        guard isRecording else {
-            return
-        }
-
         audioRecorder?.pause()
-        isRecordingPaused = true
     }
 
     /// 녹음 재개
     func restartRecording() {
-        guard isRecording else {
-            return
-        }
-
         audioRecorder?.record()
-        isRecordingPaused = false
     }
 
     /// 녹음 중지
     func stopRecording() {
-        guard isRecording else {
-            return
-        }
-
         audioRecorder?.stop()
         recordedURLs.append(audioRecorder!.url)
-
-        isRecording = false
-        isRecordingPaused = false
     }
 }
 
@@ -89,10 +63,8 @@ extension AudioRecorder {
         do {
             try audioSession.setCategory(.playAndRecord, mode: .default)
             try audioSession.setActive(true)
-            hasAudioSession = true
         } catch {
             print("오디오 세션 설정 실패: \(error)")
-            hasAudioSession = false
         }
     }
 
