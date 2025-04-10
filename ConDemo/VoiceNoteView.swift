@@ -11,6 +11,10 @@ final class VoiceNoteView: UIView {
     
     var messages: [Message] = Message.dummyMessages
     var highlightText = ""
+    
+    // 매칭 구현
+    private var matchedWordIndexPaths: [IndexPath] = []
+    private var currentMatchIndex: Int = -1
         
     private var messageBubbleTableView = MessageBubbleTableView()
     
@@ -123,11 +127,23 @@ final class VoiceNoteView: UIView {
     }
 
     @objc private func upButtonTapped() {
-        print("Up button tapped")
+        guard !matchedWordIndexPaths.isEmpty else { return }
+        
+        // 이전 결과로 이동 (위로)
+        currentMatchIndex = (currentMatchIndex - 1 + matchedWordIndexPaths.count) % matchedWordIndexPaths.count
+        scrollToCurrentMatch()
+        
+        updateMatchCounter()
     }
 
     @objc private func downButtonTapped() {
-        print("Down button tapped")
+        guard !matchedWordIndexPaths.isEmpty else { return }
+        
+        // 다음 결과로 이동 (아래로)
+        currentMatchIndex = (currentMatchIndex + 1) % matchedWordIndexPaths.count
+        scrollToCurrentMatch()
+        
+        updateMatchCounter()
     }
 
     @objc private func cancelButtonTapped() {
@@ -183,8 +199,15 @@ extension VoiceNoteView: UISearchBarDelegate {
         guard let searchText = searchBar.text else { return }
         highlightText = searchText
         
+        findAllMatchMessages(for: searchText)
+        
         messageBubbleTableView.reloadData()
         voiceNoteSearchBar.resignFirstResponder()
+        
+        if !matchedWordIndexPaths.isEmpty {
+            scrollToCurrentMatch()
+            updateMatchCounter()
+        }
         
         showSearchModeButtons()
     }
@@ -200,4 +223,41 @@ extension VoiceNoteView: UISearchBarDelegate {
 //        voiceNoteSearchBar.resignFirstResponder() // 키보드 내림
 //        highlightText = ""
 //    }
+}
+
+extension VoiceNoteView {
+    private func findAllMatchMessages(for searchText: String) {
+        guard !searchText.isEmpty else {
+            matchedWordIndexPaths = []
+            currentMatchIndex = -1
+            return
+        }
+        
+        matchedWordIndexPaths = []
+        
+        // 더 좋은 방법은 없을까?
+        for (index, message) in messages.enumerated() {
+            if message.text.range(of: searchText, options: .caseInsensitive) != nil {
+                matchedWordIndexPaths.append(IndexPath(row: index, section: 0))
+            }
+        }
+        
+        // 마지막 결과로 현재 인덱스 설정
+        currentMatchIndex = matchedWordIndexPaths.isEmpty ? -1 : matchedWordIndexPaths.count - 1
+    }
+    
+    // 매칭된 결과로 스크롤
+    private func scrollToCurrentMatch() {
+        guard currentMatchIndex >= 0 && currentMatchIndex < matchedWordIndexPaths.count else {
+            return
+        }
+        
+        let indexPath = matchedWordIndexPaths[currentMatchIndex]
+        messageBubbleTableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+    }
+    
+    // 결과 카운트
+    private func updateMatchCounter() {
+        print("현재 검색 위치: \(currentMatchIndex + 1)/\(matchedWordIndexPaths.count)")
+    }
 }
