@@ -53,19 +53,18 @@ final class RecordingMainView: UIView {
         return label
     }()
 
+    private(set) var dimLayer: UIView = {
+        let view: UIView = .init()
+        view.backgroundColor = .black
+        view.isHidden = true
+        return view
+    }()
+
     private let recordImageView: UIImageView = {
         let imageView: UIImageView = .init()
         imageView.image = .record
         imageView.contentMode = .scaleAspectFit
         return imageView
-    }()
-
-    private lazy var buttonStackView: UIStackView = {
-        let stackView: UIStackView = .init(arrangedSubviews: [saveButton, recordButton,
-                                                              completeButton])
-        stackView.axis = .horizontal
-        stackView.spacing = 26
-        return stackView
     }()
 
     // MARK: - Lifecycle
@@ -99,7 +98,10 @@ final class RecordingMainView: UIView {
         [dateLabel,
          timeLabel,
          recordImageView,
-         buttonStackView].forEach {
+         saveButton,
+         completeButton,
+         dimLayer,
+         recordButton].forEach {
             addSubview($0)
         }
     }
@@ -120,14 +122,25 @@ final class RecordingMainView: UIView {
             make.size.equalTo(212)
         }
 
-        buttonStackView.snp.makeConstraints { make in
+        recordButton.snp.makeConstraints { make in
             make.top.equalTo(recordImageView.snp.bottom).offset(126)
             make.centerX.equalToSuperview()
             make.height.equalTo(38)
+            make.width.equalTo(108)
         }
 
-        recordButton.snp.makeConstraints { make in
-            make.width.equalTo(108)
+        saveButton.snp.makeConstraints { make in
+            make.top.equalTo(recordImageView.snp.bottom).offset(126)
+            make.trailing.equalTo(recordButton.snp.leading).offset(-26)
+        }
+
+        completeButton.snp.makeConstraints { make in
+            make.top.equalTo(recordImageView.snp.bottom).offset(126)
+            make.leading.equalTo(recordButton.snp.trailing).offset(26)
+        }
+
+        dimLayer.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 
