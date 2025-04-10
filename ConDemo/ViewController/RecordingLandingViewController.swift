@@ -12,7 +12,7 @@ final class RecordingLandingViewController: UIViewController {
     // MARK: - Properties
 
     private let recordingLandingView: RecordingLandingView = .init()
-    private let recordingMainViewController: RecordingMainViewController = .init()
+    private let recordingMainViewController: RecordingMainViewController = .init(RecordingMainViewModel())
 
     // MARK: - Lifecycle
 

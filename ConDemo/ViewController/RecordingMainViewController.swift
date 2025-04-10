@@ -10,12 +10,23 @@ import UIKit
 final class RecordingMainViewController: UIViewController {
     // MARK: - Properties
 
+    private let viewModel: RecordingMainViewModel
+    
     private let recordingMainView: RecordingMainView = .init()
     private let stopwatch: Stopwatch = .init()
 
     private var originalBrightness: CGFloat = 0
     private var brightnessTimer: Timer?
-
+    
+    init(_ viewModel: RecordingMainViewModel) {
+        self.viewModel = viewModel
+        super.init()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -41,14 +52,16 @@ final class RecordingMainViewController: UIViewController {
         super.viewWillDisappear(animated)
         resetBrightnessTimer()
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         if recordingMainView.dimLayer.isHidden {
-            self.recordingMainView.recordButton.layer.borderColor = UIColor.label.resolvedColor(with: self.traitCollection).cgColor
+            recordingMainView.recordButton.layer.borderColor = UIColor.label
+                .resolvedColor(with: traitCollection).cgColor
         } else {
-            self.recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue.resolvedColor(with: self.traitCollection).cgColor
+            recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue
+                .resolvedColor(with: traitCollection).cgColor
         }
         // dimLayer가 있을 때 -> 버튼 무조건 파란색
         // dimLayer가 없을 때 -> .label
@@ -117,7 +130,8 @@ final class RecordingMainViewController: UIViewController {
 
         UIView.animate(withDuration: 0.3, animations: { [weak self] in
             self?.recordingMainView.dimLayer.alpha = 0
-            self?.recordingMainView.recordButton.layer.borderColor = UIColor.label.resolvedColor(with: self!.traitCollection).cgColor
+            self?.recordingMainView.recordButton.layer.borderColor = UIColor.label
+                .resolvedColor(with: self!.traitCollection).cgColor
             self?.recordingMainView.recordButton.tintColor = .label
         }, completion: { [weak self] _ in
             self?.recordingMainView.dimLayer.isHidden = true
@@ -130,7 +144,8 @@ final class RecordingMainViewController: UIViewController {
 
         UIView.animate(withDuration: 1.0) { [weak self] in
             self?.recordingMainView.dimLayer.alpha = 0.6
-            self?.recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue.resolvedColor(with: self!.traitCollection).cgColor
+            self?.recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue
+                .resolvedColor(with: self!.traitCollection).cgColor
             self?.recordingMainView.recordButton.tintColor = .systemBlue
         }
     }
