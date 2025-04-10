@@ -23,7 +23,7 @@ final class MessageView: UIView {
         return label
     }()
     
-    private let addButton: UIButton = {
+    private(set) var addButton: UIButton = {
         let button = UIButton()
         
         button.setTitle("Add", for: .normal)
