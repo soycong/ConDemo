@@ -182,6 +182,19 @@ final class MessageView: UIView {
         
         inputTextField.text = ""
     }
+    
+    func sendImage(image: UIImage) {
+        messages.append(Message(text: "이미지입니다.", isFromCurrentUser: true, timestamp: Date(), image: image))
+                
+        messageBubbleTableView.reloadData()
+        
+        if !messages.isEmpty {
+            let indexPath = IndexPath(row: messages.count - 1, section: 0)
+            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
+        
+        inputTextField.text = ""
+    }
 }
 
 extension MessageView: UITableViewDelegate {
