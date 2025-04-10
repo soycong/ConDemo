@@ -165,8 +165,9 @@ final class VoiceNoteView: UIView {
         }
         
         messageBubbleTableView.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(voiceNoteSearchBar.snp.top).offset(-10)
+            make.top.equalToSuperview().offset(20)
         }
     }
 }
