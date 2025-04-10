@@ -18,6 +18,7 @@ final class RecordingLandingView: UIView {
 
     private var adBannerImageView: UIImageView = {
         let imageView: UIImageView = .init()
+        imageView.image = .landingAD
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .beigeGray
         imageView.tintColor = .label
