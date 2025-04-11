@@ -64,21 +64,22 @@ final class LaunchView: UIView {
     }
 
     private func setupConstraints() {
-        launchLogoImageView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview()
-            make.size.equalTo(130)
-        }
-
         copyrightLabel.snp.makeConstraints { make in
             make.bottom.equalToSuperview().offset(-34)
             make.centerX.equalToSuperview()
         }
 
         adBannerImageView.snp.makeConstraints { make in
-            make.top.equalTo(launchLogoImageView.snp.bottom).offset(30)
+            make.bottom.equalTo(copyrightLabel.snp.top).offset(-25)
             make.horizontalEdges.equalToSuperview().inset(13)
             make.height.equalTo(241)
         }
+        
+        launchLogoImageView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(adBannerImageView.snp.top).offset(-147)
+            make.size.equalTo(130)
+        }
+
     }
 }
