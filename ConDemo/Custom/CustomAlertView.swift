@@ -98,6 +98,7 @@ extension CustomAlertView {
     private func setupGestures() {
         let tapGesture: UITapGestureRecognizer = .init(target: self,
                                                        action: #selector(backgroundViewTapped))
+        tapGesture.delegate = self
         backgroundView.addGestureRecognizer(tapGesture)
         backgroundView.isUserInteractionEnabled = true
 
@@ -157,5 +158,14 @@ extension CustomAlertView {
         }, completion: { _ in
             self.removeFromSuperview()
         })
+    }
+}
+
+extension CustomAlertView: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        let touchPoint = touch.location(in: self)
+        let isPointInAlertView = alertView.frame.contains(touchPoint)
+        
+        return !isPointInAlertView
     }
 }
