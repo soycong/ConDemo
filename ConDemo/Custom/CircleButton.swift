@@ -13,10 +13,10 @@ final class CircleButton: UIButton {
 
         setTitle(title, for: .normal)
         titleLabel?.font = UIFont(name: "BricolageGrotesque-SemiBold", size: 14)
-        setTitleColor(.black, for: .normal)
+        setTitleColor(.label, for: .normal)
         backgroundColor = .clear
         layer.borderWidth = 0.5
-        layer.borderColor = UIColor.black.cgColor
+        layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
 
     @available(*, unavailable)
@@ -29,5 +29,7 @@ final class CircleButton: UIButton {
 
         layer.cornerRadius = frame.width / 2
         clipsToBounds = true
+
+        layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
 }

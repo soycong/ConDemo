@@ -31,14 +31,6 @@ final class LaunchViewController: UIViewController {
         UIView.animate(withDuration: 1.0, delay: 0.5, options: .curveEaseInOut, animations: {
             self.launchView.launchLogoImageView.transform = CGAffineTransform(rotationAngle: .pi)
         }, completion: { _ in
-            self.fadeOutLogo()
-        })
-    }
-
-    private func fadeOutLogo() {
-        UIView.animate(withDuration: 0.8, animations: {
-            self.launchView.launchLogoImageView.alpha = 0
-        }, completion: { _ in
             self.navigateToMain()
         })
     }
@@ -47,12 +39,14 @@ final class LaunchViewController: UIViewController {
         let userDefults: UserDefaults = .standard
         let isLandingRecordScreen = userDefults.bool(forKey: UserDefaultsKeys.landingRecordScreen)
 
+        // 테스트 코드
         let newRootViewController: UIViewController =
-            if isLandingRecordScreen {
-                RecordingMainViewController()
-            } else {
-                RecordingMainViewController()
-            }
+            RecordingLandingViewController(viewModel: RecordingLandingViewModel())
+//            if isLandingRecordScreen {
+//                RecordingLandingViewController(viewModel: RecordingLandingViewModel())
+//            } else {
+//                RecordingLandingViewController(viewModel: RecordingLandingViewModel())
+//            }
 
         let transition: CATransition = .init()
         transition.duration = 0.5
@@ -60,12 +54,16 @@ final class LaunchViewController: UIViewController {
 
         if let window = UIApplication.shared.windows.first {
             window.layer.add(transition, forKey: kCATransition)
-            window.rootViewController = newRootViewController
+            window
+                .rootViewController =
+                UINavigationController(rootViewController: newRootViewController)
             window.makeKeyAndVisible()
         } else if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first {
             window.layer.add(transition, forKey: kCATransition)
-            window.rootViewController = newRootViewController
+            window
+                .rootViewController =
+                UINavigationController(rootViewController: newRootViewController)
             window.makeKeyAndVisible()
         }
     }
