@@ -6,12 +6,14 @@
 //
 
 import UIKit
+import SnapKit
 
 final class PollRecommendView: UIView {
     
     private let placeholderText = "내용을 입력해주세요."
     private var isPosted = false
     private var currentPage = 0
+    private var pollTextViewBottomConstraint: Constraint?
     
     private var pollContents: [PollContent] = [
         PollContent.defaultTemplate(),
@@ -105,6 +107,7 @@ final class PollRecommendView: UIView {
         
         configureUI()
         setupTextViews()
+        setupKeyboardNotifications()
         setupActions()
     }
     
@@ -165,13 +168,16 @@ final class PollRecommendView: UIView {
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(40)
             make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalTo(pageControl.snp.top).offset(-10)
+            // make.bottom.equalTo(pageControl.snp.top).offset(-10)
+            self.pollTextViewBottomConstraint = make.bottom.equalToSuperview().inset(70).constraint
         }
         
         pageControl.snp.makeConstraints { make in
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-10)
             make.centerX.equalToSuperview()
             make.height.equalTo(20)
+            // self.pollTextViewBottomConstraint = make.bottom.equalTo(pageControl.snp.top).offset(-10).constraint
+            // self.pollTextViewBottomConstraint = make.bottom.equalToSuperview().inset(30).constraint
         }
     }
     
@@ -183,6 +189,10 @@ final class PollRecommendView: UIView {
             textView.backgroundColor = .backgroundGray
             textView.delegate = self
             
+            textView.isScrollEnabled = true
+            textView.alwaysBounceVertical = true
+            textView.showsVerticalScrollIndicator = false
+            
             textView.textContainerInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
             textView.textContainer.lineFragmentPadding = 0
             
@@ -190,7 +200,7 @@ final class PollRecommendView: UIView {
             
             // PollContent 적용
             applyFormattedPollContent(to: textView, with: pollContents[i])
-
+            
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(textViewTapped(_:)))
             textView.addGestureRecognizer(tapGesture)
             textView.isUserInteractionEnabled = true
@@ -211,6 +221,22 @@ final class PollRecommendView: UIView {
         toolBar.sizeToFit()
         
         return toolBar
+    }
+    
+    private func setupKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
     }
     
     // 들여쓰기 문단 적용
@@ -237,6 +263,65 @@ final class PollRecommendView: UIView {
         isPosted = false
         
         // extractPollDataFromCurrentTextView()
+    }
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
+        
+        let keyboardHeight = keyboardFrame.height
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        if let activeTextView = textViews.first(where: { $0.isFirstResponder }) {
+            var contentInset = activeTextView.contentInset
+            contentInset.bottom = keyboardHeight
+            activeTextView.contentInset = contentInset
+            
+            var scrollIndicatorInsets = activeTextView.scrollIndicatorInsets
+            scrollIndicatorInsets.bottom = keyboardHeight
+            activeTextView.scrollIndicatorInsets = scrollIndicatorInsets
+            
+            if let selectedRange = activeTextView.selectedTextRange {
+                activeTextView.scrollRectToVisible(activeTextView.caretRect(for: selectedRange.end), animated: true)
+            }
+        }
+        
+        pollTextViewBottomConstraint?.update(inset: keyboardHeight + 10)
+        
+        UIView.animate(withDuration: duration) {
+            self.layoutIfNeeded()
+        }
+    }
+
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        // 모든 텍스트뷰의 인셋 초기화
+        for textView in textViews {
+            var contentInset = textView.contentInset
+            contentInset.bottom = 0
+            textView.contentInset = contentInset
+            
+            var scrollIndicatorInsets = textView.scrollIndicatorInsets
+            scrollIndicatorInsets.bottom = 0
+            textView.scrollIndicatorInsets = scrollIndicatorInsets
+        }
+        
+        pollTextViewBottomConstraint?.update(inset: 70)
+
+        UIView.animate(withDuration: duration) {
+            self.layoutIfNeeded()
+        }
+    }
+
+    @objc private func dismissKeyboard() {
+        for textView in textViews {
+            if textView.isFirstResponder {
+                textView.resignFirstResponder()
+            }
+            endEditing(true)
+        }
     }
     
     @objc private func textViewTapped(_ gesture: UITapGestureRecognizer) {
@@ -266,15 +351,6 @@ final class PollRecommendView: UIView {
     func getAllTextContents() -> [String] {
         return textViews.map { $0.text }
     }
-
-    @objc private func dismissKeyboard() {
-        for textView in textViews {
-            if textView.isFirstResponder {
-                textView.resignFirstResponder()
-                break
-            }
-        }
-    }
 }
 
 extension PollRecommendView: UIScrollViewDelegate {
@@ -303,16 +379,6 @@ extension PollRecommendView: UITextViewDelegate {
         if !textView.text.isEmpty {
             confirmButton.backgroundColor = .pointBlue
             isPosted = true
-        }
-    }
-    
-    // 추가: 텍스트뷰 터치 시 스크롤 제어
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        // 현재 편집 중인 텍스트뷰가 있다면 편집 종료
-        for textView in textViews {
-            if textView.isFirstResponder {
-                textView.resignFirstResponder()
-            }
         }
     }
 }
