@@ -56,18 +56,22 @@ final class PollRecommendView: UIView {
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
+        
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.delegate = self
+        
         return scrollView
     }()
     
     private let pageControl: UIPageControl = {
         let pageControl = UIPageControl()
+        
         pageControl.numberOfPages = 3
         pageControl.currentPage = 0
         pageControl.currentPageIndicatorTintColor = .black
         pageControl.pageIndicatorTintColor = .lightGray
+        
         return pageControl
     }()
     
@@ -174,6 +178,7 @@ final class PollRecommendView: UIView {
     private func setupTextViews() {
         for i in 0..<3 { // TextView 3개
             let textView = UITextView()
+            
             textView.layer.cornerRadius = 10
             textView.backgroundColor = .backgroundGray
             textView.delegate = self
@@ -196,7 +201,9 @@ final class PollRecommendView: UIView {
     // 들여쓰기 문단 적용
     private func createParagraphStyle(withIndent indent: CGFloat) -> NSParagraphStyle {
         let paragraphStyle = NSMutableParagraphStyle()
+        
         paragraphStyle.firstLineHeadIndent = indent
+        
         return paragraphStyle
     }
     
@@ -210,7 +217,7 @@ final class PollRecommendView: UIView {
             return
         }
         
-        textViews[currentPage].resignFirstResponder()
+        // textViews[currentPage].resignFirstResponder()
         confirmButton.backgroundColor = .gray
         isPosted = false
         
@@ -219,7 +226,13 @@ final class PollRecommendView: UIView {
     
     @objc private func textViewTapped(_ gesture: UITapGestureRecognizer) {
         if let textView = gesture.view as? UITextView {
-            textView.becomeFirstResponder() // 편집 모드
+            if textView.isFirstResponder {
+                textView.resignFirstResponder()
+                scrollView.isPagingEnabled = false
+            } else {
+                textView.becomeFirstResponder()
+                scrollView.isPagingEnabled = true
+            }
         }
     }
     
