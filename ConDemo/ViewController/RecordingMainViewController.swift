@@ -45,11 +45,19 @@ extension RecordingMainViewController {
         viewModel.startRecording()
         setupCurrentTime()
         setupStopwatch()
+        
+        if viewModel.isRecording {
+            setupBrightnessTimer()
+        } else {
+            resetBrightnessTimer()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        setupBrightnessTimer()
+        if viewModel.isRecording {
+            setupBrightnessTimer()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -78,6 +86,11 @@ extension RecordingMainViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
 
+        if !viewModel.isRecording {
+            resetBrightnessTimer()
+            return
+        }
+        
         UIView.animate(withDuration: 0.3, animations: { [weak self] in
             self?.recordingMainView.dimLayer.alpha = 0
         }, completion: { [weak self] _ in
@@ -152,12 +165,16 @@ extension RecordingMainViewController {
         })
     }
 
+    
+    // 일시정지할 때는 dimLayer 빼기
     private func reduceBrightness() {
+        guard viewModel.isRecording else { return }
+        
         recordingMainView.dimLayer.alpha = 0
         recordingMainView.dimLayer.isHidden = false
 
         UIView.animate(withDuration: 1.0) { [weak self] in
-            self?.recordingMainView.dimLayer.alpha = 0.6
+            self?.recordingMainView.dimLayer.alpha = 0.8
             self?.recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue
                 .resolvedColor(with: self!.traitCollection).cgColor
             self?.recordingMainView.recordButton.tintColor = .systemBlue
@@ -168,6 +185,8 @@ extension RecordingMainViewController {
 extension RecordingMainViewController {
     @objc
     private func backButtonTapped() {
+        resetBrightnessTimer()
+        
         let customAlert: CustomAlertView = .init()
         customAlert
             .show(in: recordingMainView, message: "녹음을 중단하시겠습니까?") { [weak self] in
@@ -177,10 +196,18 @@ extension RecordingMainViewController {
     }
 
     @objc
-    private func calendarButtonTapped() { }
+    private func calendarButtonTapped() {
+        resetBrightnessTimer()
+        
+        let calendarView: CalendarView = .init()
+        calendarView.show(in: recordingMainView)
+    }
 
     @objc
-    private func profileButtonTapped() { }
+    private func profileButtonTapped() {
+        resetBrightnessTimer()
+        
+    }
 }
 
 extension RecordingMainViewController {
@@ -189,6 +216,12 @@ extension RecordingMainViewController {
         viewModel.recordToggle()
         stopwatch.toggle()
         updateRecordButtonImage()
+        
+        if viewModel.isRecording {
+            setupBrightnessTimer()
+        } else {
+            resetBrightnessTimer()
+        }
     }
 
     private func updateRecordButtonImage() {
@@ -199,6 +232,8 @@ extension RecordingMainViewController {
 
     @objc
     private func saveButtonTapped() {
+        resetBrightnessTimer()
+        
         let customAlert: CustomAlertView = .init()
         customAlert
             .show(in: recordingMainView, message: "녹음을 시작한 부분부터\n현재까지 저장합니다") { [weak self] in
@@ -209,6 +244,8 @@ extension RecordingMainViewController {
 
     @objc
     private func completeButtonTapped() {
+        resetBrightnessTimer()
+        
         let customAlert: CustomAlertView = .init()
         customAlert
             .show(in: recordingMainView, message: "녹음을 종료합니다") { [weak self] in
