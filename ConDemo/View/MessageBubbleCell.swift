@@ -188,7 +188,7 @@ final class MessageBubbleCell: UITableViewCell {
             }
         }
         
-        messageLabel.attributedText = message.text.makeAttributedString(searchText, font: messageLabel.font, color: .red)
+        messageLabel.attributedText = message.text.makeAttributedString(searchText, font: messageLabel.font, backgroundColor: .gray)
         
         messageLabel.isHidden = true
         messageImageView.isHidden = true
