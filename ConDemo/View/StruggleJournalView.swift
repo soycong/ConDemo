@@ -55,7 +55,7 @@ final class StruggleJournalView: UIView {
         
         textView.textColor = UIColor.lightGray
         textView.font = UIFont(name: "Pretendard-Medium", size: 14)
-        
+                
         return textView
     }()
     
@@ -134,10 +134,24 @@ final class StruggleJournalView: UIView {
     private func setupTextView() {
         journalTextView.delegate = self
         journalTextView.text = placeholderText
-        
+        journalTextView.inputAccessoryView = setupKeyboardToolBar()
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(textViewTapped))
         journalTextView.addGestureRecognizer(tapGesture)
         journalTextView.isUserInteractionEnabled = true
+    }
+    
+    private func setupKeyboardToolBar() -> UIToolbar {
+        let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        toolBar.barStyle = .default
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
+        
+        toolBar.items = [flexSpace, doneButton]
+        toolBar.sizeToFit()
+        
+        return toolBar
     }
     
     private func setupActions(){
@@ -161,6 +175,12 @@ final class StruggleJournalView: UIView {
             } else {
                 textView.becomeFirstResponder()
             }
+        }
+    }
+    
+    @objc private func dismissKeyboard() {
+        if journalTextView.isFirstResponder {
+            journalTextView.resignFirstResponder()
         }
     }
 }

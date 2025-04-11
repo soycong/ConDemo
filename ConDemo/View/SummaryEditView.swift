@@ -136,10 +136,24 @@ final class SummaryEditView: UIView {
     private func setupTextView() {
         summaryTextView.delegate = self
         summaryTextView.text = placeholderText
+        summaryTextView.inputAccessoryView = setupKeyboardToolBar()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(textViewTapped))
         summaryTextView.addGestureRecognizer(tapGesture)
         summaryTextView.isUserInteractionEnabled = true
+    }
+    
+    private func setupKeyboardToolBar() -> UIToolbar {
+        let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        toolBar.barStyle = .default
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
+        
+        toolBar.items = [flexSpace, doneButton]
+        toolBar.sizeToFit()
+        
+        return toolBar
     }
     
     private func setupActions(){
@@ -163,6 +177,12 @@ final class SummaryEditView: UIView {
             } else {
                 textView.becomeFirstResponder()
             }
+        }
+    }
+    
+    @objc private func dismissKeyboard() {
+        if summaryTextView.isFirstResponder {
+            summaryTextView.resignFirstResponder()
         }
     }
 }

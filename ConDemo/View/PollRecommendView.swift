@@ -186,6 +186,8 @@ final class PollRecommendView: UIView {
             textView.textContainerInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
             textView.textContainer.lineFragmentPadding = 0
             
+            textView.inputAccessoryView = setupKeyboardToolBar()
+            
             // PollContent 적용
             applyFormattedPollContent(to: textView, with: pollContents[i])
 
@@ -196,6 +198,19 @@ final class PollRecommendView: UIView {
             textViews.append(textView)
             scrollView.addSubview(textView)
         }
+    }
+    
+    private func setupKeyboardToolBar() -> UIToolbar {
+        let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+        toolBar.barStyle = .default
+        
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
+        
+        toolBar.items = [flexSpace, doneButton]
+        toolBar.sizeToFit()
+        
+        return toolBar
     }
     
     // 들여쓰기 문단 적용
@@ -228,10 +243,8 @@ final class PollRecommendView: UIView {
         if let textView = gesture.view as? UITextView {
             if textView.isFirstResponder {
                 textView.resignFirstResponder()
-                scrollView.isPagingEnabled = false
             } else {
                 textView.becomeFirstResponder()
-                scrollView.isPagingEnabled = true
             }
         }
     }
@@ -252,6 +265,15 @@ final class PollRecommendView: UIView {
     // 모든 TextView의 텍스트 내용 가져오기
     func getAllTextContents() -> [String] {
         return textViews.map { $0.text }
+    }
+
+    @objc private func dismissKeyboard() {
+        for textView in textViews {
+            if textView.isFirstResponder {
+                textView.resignFirstResponder()
+                break
+            }
+        }
     }
 }
 
@@ -281,6 +303,16 @@ extension PollRecommendView: UITextViewDelegate {
         if !textView.text.isEmpty {
             confirmButton.backgroundColor = .pointBlue
             isPosted = true
+        }
+    }
+    
+    // 추가: 텍스트뷰 터치 시 스크롤 제어
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        // 현재 편집 중인 텍스트뷰가 있다면 편집 종료
+        for textView in textViews {
+            if textView.isFirstResponder {
+                textView.resignFirstResponder()
+            }
         }
     }
 }
