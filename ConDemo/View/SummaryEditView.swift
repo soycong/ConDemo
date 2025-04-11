@@ -156,8 +156,14 @@ final class SummaryEditView: UIView {
         isPosted = false
     }
     
-    @objc private func textViewTapped() {
-        summaryTextView.becomeFirstResponder() // 편집 모드
+    @objc private func textViewTapped(_ gesture: UITapGestureRecognizer) {
+        if let textView = gesture.view as? UITextView {
+            if textView.isFirstResponder {
+                textView.resignFirstResponder()
+            } else {
+                textView.becomeFirstResponder()
+            }
+        }
     }
 }
 
@@ -168,8 +174,13 @@ extension SummaryEditView: UITextViewDelegate {
             textView.textColor = .black
         }
         
-        confirmButton.backgroundColor = .pointBlue
-        isPosted = true
+        if textView.text.count >= 1 {
+            confirmButton.backgroundColor = .pointBlue
+            isPosted = true
+        } else {
+            confirmButton.backgroundColor = .gray
+            isPosted = false
+        }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
