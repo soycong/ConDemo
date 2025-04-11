@@ -187,9 +187,7 @@ final class MessageBubbleCell: UITableViewCell {
                 make.top.bottom.equalToSuperview().inset(12)
             }
         }
-        
-        messageLabel.attributedText = message.text.makeAttributedString(searchText, font: messageLabel.font, backgroundColor: .gray)
-        
+                
         messageLabel.isHidden = true
         messageImageView.isHidden = true
         audioButton.isHidden = true
@@ -229,6 +227,9 @@ final class MessageBubbleCell: UITableViewCell {
             messageLabel.isHidden = false
             messageLabel.text = message.text
         }
+        
+        messageLabel.attributedText = message.text.makeAttributedString(searchText, font: messageLabel.font, backgroundColor: .gray)
+
     }
     
     func updateAudioButtonIcon(isPlaying: Bool) {
