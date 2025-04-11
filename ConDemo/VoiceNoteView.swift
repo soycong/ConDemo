@@ -6,12 +6,19 @@
 //
 
 import UIKit
+import SnapKit
 
 final class VoiceNoteView: UIView {
     
     var messages: [Message] = Message.dummyMessages
     var highlightText = ""
-        
+    
+    private var messageStackViewBottomConstraint: Constraint?
+    
+    // 매칭 구현
+    private var matchedWordIndexPaths: [IndexPath] = []
+    private var currentMatchIndex: Int = -1
+    
     private var messageBubbleTableView = MessageBubbleTableView()
     
     private var voiceNoteSearchBar = VoiceNoteSearchBar()
@@ -75,14 +82,15 @@ final class VoiceNoteView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.backgroundColor = .white
+        self.backgroundColor = .backgroundGray
         
+        setupKeyboardNotifications()
         setUpTableView()
         setUpSearchBar()
         setSearchModeButtons()
         
         configureUI()
-
+        
         hideSearchModeButtons()
     }
     
@@ -90,9 +98,31 @@ final class VoiceNoteView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func setupKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        
+        // 테이블뷰 탭하면 키보드 내리기
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        messageBubbleTableView.addGestureRecognizer(tapGesture)
+    }
+    
     private func setUpTableView() {
         messageBubbleTableView.delegate = self
         messageBubbleTableView.dataSource = self
+        
+        messageBubbleTableView.backgroundColor = .backgroundGray
     }
     
     private func setUpSearchBar() {
@@ -108,12 +138,12 @@ final class VoiceNoteView: UIView {
     // 버튼 표시/숨김
     private func showSearchModeButtons() {
         systemButtonStackView.isHidden = false
-
+        
         UIView.animate(withDuration: 0.3) {
             self.systemButtonStackView.alpha = 1.0
         }
     }
-
+    
     private func hideSearchModeButtons() {
         UIView.animate(withDuration: 0.3, animations: {
             self.systemButtonStackView.alpha = 0.0
@@ -121,37 +151,83 @@ final class VoiceNoteView: UIView {
             self.systemButtonStackView.isHidden = true
         }
     }
-
-    @objc private func upButtonTapped() {
-        print("Up button tapped")
-    }
-
-    @objc private func downButtonTapped() {
-        print("Down button tapped")
-    }
-
-    @objc private func cancelButtonTapped() {
-        voiceNoteSearchBar.text = nil
-        voiceNoteSearchBar.resignFirstResponder()
-        highlightText = ""
-        messageBubbleTableView.reloadData()
-
-        hideSearchModeButtons()
-    }
     
     private func configureUI(){
         addSubview(messageStackView)
         
         messageStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(8)
-            make.verticalEdges.equalTo(safeAreaLayoutGuide)
-            make.centerX.equalToSuperview()
+            make.top.equalTo(safeAreaLayoutGuide)
+            self.messageStackViewBottomConstraint = make.bottom.equalToSuperview().inset(30).constraint
         }
         
         messageBubbleTableView.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(voiceNoteSearchBar.snp.top).offset(-10)
+            make.top.equalToSuperview().offset(20)
         }
+    }
+    
+    @objc private func upButtonTapped() {
+        guard !matchedWordIndexPaths.isEmpty else { return }
+        
+        // 이전 결과로 이동 (위로)
+        currentMatchIndex = (currentMatchIndex - 1 + matchedWordIndexPaths.count) % matchedWordIndexPaths.count
+        scrollToCurrentMatch()
+        
+        updateMatchCounter()
+    }
+    
+    @objc private func downButtonTapped() {
+        guard !matchedWordIndexPaths.isEmpty else { return }
+        
+        // 다음 결과로 이동 (아래로)
+        currentMatchIndex = (currentMatchIndex + 1) % matchedWordIndexPaths.count
+        scrollToCurrentMatch()
+        
+        updateMatchCounter()
+    }
+    
+    @objc private func cancelButtonTapped() {
+        voiceNoteSearchBar.text = nil
+        voiceNoteSearchBar.resignFirstResponder()
+        highlightText = ""
+        messageBubbleTableView.reloadData()
+        
+        hideSearchModeButtons()
+    }
+    
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
+        
+        let keyboardHeight = keyboardFrame.height
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        messageStackViewBottomConstraint?.update(inset: keyboardHeight + 10)
+        
+        UIView.animate(withDuration: duration) {
+            self.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func keyboardWillHide(notification: NSNotification) {
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        messageStackViewBottomConstraint?.update(inset: 30)
+        
+        UIView.animate(withDuration: duration) {
+            self.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func dismissKeyboard() {
+        endEditing(true)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
@@ -183,8 +259,15 @@ extension VoiceNoteView: UISearchBarDelegate {
         guard let searchText = searchBar.text else { return }
         highlightText = searchText
         
+        findAllMatchMessages(for: searchText)
+        
         messageBubbleTableView.reloadData()
         voiceNoteSearchBar.resignFirstResponder()
+        
+        if !matchedWordIndexPaths.isEmpty {
+            scrollToCurrentMatch()
+            updateMatchCounter()
+        }
         
         showSearchModeButtons()
     }
@@ -200,4 +283,41 @@ extension VoiceNoteView: UISearchBarDelegate {
 //        voiceNoteSearchBar.resignFirstResponder() // 키보드 내림
 //        highlightText = ""
 //    }
+}
+
+extension VoiceNoteView {
+    private func findAllMatchMessages(for searchText: String) {
+        guard !searchText.isEmpty else {
+            matchedWordIndexPaths = []
+            currentMatchIndex = -1
+            return
+        }
+        
+        matchedWordIndexPaths = []
+        
+        // 더 좋은 방법은 없을까?
+        for (index, message) in messages.enumerated() {
+            if message.text.range(of: searchText, options: .caseInsensitive) != nil {
+                matchedWordIndexPaths.append(IndexPath(row: index, section: 0))
+            }
+        }
+        
+        // 마지막 결과로 현재 인덱스 설정
+        currentMatchIndex = matchedWordIndexPaths.isEmpty ? -1 : matchedWordIndexPaths.count - 1
+    }
+    
+    // 매칭된 결과로 스크롤
+    private func scrollToCurrentMatch() {
+        guard currentMatchIndex >= 0 && currentMatchIndex < matchedWordIndexPaths.count else {
+            return
+        }
+        
+        let indexPath = matchedWordIndexPaths[currentMatchIndex]
+        messageBubbleTableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+    }
+    
+    // 결과 카운트
+    private func updateMatchCounter() {
+        print("현재 검색 위치: \(currentMatchIndex + 1)/\(matchedWordIndexPaths.count)")
+    }
 }
