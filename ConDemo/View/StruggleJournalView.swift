@@ -154,8 +154,14 @@ final class StruggleJournalView: UIView {
         isConfirmed = false
     }
     
-    @objc private func textViewTapped() {
-        journalTextView.becomeFirstResponder() // 편집 모드
+    @objc private func textViewTapped(_ gesture: UITapGestureRecognizer) {
+        if let textView = gesture.view as? UITextView {
+            if textView.isFirstResponder {
+                textView.resignFirstResponder()
+            } else {
+                textView.becomeFirstResponder()
+            }
+        }
     }
 }
 
@@ -166,14 +172,20 @@ extension StruggleJournalView: UITextViewDelegate {
             textView.textColor = .black
         }
         
-        confirmButton.backgroundColor = .pointBlue
-        isConfirmed = true
+        if textView.text.count >= 1 {
+            confirmButton.backgroundColor = .pointBlue
+            isConfirmed = true
+        } else {
+            confirmButton.backgroundColor = .gray
+            isConfirmed = false
+        }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
             textView.text = placeholderText
             textView.textColor = .lightGray
+            confirmButton.backgroundColor = .gray
         }
     }
     
