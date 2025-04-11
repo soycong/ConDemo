@@ -17,6 +17,8 @@ final class RecordingMainViewController: UIViewController {
 
     private var originalBrightness: CGFloat = 0
     private var brightnessTimer: Timer?
+    
+    private var didPresentSheet = false
 
     // MARK: - Lifecycle
 
@@ -38,6 +40,7 @@ extension RecordingMainViewController {
         originalBrightness = UIScreen.main.brightness
         setupNavigationBar()
         setupAddTargets()
+        setupDelegates()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -51,18 +54,24 @@ extension RecordingMainViewController {
         } else {
             resetBrightnessTimer()
         }
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        if viewModel.isRecording {
-            setupBrightnessTimer()
+        
+        if !didPresentSheet {
+            presentAsBottomSheet(VoiceNoteViewController())
+            didPresentSheet = true
         }
     }
+
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//        if viewModel.isRecording {
+//            setupBrightnessTimer()
+//        }
+//    }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         resetBrightnessTimer()
+        didPresentSheet = false
     }
 
     override func viewDidLayoutSubviews() {
@@ -86,7 +95,7 @@ extension RecordingMainViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
 
-        if !viewModel.isRecording {
+        if !viewModel.isRecording  {
             resetBrightnessTimer()
             return
         }
@@ -121,7 +130,6 @@ extension RecordingMainViewController {
     }
 
     private func setupStopwatch() {
-        stopwatch.delegate = self
         stopwatch.reset()
         stopwatch.start()
         updateRecordButtonImage()
@@ -139,12 +147,19 @@ extension RecordingMainViewController {
     private func setupCurrentTime() {
         recordingMainView.dateLabel.text = Date().toKoreaFormat().description
     }
+    
+    private func setupDelegates() {
+        stopwatch.delegate = self
+        
+    }
 }
 
 extension RecordingMainViewController {
     private func setupBrightnessTimer() {
         resetBrightnessTimer()
 
+        guard !didPresentSheet else { return }
+        
         brightnessTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false,
                                                block: { [weak self] _ in
                                                    self?.reduceBrightness()
@@ -168,7 +183,7 @@ extension RecordingMainViewController {
     
     // 일시정지할 때는 dimLayer 빼기
     private func reduceBrightness() {
-        guard viewModel.isRecording else { return }
+        guard viewModel.isRecording || !didPresentSheet else { return }
         
         recordingMainView.dimLayer.alpha = 0
         recordingMainView.dimLayer.isHidden = false
@@ -258,5 +273,51 @@ extension RecordingMainViewController {
 extension RecordingMainViewController: StopwatchDelegate {
     func stopwatchDidUpdate(_: Stopwatch, elapsedTime: TimeInterval) {
         recordingMainView.timeLabel.text = elapsedTime.formatTime()
+    }
+}
+
+extension RecordingMainViewController {
+    func presentAsBottomSheet(_ viewController: UIViewController) {
+        // 시트 프레젠테이션 컨트롤러 구성
+        let customIdentifier = UISheetPresentationController.Detent.Identifier("custom20")
+        let customDetent = UISheetPresentationController.Detent.custom(identifier: customIdentifier) { context in
+            return 20 // 원하는 높이
+        }
+        
+        if let sheet = viewController.sheetPresentationController {
+            sheet.detents = [
+                customDetent,
+                .medium(), // 화면 중간 높이까지
+                .large()   // 전체 화면 높이
+            ]
+            
+            sheet.delegate = self
+            // 사용자가 시트를 끌어올릴 수 있도록 설정
+            sheet.prefersGrabberVisible = true
+            
+            // 시작 시 어떤 높이로 표시할지 설정
+            sheet.selectedDetentIdentifier = .some(customIdentifier)
+
+            // 드래그 중에 아래 뷰가 어두워지지 않도록 설정
+            sheet.largestUndimmedDetentIdentifier = .large
+        }
+        
+        present(viewController, animated: true)
+    }
+}
+
+extension RecordingMainViewController: UISheetPresentationControllerDelegate {
+    func sheetPresentationControllerDidChangeSelectedDetentIdentifier(_ sheetPresentationController: UISheetPresentationController) {
+        if sheetPresentationController.selectedDetentIdentifier == UISheetPresentationController.Detent.Identifier("custom20") {
+            didPresentSheet = false
+            
+            if viewModel.isRecording {
+                setupBrightnessTimer()
+            }
+        } else {
+            didPresentSheet = true
+            
+            resetBrightnessTimer()
+        }
     }
 }
