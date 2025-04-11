@@ -7,7 +7,7 @@
 
 final class RecordingMainViewModel {
     private let audioRecorder: AudioRecorder = .init()
-    private var isRecording = false
+    private(set) var isRecording = false
 
     private var isPlaying = false
     private var isPaused = false
