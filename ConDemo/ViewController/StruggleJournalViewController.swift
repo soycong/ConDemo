@@ -8,36 +8,42 @@
 import UIKit
 
 final class StruggleJournalViewController: UIViewController {
-    
-    private let struggleJournalView = StruggleJournalView()
-    
+    // MARK: - Properties
+
+    private let struggleJournalView: StruggleJournalView = .init()
+
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view = struggleJournalView
-        
+
+        view = struggleJournalView
+
         setupNavigationBar()
     }
-    
+
+    // MARK: - Functions
+
     private func setupNavigationBar() {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
-        
-        let backButton = UIBarButtonItem(image: UIImage(systemName: "chevron.left"),
-                                         style: .plain,
-                                         target: self,
-                                         action: #selector(backButtonTapped))
-        
-        let waveButton = UIBarButtonItem(image: UIImage(systemName: "waveform"),
-                                         style: .plain,
-                                         target: self,
-                                         action: #selector(backButtonTapped))
-        
+
+        let backButton: UIBarButtonItem = .init(image: UIImage(systemName: "chevron.left"),
+                                                style: .plain,
+                                                target: self,
+                                                action: #selector(backButtonTapped))
+
+        let waveButton: UIBarButtonItem = .init(image: UIImage(systemName: "waveform"),
+                                                style: .plain,
+                                                target: self,
+                                                action: #selector(backButtonTapped))
+
         navigationItem.leftBarButtonItem = backButton
         navigationItem.rightBarButtonItem = waveButton
     }
-    
-    @objc private func backButtonTapped() {
+
+    @objc
+    private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
 }
