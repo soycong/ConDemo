@@ -122,7 +122,7 @@ final class VoiceNoteView: UIView {
         messageBubbleTableView.delegate = self
         messageBubbleTableView.dataSource = self
         
-        messageBubbleTableView.backgroundColor = .backgroundGray
+        messageBubbleTableView.backgroundColor = .clear
     }
     
     private func setUpSearchBar() {
