@@ -107,8 +107,13 @@ final class PollRecommendView: UIView {
         
         configureUI()
         setupTextViews()
-        setupKeyboardNotifications()
         setupActions()
+        
+        setupKeyboard(
+            bottomConstraint: pollTextViewBottomConstraint!,
+            defaultInset: 70,
+            textViews: textViews
+        )
     }
     
     required init?(coder: NSCoder) {
@@ -131,6 +136,10 @@ final class PollRecommendView: UIView {
                 height: scrollView.frame.height
             )
         }
+    }
+    
+    deinit {
+        removeKeyboard() // 키보드 리소스 해제
     }
     
     private func configureUI() {
@@ -168,7 +177,6 @@ final class PollRecommendView: UIView {
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(40)
             make.leading.trailing.equalToSuperview().inset(16)
-            // make.bottom.equalTo(pageControl.snp.top).offset(-10)
             self.pollTextViewBottomConstraint = make.bottom.equalToSuperview().inset(70).constraint
         }
         
@@ -176,8 +184,6 @@ final class PollRecommendView: UIView {
             make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).offset(-10)
             make.centerX.equalToSuperview()
             make.height.equalTo(20)
-            // self.pollTextViewBottomConstraint = make.bottom.equalTo(pageControl.snp.top).offset(-10).constraint
-            // self.pollTextViewBottomConstraint = make.bottom.equalToSuperview().inset(30).constraint
         }
     }
     
@@ -196,8 +202,6 @@ final class PollRecommendView: UIView {
             textView.textContainerInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
             textView.textContainer.lineFragmentPadding = 0
             
-            textView.inputAccessoryView = setupKeyboardToolBar()
-            
             // PollContent 적용
             applyFormattedPollContent(to: textView, with: pollContents[i])
             
@@ -208,35 +212,6 @@ final class PollRecommendView: UIView {
             textViews.append(textView)
             scrollView.addSubview(textView)
         }
-    }
-    
-    private func setupKeyboardToolBar() -> UIToolbar {
-        let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
-        toolBar.barStyle = .default
-        
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissKeyboard))
-        
-        toolBar.items = [flexSpace, doneButton]
-        toolBar.sizeToFit()
-        
-        return toolBar
-    }
-    
-    private func setupKeyboardNotifications() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(keyboardWillHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
     }
     
     // 들여쓰기 문단 적용
@@ -258,78 +233,27 @@ final class PollRecommendView: UIView {
             return
         }
         
-        // textViews[currentPage].resignFirstResponder()
+        dismissKeyboard()
+        
         confirmButton.backgroundColor = .gray
         isPosted = false
         
         // extractPollDataFromCurrentTextView()
     }
     
-    @objc private func keyboardWillShow(notification: NSNotification) {
-        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
-            return
-        }
-        
-        let keyboardHeight = keyboardFrame.height
-        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
-        
-        if let activeTextView = textViews.first(where: { $0.isFirstResponder }) {
-            var contentInset = activeTextView.contentInset
-            contentInset.bottom = keyboardHeight
-            activeTextView.contentInset = contentInset
-            
-            var scrollIndicatorInsets = activeTextView.scrollIndicatorInsets
-            scrollIndicatorInsets.bottom = keyboardHeight
-            activeTextView.scrollIndicatorInsets = scrollIndicatorInsets
-            
-            if let selectedRange = activeTextView.selectedTextRange {
-                activeTextView.scrollRectToVisible(activeTextView.caretRect(for: selectedRange.end), animated: true)
-            }
-        }
-        
-        pollTextViewBottomConstraint?.update(inset: keyboardHeight + 10)
-        
-        UIView.animate(withDuration: duration) {
-            self.layoutIfNeeded()
-        }
-    }
-
-    @objc private func keyboardWillHide(notification: NSNotification) {
-        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
-        
-        // 모든 텍스트뷰의 인셋 초기화
-        for textView in textViews {
-            var contentInset = textView.contentInset
-            contentInset.bottom = 0
-            textView.contentInset = contentInset
-            
-            var scrollIndicatorInsets = textView.scrollIndicatorInsets
-            scrollIndicatorInsets.bottom = 0
-            textView.scrollIndicatorInsets = scrollIndicatorInsets
-        }
-        
-        pollTextViewBottomConstraint?.update(inset: 70)
-
-        UIView.animate(withDuration: duration) {
-            self.layoutIfNeeded()
-        }
-    }
-
-    @objc private func dismissKeyboard() {
-        for textView in textViews {
-            if textView.isFirstResponder {
-                textView.resignFirstResponder()
-            }
-            endEditing(true)
-        }
-    }
-    
     @objc private func textViewTapped(_ gesture: UITapGestureRecognizer) {
         if let textView = gesture.view as? UITextView {
-            if textView.isFirstResponder {
-                textView.resignFirstResponder()
+            let location = gesture.location(in: textView)
+            
+            if !textView.isFirstResponder {
+                // 터치한 위치에서 가장 가까운 텍스트 위치 찾기
+                if let position = textView.closestPosition(to: location) {
+                    // 해당 위치에 커서 설정
+                    textView.selectedTextRange = textView.textRange(from: position, to: position)
+                    textView.becomeFirstResponder() // 키보드 표시
+                }
             } else {
-                textView.becomeFirstResponder()
+                textView.resignFirstResponder()
             }
         }
     }
@@ -342,14 +266,30 @@ final class PollRecommendView: UIView {
     }
     
     // 현재 TextView에서 Poll 데이터 추출
-//    private func extractPollDataFromCurrentTextView() {
-//        let textView = textViews[currentPage]
-//        print("현재 페이지 \(currentPage+1)의 Poll 데이터 추출")
-//    }
+    //    private func extractPollDataFromCurrentTextView() {
+    //        let textView = textViews[currentPage]
+    //        print("현재 페이지 \(currentPage+1)의 Poll 데이터 추출")
+    //    }
     
     // 모든 TextView의 텍스트 내용 가져오기
     func getAllTextContents() -> [String] {
         return textViews.map { $0.text }
+    }
+    
+    func getTextViewCursor(_ textView: UITextView) {
+        if let index = textViews.firstIndex(of: textView) {
+            // 현재 선택된 범위 가져오기
+            if let selectedRange = textView.selectedTextRange {
+                // 현재 선택된 위치 사용
+                let cursorPosition = selectedRange.start
+                
+                // 해당 위치에 커서 설정
+                textView.selectedTextRange = textView.textRange(from: cursorPosition, to: cursorPosition)
+                
+                // 선택한 위치가 화면에 보이도록 스크롤
+                textView.scrollRangeToVisible(textView.selectedRange)
+            }
+        }
     }
 }
 
