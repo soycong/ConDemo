@@ -11,6 +11,7 @@ import UIKit
 struct Message {
     // MARK: - Properties
 
+    // filepath, file
     let id: String
     let text: String
     let isFromCurrentUser: Bool

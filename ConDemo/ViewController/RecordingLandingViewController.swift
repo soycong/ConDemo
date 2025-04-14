@@ -56,7 +56,7 @@ final class RecordingLandingViewController: UIViewController {
 
     @objc
     private func communityButtonTapped() {
-        navigationController?.pushViewController(TestViewController(), animated: true)
+//        navigationController?.pushViewController(TestViewController(), animated: true)
     }
 }
 

@@ -10,6 +10,24 @@ import UIKit
 final class SummaryView: UIView {
     // MARK: - Properties
 
+    private(set) lazy var summaryStackView: UIStackView = {
+        let stackView: UIStackView = .init(arrangedSubviews: [firstSummaryLabel,
+                                                              secondSummaryLabel,
+                                                              thirdSummaryLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        return stackView
+    }()
+
+    private(set) var factCheckButton: AnalysisButton = .init(iconName: ButtonSystemIcon.aiIcon,
+                                                             title: "AI와 팩트 체크하기")
+    private(set) var logButton: AnalysisButton = .init(iconName: ButtonSystemIcon.logIcon,
+                                                       title: "싸움 로그 보기")
+    private(set) var pollButton: AnalysisButton = .init(iconName: ButtonSystemIcon.pollIcon,
+                                                        title: "자동 Poll 생성하기")
+    private(set) var summaryButton: AnalysisButton = .init(iconName: ButtonSystemIcon.summaryIcon,
+                                                           title: "요약 버전 생성하기")
+
     private var adBanner: UIImageView = {
         let view: UIImageView = .init()
         view.contentMode = .scaleAspectFit
@@ -55,35 +73,19 @@ final class SummaryView: UIView {
         return label
     }()
 
-    private(set) lazy var summaryStackView: UIStackView = {
-        let stackView: UIStackView = .init(arrangedSubviews: [firstSummaryLabel,
-                                                              secondSummaryLabel,
-                                                              thirdSummaryLabel])
-        stackView.axis = .vertical
-        stackView.spacing = 8
-        return stackView
-    }()
-    
     private let analysisLabel: UILabel = {
-        let label = UILabel()
+        let label: UILabel = .init()
         label.font = UIFont(name: "BricolageGrotesque-Bold", size: 16)
         label.textColor = .label
         label.textAlignment = .left
         return label
     }()
-    
-    private(set) var factCheckButton = AnalysisButton(iconName: ButtonSystemIcon.aiIcon, title: "AI와 팩트 체크하기")
-    private(set) var logButton = AnalysisButton(iconName: ButtonSystemIcon.logIcon, title: "싸움 로그 보기")
-    private(set) var pollButton = AnalysisButton(iconName: ButtonSystemIcon.pollIcon, title: "자동 Poll 생성하기")
-    private(set) var summaryButton = AnalysisButton(iconName: ButtonSystemIcon.summaryIcon, title: "요약 버전 생성하기")
-    
+
     private lazy var buttonStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [
-            factCheckButton,
-            logButton,
-            pollButton,
-            summaryButton
-        ])
+        let stackView: UIStackView = .init(arrangedSubviews: [factCheckButton,
+                                                              logButton,
+                                                              pollButton,
+                                                              summaryButton])
         stackView.axis = .vertical
         stackView.spacing = 8
         return stackView
@@ -119,8 +121,7 @@ extension SummaryView {
          summaryStackView,
          buttonStackView,
          analysisLabel,
-         buttonStackView
-        ].forEach {
+         buttonStackView].forEach {
             addSubview($0)
         }
     }
@@ -146,23 +147,21 @@ extension SummaryView {
             make.top.equalTo(summaryDateLabel.snp.bottom).offset(24)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
-        
+
         analysisLabel.snp.makeConstraints { make in
             make.top.equalTo(summaryStackView.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
-        
-        [
-            factCheckButton,
-            logButton,
-            pollButton,
-            summaryButton
-        ].forEach {
+
+        [factCheckButton,
+         logButton,
+         pollButton,
+         summaryButton].forEach {
             $0.snp.makeConstraints { make in
                 make.height.equalTo(44)
             }
         }
-        
+
         buttonStackView.snp.makeConstraints { make in
             make.top.equalTo(analysisLabel.snp.bottom).offset(17)
             make.horizontalEdges.equalToSuperview().inset(25)

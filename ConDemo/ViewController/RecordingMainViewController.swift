@@ -18,7 +18,7 @@ final class RecordingMainViewController: UIViewController {
     private var originalBrightness: CGFloat = 0
     private var brightnessTimer: Timer?
 
-    private var sheetViewController = VoiceNoteViewController()
+    private var sheetViewController: VoiceNoteViewController = .init()
     private var didPresentSheet = false
 
     // MARK: - Lifecycle
@@ -76,7 +76,7 @@ extension RecordingMainViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         resetBrightnessTimer()
-        
+
         sheetViewController.dismiss(animated: true)
         didPresentSheet = false
     }

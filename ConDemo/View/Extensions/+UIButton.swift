@@ -16,32 +16,32 @@ extension UIButton {
             tintColor = .label
         }
     }
-    
+
     func setResizeIcon(imageName: String, imageSize: CGFloat) {
         let resizedImage = resizeImage(imageName: imageName, targetSize: imageSize)
         setImage(resizedImage, for: .normal)
     }
-    
+
     private func resizeImage(imageName: String, targetSize: CGFloat) -> UIImage {
-        let image = UIImage(named: imageName)!
+        let image: UIImage = .init(named: imageName)!
         let size = image.size
-        
-        let widthRatio  = targetSize  / size.width
+
+        let widthRatio = targetSize / size.width
         let heightRatio = targetSize / size.height
-        
+
         let ratio = min(widthRatio, heightRatio)
-        
-        let newSize = CGSize(width: size.width * ratio, height: size.height * ratio)
-        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-        
+
+        let newSize: CGSize = .init(width: size.width * ratio, height: size.height * ratio)
+        let rect: CGRect = .init(x: 0, y: 0, width: newSize.width, height: newSize.height)
+
         UIGraphicsBeginImageContextWithOptions(newSize, false, 0)
         image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        let newImage: UIGraphicsGetImageFromCurrentImageContext = .init()
         UIGraphicsEndImageContext()
-        
+
         return newImage ?? image
     }
-    
+
     func setImageWithSpacing() {
         imageEdgeInsets = .init(top: 0, left: -8, bottom: 0, right: 0)
         titleEdgeInsets = .init(top: 0, left: 8, bottom: 0, right: 0)

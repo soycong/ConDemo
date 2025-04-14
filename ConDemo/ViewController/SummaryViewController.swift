@@ -43,14 +43,12 @@ extension SummaryViewController {
              UIBarButtonItem(image: .init(systemName: "calendar"), style: .plain, target: self,
                              action: #selector(calendarButtonTapped))]
     }
-    
+
     private func setupAddTargets() {
-        [
-            summaryView.factCheckButton,
-            summaryView.logButton,
-            summaryView.pollButton,
-            summaryView.summaryButton
-        ].forEach {
+        [summaryView.factCheckButton,
+         summaryView.logButton,
+         summaryView.pollButton,
+         summaryView.summaryButton].forEach {
             $0.addTarget(self, action: #selector(navigateToVC), for: .touchUpInside)
         }
     }

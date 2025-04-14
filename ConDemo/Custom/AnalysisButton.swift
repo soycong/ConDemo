@@ -8,26 +8,30 @@
 import UIKit
 
 final class AnalysisButton: UIButton {
-    
+    // MARK: - Lifecycle
+
     init(iconName: String, title: String) {
         super.init(frame: .zero)
-        
+
         setResizeIcon(imageName: iconName, imageSize: 20)
         setImageWithSpacing()
         setTitle(title, for: .normal)
         setupButton()
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
 
         layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
-    
+
+    // MARK: - Functions
+
     private func setupButton() {
         setImageWithSpacing()
         titleLabel?.font = UIFont(name: "Pretendard-SemiBold", size: 14)
