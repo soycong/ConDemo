@@ -54,21 +54,6 @@ final class StruggleJournalView: UIView {
         return textView
     }()
 
-    private var isConfirmed = false
-    private let placeholderText =
-        "왜 싸웠나요? \n\n어떤 게 제일 화가 났나요? \n\n하지 말아야 했던 말은 없었나요? \n\n듣고 싶었던 말은 무엇이었나요? \n\n상대에게 미안한 것은 무엇인가요? \n\n어떤 걸 고쳐나가고 싶나요?"
-
-    private let titleLabel: UILabel = {
-        let label: UILabel = .init()
-
-        label.font = .systemFont(ofSize: 26, weight: .bold)
-        label.textColor = .black
-        label.textAlignment = .left
-        label.text = "싸움로그 남기기"
-
-        return label
-    }()
-
     private let dateLabel: UILabel = {
         let label: UILabel = .init()
 

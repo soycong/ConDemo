@@ -148,11 +148,6 @@ final class PollRecommendView: UIView {
 //        print("현재 페이지 \(currentPage+1)의 Poll 데이터 추출")
 //    }
 
-    /// 모든 TextView의 텍스트 내용 가져오기
-    func getAllTextContents() -> [String] {
-        textViews.map(\.text)
-    }
-
     private func configureUI() {
         addSubview(contentStackView)
         addSubview(scrollView)
