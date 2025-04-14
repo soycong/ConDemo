@@ -74,12 +74,11 @@ final class LaunchView: UIView {
             make.horizontalEdges.equalToSuperview().inset(13)
             make.height.equalTo(241)
         }
-        
+
         launchLogoImageView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(adBannerImageView.snp.top).offset(-147)
             make.size.equalTo(130)
         }
-
     }
 }

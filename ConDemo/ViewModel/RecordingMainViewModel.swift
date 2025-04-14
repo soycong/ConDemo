@@ -6,8 +6,10 @@
 //
 
 final class RecordingMainViewModel {
-    private let audioRecorder: AudioRecorder = .init()
     private(set) var isRecording = false
+    var hasStartedRecordingOnce: Bool = false
+
+    private let audioRecorder: AudioRecorder = .init()
 
     private var isPlaying = false
     private var isPaused = false
@@ -35,6 +37,7 @@ extension RecordingMainViewModel {
     func stopRecording() {
         audioRecorder.stopRecording()
         isRecording = false
+        hasStartedRecordingOnce = false
         print("녹음 종료")
     }
 

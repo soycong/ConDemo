@@ -21,7 +21,6 @@ final class RecordingLandingView: UIView {
         imageView.image = .landingAD
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .beigeGray
-        imageView.tintColor = .label
         imageView.layer.cornerRadius = 14
         return imageView
     }()
