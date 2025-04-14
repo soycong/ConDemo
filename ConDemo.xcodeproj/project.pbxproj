@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0F1F8F822DACA066009730B2 /* AWSTranscribeStreaming in Frameworks */ = {isa = PBXBuildFile; productRef = 0F1F8F812DACA066009730B2 /* AWSTranscribeStreaming */; };
+		0F1F90142DACAA4D009730B2 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 0F1F90132DACAA4D009730B2 /* ArgumentParser */; };
 		B3A44E0D2DA4CA2200C4872D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0C2DA4CA2200C4872D /* Alamofire */; };
 		B3A44E102DA4CA2F00C4872D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0F2DA4CA2F00C4872D /* SnapKit */; };
 /* End PBXBuildFile section */
@@ -44,6 +45,7 @@
 			files = (
 				B3A44E0D2DA4CA2200C4872D /* Alamofire in Frameworks */,
 				0F1F8F822DACA066009730B2 /* AWSTranscribeStreaming in Frameworks */,
+				0F1F90142DACAA4D009730B2 /* ArgumentParser in Frameworks */,
 				B3A44E102DA4CA2F00C4872D /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -91,6 +93,7 @@
 				B3A44E0C2DA4CA2200C4872D /* Alamofire */,
 				B3A44E0F2DA4CA2F00C4872D /* SnapKit */,
 				0F1F8F812DACA066009730B2 /* AWSTranscribeStreaming */,
+				0F1F90132DACAA4D009730B2 /* ArgumentParser */,
 			);
 			productName = ConDemo;
 			productReference = B3A44DEE2DA4C37500C4872D /* ConDemo.app */;
@@ -124,6 +127,7 @@
 				B3A44E0B2DA4CA2200C4872D /* XCRemoteSwiftPackageReference "Alamofire" */,
 				B3A44E0E2DA4CA2F00C4872D /* XCRemoteSwiftPackageReference "SnapKit" */,
 				0F1F8F802DACA066009730B2 /* XCRemoteSwiftPackageReference "aws-sdk-swift" */,
+				0F1F90122DACAA4D009730B2 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B3A44DEF2DA4C37500C4872D /* Products */;
@@ -401,6 +405,14 @@
 				minimumVersion = 1.2.58;
 			};
 		};
+		0F1F90122DACAA4D009730B2 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
 		B3A44E0B2DA4CA2200C4872D /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -424,6 +436,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0F1F8F802DACA066009730B2 /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
 			productName = AWSTranscribeStreaming;
+		};
+		0F1F90132DACAA4D009730B2 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0F1F90122DACAA4D009730B2 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
 		};
 		B3A44E0C2DA4CA2200C4872D /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
