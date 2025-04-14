@@ -162,10 +162,10 @@ extension CustomAlertView {
 }
 
 extension CustomAlertView: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    func gestureRecognizer(_: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         let touchPoint = touch.location(in: self)
         let isPointInAlertView = alertView.frame.contains(touchPoint)
-        
+
         return !isPointInAlertView
     }
 }

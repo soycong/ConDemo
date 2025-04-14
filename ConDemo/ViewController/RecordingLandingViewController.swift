@@ -41,7 +41,9 @@ final class RecordingLandingViewController: UIViewController {
     private func setAddTargets() {
         recordingLandingView.startButton.addTarget(self, action: #selector(startButtonTapped),
                                                    for: .touchUpInside)
-        recordingLandingView.communityButton.addTarget(self, action: #selector(communityButtonTapped), for: .touchUpInside)
+        recordingLandingView.communityButton.addTarget(self,
+                                                       action: #selector(communityButtonTapped),
+                                                       for: .touchUpInside)
     }
 
     @objc
@@ -51,10 +53,10 @@ final class RecordingLandingViewController: UIViewController {
                                                            animated: true)
         }
     }
-    
+
     @objc
     private func communityButtonTapped() {
-        self.navigationController?.pushViewController(TestViewController(), animated: true)
+//        navigationController?.pushViewController(TestViewController(), animated: true)
     }
 }
 

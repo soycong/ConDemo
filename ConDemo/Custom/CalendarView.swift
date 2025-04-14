@@ -12,7 +12,7 @@ final class CalendarView: UIView {
 
     private var isAnimating: Bool = false
     private var lastTouchTime: TimeInterval = 0
-    
+
     private var backgroundView: UIView = {
         let view: UIView = .init()
         view.backgroundColor = .systemBackground.withAlphaComponent(0.7)
@@ -31,7 +31,7 @@ final class CalendarView: UIView {
         view.layer.shadowRadius = 10
         return view
     }()
-    
+
     private let calendarView: UICalendarView = {
         let view: UICalendarView = .init()
         view.wantsDateDecorations = true
@@ -43,7 +43,7 @@ final class CalendarView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+
         setupSubviews()
         setupConstratins()
     }
@@ -71,7 +71,7 @@ extension CalendarView {
             make.height.equalTo(310)
             make.center.equalToSuperview()
         }
-        
+
         calendarView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(10)
         }
@@ -99,10 +99,12 @@ extension CalendarView {
 extension CalendarView {
     @objc
     private func dismiss() {
-        if isAnimating { return }
-        
+        if isAnimating {
+            return
+        }
+
         isAnimating = true
-        
+
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseIn, animations: {
             self.backgroundView.alpha = 0
             self.containerView.alpha = 0
@@ -115,18 +117,18 @@ extension CalendarView {
 }
 
 extension CalendarView {
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    override func point(inside point: CGPoint, with _: UIEvent?) -> Bool {
         if isAnimating {
             return false
         }
-        
+
         // 중복 호출 방지 (짧은 시간 내 여러 번 호출되는 것 방지)
         let currentTime = Date().timeIntervalSince1970
         if currentTime - lastTouchTime < 0.3 {
             return containerView.frame.contains(point)
         }
         lastTouchTime = currentTime
-        
+
         // containerView 영역 내부의 터치인지 확인
         if containerView.frame.contains(point) {
             // containerView 내부 터치는 처리 허용
