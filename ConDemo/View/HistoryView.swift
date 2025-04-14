@@ -7,7 +7,12 @@
 
 import UIKit
 
+protocol HistoryViewDelegate: AnyObject {
+    func didSelectHistory(at index: Int)
+}
+
 final class HistoryView: UIView {
+    weak var delegate: HistoryViewDelegate?
     
     private var adBanner: UIImageView = {
         let view: UIImageView = .init()
@@ -30,7 +35,7 @@ final class HistoryView: UIView {
         return label
     }()
 
-    private let calenderButton: UIButton = {
+    private(set) var calenderButton: UIButton = {
         let button: UIButton = .init()
 
         let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
@@ -112,7 +117,13 @@ final class HistoryView: UIView {
     }
 }
 
-extension HistoryView: UITableViewDelegate { }
+extension HistoryView: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        delegate?.didSelectHistory(at: indexPath.row)
+    }
+}
 
 extension HistoryView: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {

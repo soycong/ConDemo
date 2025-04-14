@@ -18,8 +18,14 @@ final class HistoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        setDelegate()
         setupView()
         setupNavigationBar()
+        setupAddTargets()
+    }
+    
+    private func setDelegate() {
+        historyView.delegate = self
     }
     
     private func setupView() {
@@ -32,7 +38,7 @@ final class HistoryViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),
                                                            style: .plain, target: self,
-                                                           action: #selector(backButtonTapped))
+                                                           action: #selector(xmarkButtonTapped))
         navigationItem
             .rightBarButtonItem = UIBarButtonItem(image: .init(systemName: "person.circle"),
                                                   style: .plain, target: self,
@@ -41,17 +47,32 @@ final class HistoryViewController: UIViewController {
 }
 
 extension HistoryViewController {
+    private func setupAddTargets() {
+        historyView.calenderButton.addTarget(self, action: #selector(calendarButtonTapped),
+                                                 for: .touchUpInside)
+    }
+    
     @objc
-    private func backButtonTapped() {
+    private func xmarkButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
 
-//    @objc
-//    private func calendarButtonTapped() {
-//        let calendarView: CalendarView = .init()
-//        calendarView.show(in: summaryView)
-//    }
+    @objc
+    private func calendarButtonTapped() {
+        let calendarView: CalendarView = .init()
+        calendarView.show(in: historyView)
+    }
 
     @objc
     private func profileButtonTapped() { }
+}
+
+extension HistoryViewController: HistoryViewDelegate {
+    func didSelectHistory(at index: Int) {
+        let summaryVC = SummaryViewController()
+
+        // summaryVC.historyIndex = index
+        
+        navigationController?.pushViewController(summaryVC, animated: true)
+    }
 }
