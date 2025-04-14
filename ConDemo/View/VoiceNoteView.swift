@@ -245,9 +245,8 @@ final class VoiceNoteView: UIView {
         }
     }
 
-    @objc
-    private func dismissKeyboard() {
-        endEditing(true)
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 

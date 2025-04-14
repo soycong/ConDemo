@@ -6,9 +6,24 @@
 //
 
 import UIKit
+import SnapKit
 
 final class StruggleJournalView: UIView {
-    // MARK: - Properties
+  
+    private var isConfirmed = false
+    private let placeholderText = "왜 싸웠나요? \n\n어떤 게 제일 화가 났나요? \n\n하지 말아야 했던 말은 없었나요? \n\n듣고 싶었던 말은 무엇이었나요? \n\n상대에게 미안한 것은 무엇인가요? \n\n어떤 걸 고쳐나가고 싶나요?"
+    private var journalTextViewBottomConstraint: Constraint?
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        
+        label.font = .systemFont(ofSize: 26, weight: .bold)
+        label.textColor = .black
+        label.textAlignment = .left
+        label.text = "싸움로그 남기기"
+        
+        return label
+    }()
 
     private(set) var confirmButton: UIButton = {
         let button: UIButton = .init()
@@ -28,6 +43,10 @@ final class StruggleJournalView: UIView {
 
         textView.layer.cornerRadius = 10
         textView.backgroundColor = .white
+        
+        textView.isScrollEnabled = true
+        textView.alwaysBounceVertical = true
+        textView.showsVerticalScrollIndicator = false
 
         textView.textColor = UIColor.lightGray
         textView.font = UIFont(name: "Pretendard-Medium", size: 14)
@@ -93,14 +112,22 @@ final class StruggleJournalView: UIView {
         configureUI()
         setupTextView()
         setupActions()
+        
+        setupKeyboard(
+            bottomConstraint: journalTextViewBottomConstraint!,
+            defaultInset: 70,
+            textViews: [journalTextView]
+        )
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: - Functions
+    
+    deinit {
+        removeKeyboard()
+    }
 
     private func configureUI() {
         addSubview(journalStackView)
@@ -134,7 +161,7 @@ final class StruggleJournalView: UIView {
 
         journalTextView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(40)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            self.journalTextViewBottomConstraint = make.bottom.equalToSuperview().inset(30).constraint
             make.horizontalEdges.equalToSuperview().inset(10)
         }
     }
@@ -158,15 +185,22 @@ final class StruggleJournalView: UIView {
         if confirmButton.backgroundColor == UIColor.gray {
             return
         }
+        
+        dismissKeyboard()
 
         journalTextView.resignFirstResponder()
         confirmButton.backgroundColor = .gray
         isConfirmed = false
     }
-
-    @objc
-    private func textViewTapped() {
-        journalTextView.becomeFirstResponder() // 편집 모드
+    
+    @objc private func textViewTapped(_ gesture: UITapGestureRecognizer) {
+        if let textView = gesture.view as? UITextView {
+            if textView.isFirstResponder {
+                textView.resignFirstResponder()
+            } else {
+                textView.becomeFirstResponder()
+            }
+        }
     }
 }
 
@@ -176,15 +210,21 @@ extension StruggleJournalView: UITextViewDelegate {
             textView.text = ""
             textView.textColor = .black
         }
-
-        confirmButton.backgroundColor = .pointBlue
-        isConfirmed = true
+        
+        if textView.text.count >= 1 {
+            confirmButton.backgroundColor = .pointBlue
+            isConfirmed = true
+        } else {
+            confirmButton.backgroundColor = .gray
+            isConfirmed = false
+        }
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
             textView.text = placeholderText
             textView.textColor = .lightGray
+            confirmButton.backgroundColor = .gray
         }
     }
 

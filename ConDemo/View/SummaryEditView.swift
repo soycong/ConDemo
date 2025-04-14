@@ -6,9 +6,24 @@
 //
 
 import UIKit
+import SnapKit
 
 final class SummaryEditView: UIView {
-    // MARK: - Properties
+    
+    private let placeholderText = "내용을 입력해주세요."
+    private var isPosted = false
+    private var summaryTextViewBottomConstraint: Constraint?
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        
+        label.font = .systemFont(ofSize: 26, weight: .bold)
+        label.textColor = .black
+        label.textAlignment = .left
+        label.text = "요약"
+        
+        return label
+    }()
 
     private(set) var confirmButton: UIButton = {
         let button: UIButton = .init()
@@ -31,7 +46,11 @@ final class SummaryEditView: UIView {
 
         textView.textColor = UIColor.lightGray
         textView.font = UIFont(name: "Pretendard-Medium", size: 14)
-
+        
+        textView.isScrollEnabled = true
+        textView.alwaysBounceVertical = true
+        textView.showsVerticalScrollIndicator = false
+        
         textView.textContainerInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
         textView.textContainer.lineFragmentPadding = 0
 
@@ -74,10 +93,9 @@ final class SummaryEditView: UIView {
         return stackView
     }()
 
-    private lazy var journalStackView = {
-        let stackView: UIStackView = .init(arrangedSubviews: [titleStackView, dateLabel,
-                                                              summaryTextView])
-
+    private lazy var summaryStackView = {
+        let stackView = UIStackView(arrangedSubviews: [titleStackView, dateLabel, summaryTextView])
+        
         stackView.axis = .vertical
         stackView.spacing = 20
         stackView.alignment = .fill
@@ -95,6 +113,12 @@ final class SummaryEditView: UIView {
         configureUI()
         setupTextView()
         setupActions()
+        
+        setupKeyboard(
+            bottomConstraint: summaryTextViewBottomConstraint!,
+            defaultInset: 70,
+            textViews: [summaryTextView]
+        )
     }
 
     @available(*, unavailable)
@@ -102,12 +126,14 @@ final class SummaryEditView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Functions
-
-    private func configureUI() {
-        addSubview(journalStackView)
-
-        journalStackView.snp.makeConstraints { make in
+    deinit {
+        removeKeyboard()
+    }
+    
+    private func configureUI(){
+        addSubview(summaryStackView)
+        
+        summaryStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.verticalEdges.equalTo(safeAreaLayoutGuide)
             make.centerX.equalToSuperview()
@@ -136,7 +162,7 @@ final class SummaryEditView: UIView {
 
         summaryTextView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(40)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom)
+            self.summaryTextViewBottomConstraint = make.bottom.equalToSuperview().inset(30).constraint
             make.horizontalEdges.equalToSuperview().inset(10)
         }
     }
@@ -160,16 +186,22 @@ final class SummaryEditView: UIView {
         if confirmButton.backgroundColor == UIColor.gray {
             return
         }
+ 
+        dismissKeyboard()
 
         summaryTextView.resignFirstResponder()
         confirmButton.backgroundColor = .gray
         isPosted = false
     }
 
-    @objc
-    private func textViewTapped() {
-        summaryTextView.becomeFirstResponder() // 편집 모드
-    }
+    @objc private func textViewTapped(_ gesture: UITapGestureRecognizer) {
+        if let textView = gesture.view as? UITextView {
+            if textView.isFirstResponder {
+                textView.resignFirstResponder()
+            } else {
+                textView.becomeFirstResponder()
+            }
+        }
 }
 
 extension SummaryEditView: UITextViewDelegate {
@@ -178,9 +210,14 @@ extension SummaryEditView: UITextViewDelegate {
             textView.text = ""
             textView.textColor = .black
         }
-
-        confirmButton.backgroundColor = .pointBlue
-        isPosted = true
+        
+        if textView.text.count >= 1 {
+            confirmButton.backgroundColor = .pointBlue
+            isPosted = true
+        } else {
+            confirmButton.backgroundColor = .gray
+            isPosted = false
+        }
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {

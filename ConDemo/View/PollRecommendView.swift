@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class PollRecommendView: UIView {
     // MARK: - Properties
@@ -26,11 +27,14 @@ final class PollRecommendView: UIView {
     private let placeholderText = "내용을 입력해주세요."
     private var isPosted = false
     private var currentPage = 0
-
-    private var pollContents: [PollContent] = [PollContent.defaultTemplate(),
-                                               PollContent.defaultTemplate(),
-                                               PollContent.defaultTemplate()]
-
+    private var pollTextViewBottomConstraint: Constraint?
+    
+    private var pollContents: [PollContent] = [
+        PollContent.defaultTemplate(),
+        PollContent.defaultTemplate(),
+        PollContent.defaultTemplate()
+    ]
+  
     private let titleLabel: UILabel = {
         let label: UILabel = .init()
 
@@ -54,19 +58,23 @@ final class PollRecommendView: UIView {
     }()
 
     private lazy var scrollView: UIScrollView = {
-        let scrollView: UIScrollView = .init()
+        let scrollView = UIScrollView()
+
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.delegate = self
+        
         return scrollView
     }()
 
     private let pageControl: UIPageControl = {
-        let pageControl: UIPageControl = .init()
+        let pageControl = UIPageControl()
+
         pageControl.numberOfPages = 3
         pageControl.currentPage = 0
         pageControl.currentPageIndicatorTintColor = .black
         pageControl.pageIndicatorTintColor = .lightGray
+        
         return pageControl
     }()
 
@@ -103,6 +111,12 @@ final class PollRecommendView: UIView {
         configureUI()
         setupTextViews()
         setupActions()
+        
+        setupKeyboard(
+            bottomConstraint: pollTextViewBottomConstraint!,
+            defaultInset: 70,
+            textViews: textViews
+        )
     }
 
     @available(*, unavailable)
@@ -123,8 +137,10 @@ final class PollRecommendView: UIView {
                                     height: scrollView.frame.height)
         }
     }
-
-    // MARK: - Functions
+    
+    deinit {
+        removeKeyboard() // 키보드 리소스 해제
+    }
 
     // 현재 TextView에서 Poll 데이터 추출
 //    private func extractPollDataFromCurrentTextView() {
@@ -172,7 +188,7 @@ final class PollRecommendView: UIView {
         scrollView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(40)
             make.leading.trailing.equalToSuperview().inset(16)
-            make.bottom.equalTo(pageControl.snp.top).offset(-10)
+            self.pollTextViewBottomConstraint = make.bottom.equalToSuperview().inset(70).constraint
         }
 
         pageControl.snp.makeConstraints { make in
@@ -183,20 +199,25 @@ final class PollRecommendView: UIView {
     }
 
     private func setupTextViews() {
-        for i in 0 ..< 3 { // TextView 3개
-            let textView: UITextView = .init()
+        for i in 0..<3 { // TextView 3개
+            let textView = UITextView()
+            
             textView.layer.cornerRadius = 10
             textView.backgroundColor = .backgroundGray
             textView.delegate = self
-
+            
+            textView.isScrollEnabled = true
+            textView.alwaysBounceVertical = true
+            textView.showsVerticalScrollIndicator = false
+            
             textView.textContainerInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
             textView.textContainer.lineFragmentPadding = 0
 
             // PollContent 적용
             applyFormattedPollContent(to: textView, with: pollContents[i])
+            
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(textViewTapped(_:)))
 
-            let tapGesture: UITapGestureRecognizer = .init(target: self,
-                                                           action: #selector(textViewTapped(_:)))
             textView.addGestureRecognizer(tapGesture)
             textView.isUserInteractionEnabled = true
 
@@ -207,8 +228,10 @@ final class PollRecommendView: UIView {
 
     /// 들여쓰기 문단 적용
     private func createParagraphStyle(withIndent indent: CGFloat) -> NSParagraphStyle {
-        let paragraphStyle: NSMutableParagraphStyle = .init()
+        let paragraphStyle = NSMutableParagraphStyle()
+
         paragraphStyle.firstLineHeadIndent = indent
+        
         return paragraphStyle
     }
 
@@ -222,8 +245,9 @@ final class PollRecommendView: UIView {
         if confirmButton.backgroundColor == UIColor.gray {
             return
         }
-
-        textViews[currentPage].resignFirstResponder()
+      
+        dismissKeyboard()
+        
         confirmButton.backgroundColor = .gray
         isPosted = false
 
@@ -233,7 +257,18 @@ final class PollRecommendView: UIView {
     @objc
     private func textViewTapped(_ gesture: UITapGestureRecognizer) {
         if let textView = gesture.view as? UITextView {
-            textView.becomeFirstResponder() // 편집 모드
+            let location = gesture.location(in: textView)
+            
+            if !textView.isFirstResponder {
+                // 터치한 위치에서 가장 가까운 텍스트 위치 찾기
+                if let position = textView.closestPosition(to: location) {
+                    // 해당 위치에 커서 설정
+                    textView.selectedTextRange = textView.textRange(from: position, to: position)
+                    textView.becomeFirstResponder() // 키보드 표시
+                }
+            } else {
+                textView.resignFirstResponder()
+            }
         }
     }
 
@@ -243,6 +278,33 @@ final class PollRecommendView: UIView {
         let xOffset = scrollView.frame.width * CGFloat(page)
         scrollView.setContentOffset(CGPoint(x: xOffset, y: 0), animated: true)
         currentPage = page
+    }
+    
+    // 현재 TextView에서 Poll 데이터 추출
+    //    private func extractPollDataFromCurrentTextView() {
+    //        let textView = textViews[currentPage]
+    //        print("현재 페이지 \(currentPage+1)의 Poll 데이터 추출")
+    //    }
+    
+    // 모든 TextView의 텍스트 내용 가져오기
+    func getAllTextContents() -> [String] {
+        return textViews.map { $0.text }
+    }
+    
+    func getTextViewCursor(_ textView: UITextView) {
+        if let index = textViews.firstIndex(of: textView) {
+            // 현재 선택된 범위 가져오기
+            if let selectedRange = textView.selectedTextRange {
+                // 현재 선택된 위치 사용
+                let cursorPosition = selectedRange.start
+                
+                // 해당 위치에 커서 설정
+                textView.selectedTextRange = textView.textRange(from: cursorPosition, to: cursorPosition)
+                
+                // 선택한 위치가 화면에 보이도록 스크롤
+                textView.scrollRangeToVisible(textView.selectedRange)
+            }
+        }
     }
 }
 

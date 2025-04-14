@@ -281,14 +281,12 @@ final class MessageView: UIView {
             self.layoutIfNeeded()
         }
     }
-
-    @objc
-    private func dismissKeyboard() {
-        endEditing(true)
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
-
-    @objc
-    private func sendButtonTapped() {
+    
+    @objc private func sendButtonTapped() {
         sendMessage()
     }
 
