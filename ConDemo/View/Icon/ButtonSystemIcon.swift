@@ -13,6 +13,7 @@ enum ButtonSystemIcon {
     static let downButtonImage = "chevron.down"
 
     static let cancelButtonImage = "xmark"
+    static let backButtonImage = "chevron.left"
 
     static let aiIcon = "aiIcon"
     static let logIcon = "logIcon"
