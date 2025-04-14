@@ -36,8 +36,6 @@ final class SummaryView: UIView {
 
     private var firstSummaryLabel: UILabel = {
         let label: UILabel = .init()
-        label.font = UIFont(name: "Pretendard-Medium", size: 12)
-        label.textColor = .label
         label.numberOfLines = 0
         label.textAlignment = .left
         return label
@@ -45,8 +43,6 @@ final class SummaryView: UIView {
 
     private var secondSummaryLabel: UILabel = {
         let label: UILabel = .init()
-        label.font = UIFont(name: "Pretendard-Medium", size: 12)
-        label.textColor = .label
         label.numberOfLines = 0
         label.textAlignment = .left
         return label
@@ -54,17 +50,40 @@ final class SummaryView: UIView {
 
     private var thirdSummaryLabel: UILabel = {
         let label: UILabel = .init()
-        label.font = UIFont(name: "Pretendard-Medium", size: 12)
-        label.textColor = .label
         label.numberOfLines = 0
         label.textAlignment = .left
         return label
     }()
 
-    private lazy var summaryStackView: UIStackView = {
+    private(set) lazy var summaryStackView: UIStackView = {
         let stackView: UIStackView = .init(arrangedSubviews: [firstSummaryLabel,
                                                               secondSummaryLabel,
                                                               thirdSummaryLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        return stackView
+    }()
+    
+    private let analysisLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont(name: "BricolageGrotesque-Bold", size: 16)
+        label.textColor = .label
+        label.textAlignment = .left
+        return label
+    }()
+    
+    private(set) var factCheckButton = AnalysisButton(iconName: ButtonSystemIcon.aiIcon, title: "AI와 팩트 체크하기")
+    private(set) var logButton = AnalysisButton(iconName: ButtonSystemIcon.logIcon, title: "싸움 로그 보기")
+    private(set) var pollButton = AnalysisButton(iconName: ButtonSystemIcon.pollIcon, title: "자동 Poll 생성하기")
+    private(set) var summaryButton = AnalysisButton(iconName: ButtonSystemIcon.summaryIcon, title: "요약 버전 생성하기")
+    
+    private lazy var buttonStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            factCheckButton,
+            logButton,
+            pollButton,
+            summaryButton
+        ])
         stackView.axis = .vertical
         stackView.spacing = 8
         return stackView
@@ -94,11 +113,13 @@ extension SummaryView {
     }
 
     private func setupSubviews() {
-        [
-            adBanner,
-            summaryTitleLabel,
-            summaryDateLabel,
-            summaryStackView
+        [adBanner,
+         summaryTitleLabel,
+         summaryDateLabel,
+         summaryStackView,
+         buttonStackView,
+         analysisLabel,
+         buttonStackView
         ].forEach {
             addSubview($0)
         }
@@ -110,20 +131,41 @@ extension SummaryView {
             make.horizontalEdges.equalToSuperview().inset(13)
             make.height.equalTo(72)
         }
-        
+
         summaryTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(adBanner.snp.bottom).offset(31)
-            make.horizontalEdges.equalToSuperview().inset(13)
+            make.horizontalEdges.equalToSuperview().inset(25)
         }
-        
+
         summaryDateLabel.snp.makeConstraints { make in
             make.top.equalTo(summaryTitleLabel.snp.bottom).offset(17)
-            make.horizontalEdges.equalToSuperview().inset(13)
+            make.horizontalEdges.equalToSuperview().inset(25)
         }
-        
+
         summaryStackView.snp.makeConstraints { make in
             make.top.equalTo(summaryDateLabel.snp.bottom).offset(24)
-            make.horizontalEdges.equalToSuperview().inset(13)
+            make.horizontalEdges.equalToSuperview().inset(25)
+        }
+        
+        analysisLabel.snp.makeConstraints { make in
+            make.top.equalTo(summaryStackView.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview().inset(25)
+        }
+        
+        [
+            factCheckButton,
+            logButton,
+            pollButton,
+            summaryButton
+        ].forEach {
+            $0.snp.makeConstraints { make in
+                make.height.equalTo(44)
+            }
+        }
+        
+        buttonStackView.snp.makeConstraints { make in
+            make.top.equalTo(analysisLabel.snp.bottom).offset(17)
+            make.horizontalEdges.equalToSuperview().inset(25)
         }
     }
 
@@ -156,7 +198,9 @@ extension SummaryView {
         paragraphStyle.lineSpacing = 10.0
 
         let attributes: [NSAttributedString.Key: Any] = [.paragraphStyle: paragraphStyle,
-                                                         .font: UIFont.systemFont(ofSize: 16)]
+                                                         .font: UIFont(name: "Pretendard-Medium",
+                                                                       size: 12),
+                                                         .foregroundColor: UIColor.label]
 
         return NSAttributedString(string: text, attributes: attributes)
     }
