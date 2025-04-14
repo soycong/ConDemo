@@ -8,12 +8,15 @@
 import UIKit
 
 final class VoiceNoteViewController: UIViewController {
-    private let voiceNoteView = VoiceNoteView()
-    
+    // MARK: - Properties
+
+    private let voiceNoteView: VoiceNoteView = .init()
+
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.view = voiceNoteView
+
+        view = voiceNoteView
     }
 }
-
