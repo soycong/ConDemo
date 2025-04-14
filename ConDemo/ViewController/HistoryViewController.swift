@@ -12,6 +12,7 @@ final class HistoryViewController: UIViewController {
     // MARK: - Properties
 
     private let historyView: HistoryView = .init()
+    private let calendarView: CalendarView = .init()
 
     // MARK: - Lifecycle
 
@@ -21,6 +22,7 @@ final class HistoryViewController: UIViewController {
         setDelegate()
         setupView()
         setupNavigationBar()
+        setupCalendar()
         setupAddTargets()
     }
     
@@ -44,6 +46,10 @@ final class HistoryViewController: UIViewController {
                                                   style: .plain, target: self,
                                                   action: #selector(profileButtonTapped))
     }
+    
+    private func setupCalendar() {
+        calendarView.delegate = self
+    }
 }
 
 extension HistoryViewController {
@@ -59,20 +65,26 @@ extension HistoryViewController {
 
     @objc
     private func calendarButtonTapped() {
-        let calendarView: CalendarView = .init()
         calendarView.show(in: historyView)
     }
 
     @objc
     private func profileButtonTapped() { }
+    
+    private func pushToSummaryViewController() {
+        let summaryVC = SummaryViewController()
+        navigationController?.pushViewController(summaryVC, animated: true)
+    }
 }
 
 extension HistoryViewController: HistoryViewDelegate {
     func didSelectHistory(at index: Int) {
-        let summaryVC = SummaryViewController()
+        pushToSummaryViewController()
+    }
+}
 
-        // summaryVC.historyIndex = index
-        
-        navigationController?.pushViewController(summaryVC, animated: true)
+extension HistoryViewController: CalendarViewDelegate {
+    func calendarView(_ calendarView: CalendarView, didSelectDate date: Date) {
+        pushToSummaryViewController()
     }
 }
