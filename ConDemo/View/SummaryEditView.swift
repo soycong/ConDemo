@@ -56,21 +56,7 @@ final class SummaryEditView: UIView {
 
         return textView
     }()
-
-    private let placeholderText = "내용을 입력해주세요."
-    private var isPosted = false
-
-    private let titleLabel: UILabel = {
-        let label: UILabel = .init()
-
-        label.font = .systemFont(ofSize: 26, weight: .bold)
-        label.textColor = .black
-        label.textAlignment = .left
-        label.text = "요약"
-
-        return label
-    }()
-
+    
     private let dateLabel: UILabel = {
         let label: UILabel = .init()
 
@@ -202,6 +188,7 @@ final class SummaryEditView: UIView {
                 textView.becomeFirstResponder()
             }
         }
+    }
 }
 
 extension SummaryEditView: UITextViewDelegate {
