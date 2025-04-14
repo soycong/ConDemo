@@ -108,6 +108,7 @@ final class SummaryView: UIView {
         setupView()
         setupSubviews()
         setupConstraints()
+        setupButtonTags()
         setupADimage()
         setupTestText()
     }
@@ -182,6 +183,13 @@ extension SummaryView {
             make.top.equalTo(analysisLabel.snp.bottom).offset(17)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
+    }
+    
+    private func setupButtonTags() {
+        factCheckButton.tag = 1
+        logButton.tag = 2
+        pollButton.tag = 3
+        summaryButton.tag = 4
     }
 
     private func setupADimage() {
