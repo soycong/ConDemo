@@ -19,15 +19,15 @@ final class HistoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setDelegate()
+        setDelegates()
         setupView()
         setupNavigationBar()
-        setupCalendar()
         setupAddTargets()
     }
     
-    private func setDelegate() {
+    private func setDelegates() {
         historyView.delegate = self
+        calendarView.delegate = self
     }
     
     private func setupView() {
@@ -45,10 +45,6 @@ final class HistoryViewController: UIViewController {
             .rightBarButtonItem = UIBarButtonItem(image: .init(systemName: "person.circle"),
                                                   style: .plain, target: self,
                                                   action: #selector(profileButtonTapped))
-    }
-    
-    private func setupCalendar() {
-        calendarView.delegate = self
     }
 }
 
