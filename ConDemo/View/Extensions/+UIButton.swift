@@ -13,10 +13,35 @@ extension UIButton {
         let config = UIImage.SymbolConfiguration(pointSize: imageSize, weight: .medium)
         if let image = UIImage(systemName: imageName, withConfiguration: config) {
             setImage(image, for: .normal)
-            tintColor = .black
+            tintColor = .label
         }
     }
-
+    
+    func setResizeIcon(imageName: String, imageSize: CGFloat) {
+        let resizedImage = resizeImage(imageName: imageName, targetSize: imageSize)
+        setImage(resizedImage, for: .normal)
+    }
+    
+    private func resizeImage(imageName: String, targetSize: CGFloat) -> UIImage {
+        let image = UIImage(named: imageName)!
+        let size = image.size
+        
+        let widthRatio  = targetSize  / size.width
+        let heightRatio = targetSize / size.height
+        
+        let ratio = min(widthRatio, heightRatio)
+        
+        let newSize = CGSize(width: size.width * ratio, height: size.height * ratio)
+        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0)
+        image.draw(in: rect)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage ?? image
+    }
+    
     func setImageWithSpacing() {
         imageEdgeInsets = .init(top: 0, left: -8, bottom: 0, right: 0)
         titleEdgeInsets = .init(top: 0, left: 8, bottom: 0, right: 0)
