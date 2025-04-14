@@ -38,7 +38,8 @@ final class HistoryViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),
+        // x버튼 어색해서 < 버튼으로 변경
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.backButtonImage),
                                                            style: .plain, target: self,
                                                            action: #selector(xmarkButtonTapped))
         navigationItem
