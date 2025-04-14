@@ -54,7 +54,7 @@ final class HistoryCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         selectionStyle = .none
-        backgroundColor = .white
+        backgroundColor = .baseBackground
         
         contentView.backgroundColor = .backgroundGray
         contentView.layer.cornerRadius = 10

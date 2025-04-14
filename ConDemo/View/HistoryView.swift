@@ -42,7 +42,7 @@ final class HistoryView: UIView {
         let image: UIImage = .init(systemName: "calendar", withConfiguration: config)!
 
         button.setImage(image, for: .normal)
-        button.tintColor = .black
+        button.tintColor = .label
 
         return button
     }()
@@ -66,7 +66,7 @@ final class HistoryView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .baseBackground
         
         setupADimage()
         setUpTableView()
@@ -88,7 +88,7 @@ final class HistoryView: UIView {
         
         historyTableView.register(HistoryCell.self, forCellReuseIdentifier: HistoryCell.id)
         
-        historyTableView.backgroundColor = .white
+        historyTableView.backgroundColor = .baseBackground
         historyTableView.showsVerticalScrollIndicator = false
     }
     
