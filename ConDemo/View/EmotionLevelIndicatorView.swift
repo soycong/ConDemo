@@ -1,5 +1,5 @@
 //
-//  EmotionLevelIndicator.swift
+//  EmotionLevelIndicatorView.swift
 //  ConDemo
 //
 //  Created by seohuibaek on 4/14/25.
@@ -8,18 +8,22 @@
 import UIKit
 import SnapKit
 
-final class EmotionLevelIndicator: UIView {
+final class EmotionLevelIndicatorView: UIView {
     
-    enum EmotionLevel: Int {
-        case low
-        case medium
-        case high
-    }
+//    enum EmotionLevel: Int {
+//        case low
+//        case medium
+//        case high
+//    }
+    
+    private var emotionIcons = ["🙃", "😕", "😨", "😵‍💫", "😤", "🤯", "😵‍💫", "😡", "🤬", "🤪"]
     
     private var barView: UIView = {
         let view = UIView()
         
         view.layer.cornerRadius = 8
+        view.layer.borderColor = UIColor.black.cgColor
+        view.layer.borderWidth = 1
         view.clipsToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -52,12 +56,12 @@ final class EmotionLevelIndicator: UIView {
         
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
+        label.textAlignment = .left
         
         return label
     }()
     
-    var emotionLevel: Int = 9 {
+    var emotionLevel: Int = 10 {
         didSet {
             updateUI()
         }
@@ -95,9 +99,11 @@ final class EmotionLevelIndicator: UIView {
         
         markerView.snp.makeConstraints { make in
             make.top.equalTo(barView.snp.bottom).offset(2)
+            make.height.width.equalTo(16)
         }
         
         emotionLabel.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(12)
             make.top.equalTo(markerView.snp.bottom).offset(8)
             make.bottom.centerX.equalToSuperview()
         }
@@ -106,7 +112,15 @@ final class EmotionLevelIndicator: UIView {
     }
     
     private func updateUI() {
-        emotionLabel.text = "매운맛 \(emotionLevel)단계 🥵"
+        switch emotionLevel {
+        case 1...5:
+            emotionLabel.text = "순한맛 \(emotionLevel)단계 \(emotionIcons[emotionLevel - 1])"
+        case 6...10:
+            emotionLabel.text = "매운맛 \(emotionLevel)단계 \(emotionIcons[emotionLevel - 1])"
+        default:
+            emotionLabel.text = "분석이 어렵습니다."
+        }
+        
         updateMarkerPosition()
     }
     
@@ -129,8 +143,8 @@ final class EmotionLevelIndicator: UIView {
             item: markerView,
             attribute: .centerX,
             relatedBy: .equal,
-            toItem: nil,
-            attribute: .notAnAttribute,
+            toItem: self,
+            attribute: .leading,
             multiplier: 1.0,
             constant: xPosition
         )
