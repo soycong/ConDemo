@@ -75,7 +75,8 @@ final class SummaryView: UIView {
 
     private let analysisLabel: UILabel = {
         let label: UILabel = .init()
-        label.font = UIFont(name: "BricolageGrotesque-Bold", size: 16)
+        label.font = UIFont(name: "BricolageGrotesque-Bold", size: 26)
+        label.text = "Analysis"
         label.textColor = .label
         label.textAlignment = .left
         return label
@@ -160,9 +161,9 @@ extension SummaryView {
         }
         
         emotionLevelIndicator.snp.makeConstraints { make in
-            make.top.equalTo(summaryStackView.snp.bottom).offset(35)
+            make.top.equalTo(summaryStackView.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(13)
-            make.height.equalTo(60)
+            // make.height.equalTo(60)
         }
 
         analysisLabel.snp.makeConstraints { make in
