@@ -104,7 +104,7 @@ final class EmotionLevelIndicatorView: UIView {
         
         emotionLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(12)
-            make.top.equalTo(markerView.snp.bottom).offset(8)
+            make.top.equalTo(markerView.snp.bottom).offset(6)
             make.bottom.centerX.equalToSuperview()
         }
         
