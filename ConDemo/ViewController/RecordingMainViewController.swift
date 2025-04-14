@@ -20,6 +20,8 @@ final class RecordingMainViewController: UIViewController {
 
     private var sheetViewController: VoiceNoteViewController = .init()
     private var didPresentSheet = false
+    
+    private let calendarView: CalendarView = .init()
 
     // MARK: - Lifecycle
 
@@ -157,6 +159,7 @@ extension RecordingMainViewController {
 
     private func setupDelegates() {
         stopwatch.delegate = self
+        calendarView.delegate = self
     }
 }
 
@@ -222,8 +225,6 @@ extension RecordingMainViewController {
     @objc
     private func calendarButtonTapped() {
         resetBrightnessTimer()
-
-        let calendarView: CalendarView = .init()
         calendarView.show(in: recordingMainView)
     }
 
@@ -337,5 +338,16 @@ extension RecordingMainViewController: UISheetPresentationControllerDelegate {
 
             resetBrightnessTimer()
         }
+    }
+}
+
+extension RecordingMainViewController: CalendarViewDelegate {
+    private func pushToSummaryViewController() {
+        let summaryVC = SummaryViewController()
+        navigationController?.pushViewController(summaryVC, animated: true)
+    }
+    
+    func calendarView(_ calendarView: CalendarView, didSelectDate date: Date) {
+        pushToSummaryViewController()
     }
 }
