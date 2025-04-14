@@ -281,11 +281,7 @@ final class MessageView: UIView {
             self.layoutIfNeeded()
         }
     }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
+
     @objc private func sendButtonTapped() {
         sendMessage()
     }
