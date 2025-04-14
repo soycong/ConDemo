@@ -21,7 +21,7 @@ final class EmotionLevelIndicatorView: UIView {
     private var barView: UIView = {
         let view = UIView()
         
-        view.layer.cornerRadius = 8
+        view.layer.cornerRadius = 5
         view.layer.borderColor = UIColor.black.cgColor
         view.layer.borderWidth = 1
         view.clipsToBounds = true
@@ -33,7 +33,7 @@ final class EmotionLevelIndicatorView: UIView {
     private var gradientLayer: CAGradientLayer = {
         let gradientLayer = CAGradientLayer()
         
-        gradientLayer.colors = [UIColor.yellow.cgColor, UIColor.orange.cgColor, UIColor.red.cgColor]
+        gradientLayer.colors = [UIColor.emotionLowYellow.cgColor, UIColor.emotionMidRed.cgColor, UIColor.emotionHighRed.cgColor]
         gradientLayer.locations = [0.0, 0.5, 1.0]
         gradientLayer.startPoint = CGPoint(x: 0.0, y: 0.5)
         gradientLayer.endPoint = CGPoint(x: 1.0, y: 0.5)
@@ -54,7 +54,7 @@ final class EmotionLevelIndicatorView: UIView {
     private let emotionLabel: UILabel = {
         let label = UILabel()
         
-        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        label.font = UIFont(name: "Pretendard-ExtraBold", size: 20)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         
@@ -94,7 +94,7 @@ final class EmotionLevelIndicatorView: UIView {
 
         barView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
-            make.height.equalTo(16)
+            make.height.equalTo(11)
         }
         
         markerView.snp.makeConstraints { make in
