@@ -91,7 +91,7 @@ final class RecordingMainView: UIView {
     // MARK: - Functions
 
     private func setupView() {
-        backgroundColor = .systemBackground
+        backgroundColor = .baseBackground
         recordButton.layer.borderColor = UIColor.label.resolvedColor(with: traitCollection).cgColor
     }
 

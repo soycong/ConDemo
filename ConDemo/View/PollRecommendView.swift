@@ -39,7 +39,7 @@ final class PollRecommendView: UIView {
         let label: UILabel = .init()
 
         label.font = .systemFont(ofSize: 26, weight: .bold)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "Poll 추천"
 
@@ -50,7 +50,7 @@ final class PollRecommendView: UIView {
         let label: UILabel = .init()
 
         label.font = UIFont(name: "Pretendard-Medium", size: 12)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "2025.04.10 오후 17:00"
 
@@ -72,7 +72,7 @@ final class PollRecommendView: UIView {
 
         pageControl.numberOfPages = 3
         pageControl.currentPage = 0
-        pageControl.currentPageIndicatorTintColor = .black
+        pageControl.currentPageIndicatorTintColor = .pointBlue
         pageControl.pageIndicatorTintColor = .lightGray
         
         return pageControl
@@ -106,7 +106,7 @@ final class PollRecommendView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .baseBackground
 
         configureUI()
         setupTextViews()
@@ -199,6 +199,7 @@ final class PollRecommendView: UIView {
             
             textView.layer.cornerRadius = 10
             textView.backgroundColor = .backgroundGray
+            textView.textColor = .label
             textView.delegate = self
             
             textView.isScrollEnabled = true
@@ -336,76 +337,76 @@ extension PollRecommendView: UITextViewDelegate {
 extension PollRecommendView {
     private func applyFormattedPollContent(to textView: UITextView, with content: PollContent) {
         let attributedText: NSMutableAttributedString = .init()
-
+        
         // 1. 제목 스타일
         let titleAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 24,
                                                                                        weight: .bold),
-                                                              .foregroundColor: UIColor.black]
+                                                              .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: content.title + "\n\n",
                                                  attributes: titleAttributes))
-
+        
         // 2. 본문 스타일
         let bodyAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16,
                                                                                       weight: .regular),
-                                                             .foregroundColor: UIColor.black]
+                                                             .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: content.body + "\n\n",
                                                  attributes: bodyAttributes))
-
+        
         // 3. 대화 스타일
         for (speaker, text) in content.dialogues {
             // 화자(Speaker) 스타일
             let speakerAttributes: [NSAttributedString.Key: Any] =
-                [.font: UIFont.systemFont(ofSize: 20,
-                                          weight: .bold),
-                 .foregroundColor: UIColor.black]
+            [.font: UIFont.systemFont(ofSize: 20,
+                                      weight: .bold),
+             .foregroundColor: UIColor.label]
             attributedText.append(NSAttributedString(string: speaker + "\n",
                                                      attributes: speakerAttributes))
-
+            
             // 대화 내용 스타일
             let dialogueAttributes: [NSAttributedString.Key: Any] =
-                [.font: UIFont.systemFont(ofSize: 16,
-                                          weight: .regular),
-                 .foregroundColor: UIColor
-                     .black]
+            [.font: UIFont.systemFont(ofSize: 16,
+                                      weight: .regular),
+             .foregroundColor: UIColor
+                .label]
             attributedText.append(NSAttributedString(string: text + "\n\n",
                                                      attributes: dialogueAttributes))
         }
-
+        
         // 4. 질문 스타일
         let questionAttributes: [NSAttributedString.Key: Any] =
-            [.font: UIFont.systemFont(ofSize: 22,
-                                      weight: .bold),
-             .foregroundColor: UIColor.black]
+        [.font: UIFont.systemFont(ofSize: 22,
+                                  weight: .bold),
+         .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: content.question + "\n\n",
                                                  attributes: questionAttributes))
-
+        
         // 5. Poll 옵션 소개 스타일
         let pollIntroAttributes: [NSAttributedString.Key: Any] =
-            [.font: UIFont.systemFont(ofSize: 16,
-                                      weight: .regular),
-             .foregroundColor: UIColor.black]
+        [.font: UIFont.systemFont(ofSize: 16,
+                                  weight: .regular),
+         .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: "Poll opt.\n",
                                                  attributes: pollIntroAttributes))
-
+        
         // 6. 선택지 스타일
         let optionAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16,
                                                                                         weight: .regular),
-                                                               .foregroundColor: UIColor.black,
+                                                               .foregroundColor: UIColor.label,
                                                                .paragraphStyle: createParagraphStyle(withIndent: 20)]
-
+        
         // 각 선택지 추가
         for (index, option) in content.options.enumerated() {
             attributedText
                 .append(NSAttributedString(string: option +
-                        (index < content.options.count - 1 ? "\n" : ""),
-                    attributes: optionAttributes))
+                                           (index < content.options.count - 1 ? "\n" : ""),
+                                           attributes: optionAttributes))
         }
-
+        
         // TextView에 적용
         textView.attributedText = attributedText
-
+        
         // 타이핑 속성 설정 (유저가 텍스트 입력시 사용됨)
         textView.typingAttributes = [.font: UIFont.systemFont(ofSize: 16),
-                                     .foregroundColor: UIColor.black]
+                                     .foregroundColor: UIColor.label]
     }
 }

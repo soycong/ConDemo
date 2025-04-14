@@ -22,8 +22,10 @@ final class EmotionLevelIndicatorView: UIView {
         let view = UIView()
         
         view.layer.cornerRadius = 5
-        view.layer.borderColor = UIColor.black.cgColor
+        
+        view.layer.borderColor = UIColor.label.cgColor
         view.layer.borderWidth = 1
+        
         view.clipsToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -45,7 +47,7 @@ final class EmotionLevelIndicatorView: UIView {
         let imageView = UIImageView()
         
         imageView.image = UIImage(systemName: "arrowtriangle.up.fill")
-        imageView.tintColor = .black
+        imageView.tintColor = .label
         imageView.translatesAutoresizingMaskIntoConstraints = false
         
         return imageView

@@ -28,6 +28,7 @@ final class VoiceNoteView: UIView {
         let button: UIButton = .init()
 
         button.setButtonWithSystemImage(imageName: ButtonSystemIcon.upButtonImage)
+        button.tintColor = .label
 
         return button
     }()
@@ -36,6 +37,7 @@ final class VoiceNoteView: UIView {
         let button: UIButton = .init()
 
         button.setButtonWithSystemImage(imageName: ButtonSystemIcon.downButtonImage)
+        button.tintColor = .label
 
         return button
     }()
@@ -44,6 +46,7 @@ final class VoiceNoteView: UIView {
         let button: UIButton = .init()
 
         button.setButtonWithSystemImage(imageName: ButtonSystemIcon.cancelButtonImage)
+        button.tintColor = .label
 
         return button
     }()

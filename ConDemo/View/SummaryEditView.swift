@@ -18,7 +18,7 @@ final class SummaryEditView: UIView {
         let label = UILabel()
         
         label.font = .systemFont(ofSize: 26, weight: .bold)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "요약"
         
@@ -61,7 +61,7 @@ final class SummaryEditView: UIView {
         let label: UILabel = .init()
 
         label.font = UIFont(name: "Pretendard-Medium", size: 12)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "2025.04.10 오후 17:00"
 
@@ -94,7 +94,7 @@ final class SummaryEditView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .baseBackground
 
         configureUI()
         setupTextView()
@@ -195,7 +195,7 @@ extension SummaryEditView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == placeholderText {
             textView.text = ""
-            textView.textColor = .black
+            textView.textColor = .label
         }
         
         if textView.text.count >= 1 {

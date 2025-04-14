@@ -122,7 +122,7 @@ final class SummaryView: UIView {
 
 extension SummaryView {
     private func setupView() {
-        backgroundColor = .systemBackground
+        backgroundColor = .baseBackground
     }
 
     private func setupSubviews() {

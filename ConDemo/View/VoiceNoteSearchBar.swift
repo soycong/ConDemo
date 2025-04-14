@@ -21,6 +21,7 @@ final class VoiceNoteSearchBar: UISearchBar {
         // setSearchFieldBackgroundImage(UIImage(), for: .normal)
 
         searchTextField.backgroundColor = .backgroundGray
+        searchTextField.textColor = .label
         searchTextField.layer.cornerRadius = 18
         searchTextField.clipsToBounds = true
 

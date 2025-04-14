@@ -18,7 +18,7 @@ final class StruggleJournalView: UIView {
         let label = UILabel()
         
         label.font = .systemFont(ofSize: 26, weight: .bold)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "싸움로그 남기기"
         
@@ -42,13 +42,13 @@ final class StruggleJournalView: UIView {
         let textView: UITextView = .init()
 
         textView.layer.cornerRadius = 10
-        textView.backgroundColor = .white
+        textView.backgroundColor = .baseBackground
         
         textView.isScrollEnabled = true
         textView.alwaysBounceVertical = true
         textView.showsVerticalScrollIndicator = false
 
-        textView.textColor = UIColor.lightGray
+        textView.textColor = .lightGray
         textView.font = UIFont(name: "Pretendard-Medium", size: 14)
 
         return textView
@@ -58,7 +58,7 @@ final class StruggleJournalView: UIView {
         let label: UILabel = .init()
 
         label.font = UIFont(name: "Pretendard-Medium", size: 12)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "2025.04.10 오후 17:00"
 
@@ -92,7 +92,7 @@ final class StruggleJournalView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .baseBackground
 
         configureUI()
         setupTextView()
@@ -193,7 +193,7 @@ extension StruggleJournalView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == placeholderText {
             textView.text = ""
-            textView.textColor = .black
+            textView.textColor = .label
         }
         
         if textView.text.count >= 1 {
