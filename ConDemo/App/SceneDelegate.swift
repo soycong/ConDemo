@@ -30,15 +30,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let args: Array = .init(CommandLine.arguments.dropFirst())
 
             do {
-                let command = try Transcriber.parse(args)
+                let command = try StreamingTranscriber.parse(args)
                 print("시작\n")
                 try await command.transcribe(encoding: command.getMediaEncoding())
                 print("\n완료")
-            } catch let error as TranscribeError {
+            } catch let error as StreamingTranscribeError {
                 print("트랜스크립션 오류: \(error.errorDescription ?? "알 수 없는 오류")")
             } catch {
                 print("일반 오류: \(error)")
-                Transcriber.exit(withError: error)
+                StreamingTranscriber.exit(withError: error)
             }
         }
     }
@@ -48,7 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-enum TranscribeError: Error {
+enum StreamingTranscribeError: Error {
     /// No transcription stream available.
     case noTranscriptionStream
     /// The source media file couldn't be read.

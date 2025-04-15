@@ -1,5 +1,5 @@
 //
-//  Transcriber.swift
+//  StreamingTranscriber.swift
 //  ConDemo
 //
 //  Created by 이명지 on 4/14/25.
@@ -11,7 +11,7 @@ import AWSTranscribeStreaming
 import CoreFoundation
 import Foundation
 
-struct Transcriber: ParsableCommand {
+struct StreamingTranscriber: ParsableCommand {
     // MARK: - Nested Types
 
     /// input 파일 형식
