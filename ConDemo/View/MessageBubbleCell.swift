@@ -65,7 +65,7 @@ final class MessageBubbleCell: UITableViewCell {
         let button: UIButton = .init()
 
         button.setImage(UIImage(systemName: "play.circle.fill"), for: .normal)
-        button.tintColor = .white
+        button.tintColor = .systemBackground
 
         return button
     }()
@@ -74,7 +74,7 @@ final class MessageBubbleCell: UITableViewCell {
         let label: UILabel = .init()
 
         label.font = .systemFont(ofSize: 12)
-        label.textColor = .white
+        label.textColor = .systemBackground
         label.text = "0:00 / 0:00"
         label.textAlignment = .center
 
@@ -139,7 +139,7 @@ final class MessageBubbleCell: UITableViewCell {
                 make.top.bottom.equalToSuperview().inset(12)
             }
         } else {
-            messageLabel.textColor = .black
+            messageLabel.textColor = .label
             messageLabel.textAlignment = .left
 
             bubbleBackgroundView.backgroundColor = .systemGray4
