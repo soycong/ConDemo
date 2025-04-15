@@ -112,6 +112,129 @@ struct Transcriber: ParsableCommand {
         }
     }
 
+    /// 메세지 전달 메서드
+    func transcribeWithMessageStream(encoding: TranscribeStreamingClientTypes
+        .MediaEncoding) -> AsyncStream<(text: String,
+                                        speaker: String)> {
+        AsyncStream<(text: String, speaker: String)> { continuation in
+            Task {
+                let totalStartTime = CFAbsoluteTimeGetCurrent()
+
+                guard let accessKey = Bundle.main.infoDictionary?["AWS_ACCESS_KEY_ID"] as? String,
+                      let secretKey = Bundle.main
+                      .infoDictionary?["AWS_SECRET_ACCESS_KEY"] as? String else {
+                    print("Info.plist에서 AWS 인증 정보를 찾을 수 없습니다.")
+                    continuation.finish()
+                    return
+                }
+
+                // AWS 서버 지역 설정
+                do {
+                    let clientConfig = try await TranscribeStreamingClient
+                        .TranscribeStreamingClientConfiguration(region: region)
+
+                    // 환경 변수 설정
+                    setenv("AWS_ACCESS_KEY_ID", accessKey, 1)
+                    setenv("AWS_SECRET_ACCESS_KEY", secretKey, 1)
+
+                    let client: TranscribeStreamingClient = .init(config: clientConfig)
+
+                    let output = try await client
+                        .startStreamTranscription(input: StartStreamTranscriptionInput(audioStream: createAudioStream(),
+                                                                                       enablePartialResultsStabilization: true,
+                                                                                       languageCode: TranscribeStreamingClientTypes
+                                                                                           .LanguageCode(rawValue: lang),
+                                                                                       mediaEncoding: encoding,
+                                                                                       mediaSampleRateHertz: sampleRate,
+                                                                                       partialResultsStability: .high,
+                                                                                       showSpeakerLabel: true))
+
+                    guard let transcriptResultStream = output.transcriptResultStream else {
+                        print("No transcription stream returned")
+                        continuation.finish()
+                        return
+                    }
+
+                    for try await event in transcriptResultStream {
+                        switch event {
+                        case let .transcriptevent(event):
+                            for result in event.transcript?.results ?? [] {
+                                if !result.isPartial || showPartial {
+                                    if let alternatives = result.alternatives,
+                                       let firstAlternative = alternatives.first {
+                                        if let items = firstAlternative.items, !items.isEmpty {
+                                            var currentSpeaker = ""
+                                            var currentText: [String] = []
+
+                                            for item in items {
+                                                let speaker = item.speaker ?? "0"
+                                                let content = item.content ?? ""
+
+                                                if currentSpeaker.isEmpty {
+                                                    currentSpeaker = speaker
+                                                } else if speaker != currentSpeaker &&
+                                                    !currentText.isEmpty {
+                                                    var utterance = currentText
+                                                        .joined(separator: " ")
+
+                                                    // 문장 앞에 ". "가 오는 경우 삭제
+                                                    if utterance.hasPrefix(". ") {
+                                                        utterance = utterance.dropFirst(2)
+                                                            .trimmingCharacters(in: .whitespaces)
+                                                    }
+
+                                                    // "."만 있는 경우 제외하고 출력
+                                                    if utterance
+                                                        .trimmingCharacters(in: .whitespaces) !=
+                                                        "." {
+                                                        continuation.yield((text: utterance,
+                                                                            speaker: currentSpeaker))
+                                                    }
+
+                                                    currentText = []
+                                                    currentSpeaker = speaker
+                                                }
+
+                                                currentText.append(content)
+                                            }
+
+                                            if !currentText.isEmpty {
+                                                var utterance = currentText.joined(separator: " ")
+
+                                                if utterance.hasPrefix(". ") {
+                                                    utterance = utterance.dropFirst(2)
+                                                        .trimmingCharacters(in: .whitespaces)
+                                                }
+
+                                                if utterance
+                                                    .trimmingCharacters(in: .whitespaces) != "." {
+                                                    continuation.yield((text: utterance,
+                                                                        speaker: currentSpeaker))
+                                                    print("화자 \(currentSpeaker): \(utterance)")
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        default:
+                            print("Error: Unexpected message from Amazon Transcribe:")
+                        }
+                    }
+
+                    let totalEndTime = CFAbsoluteTimeGetCurrent()
+                    let executionTime = totalEndTime - totalStartTime
+
+                    print("\n**총 실행 시간: \(String(format: "%.2f", executionTime))초**")
+                    continuation.finish()
+                } catch {
+                    print("Transcription error: \(error)")
+                    continuation.finish()
+                }
+            }
+        }
+    }
+
     func transcribe(encoding: TranscribeStreamingClientTypes.MediaEncoding) async throws {
         let totalStartTime = CFAbsoluteTimeGetCurrent()
 
