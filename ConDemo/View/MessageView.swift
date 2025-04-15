@@ -132,15 +132,8 @@ final class MessageView: UIView {
         messages.append(Message(text: "이미지입니다.", isFromCurrentUser: true, timestamp: Date(),
                                 image: image))
 
-        messageBubbleTableView.reloadData()
-
-        if !messages.isEmpty {
-            let indexPath: IndexPath = .init(row: messages.count - 1, section: 0)
-            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
-
         inputTextField.text = ""
-
+        messageBubbleTableView.reloadData()
         scrollToBottom()
     }
 
@@ -149,12 +142,6 @@ final class MessageView: UIView {
                                 audioURL: url, audioData: data))
 
         messageBubbleTableView.reloadData()
-
-        if !messages.isEmpty {
-            let indexPath: IndexPath = .init(row: messages.count - 1, section: 0)
-            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
-
         scrollToBottom()
     }
 
@@ -226,7 +213,7 @@ final class MessageView: UIView {
         }
 
         let index: IndexPath = .init(row: messages.count - 1, section: 0)
-        messageBubbleTableView.scrollToRow(at: index, at: .bottom, animated: true)
+        messageBubbleTableView.scrollToRow(at: index, at: .bottom, animated: false)
     }
 
     private func setupActions() {
@@ -268,7 +255,6 @@ final class MessageView: UIView {
             self.layoutIfNeeded()
         }
 
-        // 맨 아래로 스크롤
         scrollToBottom()
     }
 
@@ -296,11 +282,6 @@ final class MessageView: UIView {
         messages.append(Message(text: text, isFromCurrentUser: true, timestamp: Date()))
 
         messageBubbleTableView.reloadData()
-
-        if !messages.isEmpty {
-            let indexPath: IndexPath = .init(row: messages.count - 1, section: 0)
-            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
 
         inputTextField.text = ""
 
