@@ -187,7 +187,6 @@ final class VoiceNoteView: UIView {
         currentMatchIndex = (currentMatchIndex - 1 + matchedWordIndexPaths.count) %
             matchedWordIndexPaths.count
         scrollToCurrentMatch()
-
         updateMatchCounter()
     }
 
@@ -200,7 +199,6 @@ final class VoiceNoteView: UIView {
         // 다음 결과로 이동 (아래로)
         currentMatchIndex = (currentMatchIndex + 1) % matchedWordIndexPaths.count
         scrollToCurrentMatch()
-
         updateMatchCounter()
     }
 
