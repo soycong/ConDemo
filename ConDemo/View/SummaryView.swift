@@ -81,16 +81,16 @@ final class SummaryView: UIView {
         label.textAlignment = .left
         return label
     }()
-    
+
     private let emotionLevelIndicator: EmotionLevelIndicatorView = {
-        let view = EmotionLevelIndicatorView()
-        
+        let view: EmotionLevelIndicatorView = .init()
+
         view.translatesAutoresizingMaskIntoConstraints = false
         view.emotionLevel = 9
-        
+
         return view
     }()
-    
+
     private lazy var buttonStackView: UIStackView = {
         let stackView: UIStackView = .init(arrangedSubviews: [factCheckButton,
                                                               logButton,
@@ -159,7 +159,7 @@ extension SummaryView {
             make.top.equalTo(summaryDateLabel.snp.bottom).offset(24)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
-        
+
         emotionLevelIndicator.snp.makeConstraints { make in
             make.top.equalTo(summaryStackView.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(13)
@@ -185,7 +185,7 @@ extension SummaryView {
             make.horizontalEdges.equalToSuperview().inset(25)
         }
     }
-    
+
     private func setupButtonTags() {
         factCheckButton.tag = 1
         logButton.tag = 2

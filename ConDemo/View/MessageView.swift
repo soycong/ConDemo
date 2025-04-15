@@ -12,7 +12,7 @@ final class MessageView: UIView {
     // MARK: - Properties
 
     var messages: [Message] = Message.dummyMessages
-    
+
     private(set) var addButton: UIButton = {
         let button: UIButton = .init()
 
@@ -148,7 +148,7 @@ final class MessageView: UIView {
     private func setUpTableView() {
         messageBubbleTableView.delegate = self
         messageBubbleTableView.dataSource = self
-        
+
         messageBubbleTableView.backgroundColor = .baseBackground
         messageBubbleTableView.showsVerticalScrollIndicator = false
         messageBubbleTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 4, right: 0)
@@ -270,7 +270,8 @@ final class MessageView: UIView {
         }
     }
 
-    @objc private func sendButtonTapped() {
+    @objc
+    private func sendButtonTapped() {
         sendMessage()
     }
 

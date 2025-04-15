@@ -107,6 +107,10 @@ final class VoiceNoteView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     // MARK: - Functions
 
     private func setupKeyboardNotifications() {
@@ -240,10 +244,6 @@ final class VoiceNoteView: UIView {
         UIView.animate(withDuration: duration) {
             self.layoutIfNeeded()
         }
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 }
 

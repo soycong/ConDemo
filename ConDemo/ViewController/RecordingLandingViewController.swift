@@ -45,8 +45,8 @@ final class RecordingLandingViewController: UIViewController {
                                                        action: #selector(communityButtonTapped),
                                                        for: .touchUpInside)
         recordingLandingView.historyButton.addTarget(self,
-                                                       action: #selector(historyButtonTapped),
-                                                       for: .touchUpInside)
+                                                     action: #selector(historyButtonTapped),
+                                                     for: .touchUpInside)
     }
 
     @objc
@@ -61,10 +61,10 @@ final class RecordingLandingViewController: UIViewController {
     private func communityButtonTapped() {
 //        navigationController?.pushViewController(TestViewController(), animated: true)
     }
-    
+
     @objc
     private func historyButtonTapped() {
-        let historyVC = HistoryViewController()
+        let historyVC: HistoryViewController = .init()
         navigationController?.pushViewController(historyVC, animated: true)
     }
 }

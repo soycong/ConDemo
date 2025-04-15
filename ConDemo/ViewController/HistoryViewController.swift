@@ -8,7 +8,6 @@
 import UIKit
 
 final class HistoryViewController: UIViewController {
-    
     // MARK: - Properties
 
     private let historyView: HistoryView = .init()
@@ -24,12 +23,14 @@ final class HistoryViewController: UIViewController {
         setupNavigationBar()
         setupAddTargets()
     }
-    
+
+    // MARK: - Functions
+
     private func setDelegates() {
         historyView.delegate = self
         calendarView.delegate = self
     }
-    
+
     private func setupView() {
         view = historyView
     }
@@ -37,11 +38,13 @@ final class HistoryViewController: UIViewController {
     private func setupNavigationBar() {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
-        
+
         // x버튼 어색해서 < 버튼으로 변경
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.backButtonImage),
-                                                           style: .plain, target: self,
-                                                           action: #selector(xmarkButtonTapped))
+        navigationItem
+            .leftBarButtonItem =
+            UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.backButtonImage),
+                            style: .plain, target: self,
+                            action: #selector(xmarkButtonTapped))
         navigationItem
             .rightBarButtonItem = UIBarButtonItem(image: .init(systemName: "person.circle"),
                                                   style: .plain, target: self,
@@ -52,9 +55,9 @@ final class HistoryViewController: UIViewController {
 extension HistoryViewController {
     private func setupAddTargets() {
         historyView.calenderButton.addTarget(self, action: #selector(calendarButtonTapped),
-                                                 for: .touchUpInside)
+                                             for: .touchUpInside)
     }
-    
+
     @objc
     private func xmarkButtonTapped() {
         navigationController?.popViewController(animated: true)
@@ -67,21 +70,21 @@ extension HistoryViewController {
 
     @objc
     private func profileButtonTapped() { }
-    
+
     private func pushToSummaryViewController() {
-        let summaryVC = SummaryViewController()
+        let summaryVC: SummaryViewController = .init()
         navigationController?.pushViewController(summaryVC, animated: true)
     }
 }
 
 extension HistoryViewController: HistoryViewDelegate {
-    func didSelectHistory(at index: Int) {
+    func didSelectHistory(at _: Int) {
         pushToSummaryViewController()
     }
 }
 
 extension HistoryViewController: CalendarViewDelegate {
-    func calendarView(_ calendarView: CalendarView, didSelectDate date: Date) {
+    func calendarView(_: CalendarView, didSelectDate _: Date) {
         pushToSummaryViewController()
     }
 }
