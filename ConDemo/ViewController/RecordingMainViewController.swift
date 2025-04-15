@@ -48,7 +48,6 @@ extension RecordingMainViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         if !viewModel.hasStartedRecordingOnce {
             viewModel.startRecording()
             viewModel.hasStartedRecordingOnce = true

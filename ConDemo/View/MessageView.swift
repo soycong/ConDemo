@@ -12,7 +12,7 @@ final class MessageView: UIView {
     // MARK: - Properties
 
     var messages: [Message] = Message.dummyMessages
-
+  
     private(set) var addButton: UIButton = {
         let button: UIButton = .init()
 
@@ -269,7 +269,7 @@ final class MessageView: UIView {
             self.layoutIfNeeded()
         }
     }
-
+  
     @objc
     private func sendButtonTapped() {
         sendMessage()
@@ -283,9 +283,7 @@ final class MessageView: UIView {
         messages.append(Message(text: text, isFromCurrentUser: true, timestamp: Date()))
 
         messageBubbleTableView.reloadData()
-
         inputTextField.text = ""
-
         scrollToBottom()
     }
 }

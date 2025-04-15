@@ -28,6 +28,7 @@ final class StruggleJournalView: UIView {
         let textView: UITextView = .init()
 
         textView.layer.cornerRadius = 10
+
         textView.backgroundColor = .baseBackground
 
         textView.isScrollEnabled = true
@@ -43,6 +44,7 @@ final class StruggleJournalView: UIView {
     private var isConfirmed = false
     private let placeholderText =
         "왜 싸웠나요? \n\n어떤 게 제일 화가 났나요? \n\n하지 말아야 했던 말은 없었나요? \n\n듣고 싶었던 말은 무엇이었나요? \n\n상대에게 미안한 것은 무엇인가요? \n\n어떤 걸 고쳐나가고 싶나요?"
+
     private var journalTextViewBottomConstraint: Constraint?
 
     private let titleLabel: UILabel = {
@@ -60,6 +62,7 @@ final class StruggleJournalView: UIView {
         let label: UILabel = .init()
 
         label.font = UIFont(name: "Pretendard-Medium", size: 12)
+
         label.textColor = .label
         label.textAlignment = .left
         label.text = "2025.04.10 오후 17:00"
@@ -94,6 +97,7 @@ final class StruggleJournalView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
         backgroundColor = .baseBackground
 
         configureUI()

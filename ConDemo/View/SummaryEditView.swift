@@ -96,6 +96,7 @@ final class SummaryEditView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
         backgroundColor = .baseBackground
 
         configureUI()
