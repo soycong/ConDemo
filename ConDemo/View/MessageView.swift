@@ -12,7 +12,7 @@ final class MessageView: UIView {
     // MARK: - Properties
 
     var messages: [Message] = Message.dummyMessages
-  
+
     private(set) var addButton: UIButton = {
         let button: UIButton = .init()
 
@@ -269,7 +269,7 @@ final class MessageView: UIView {
             self.layoutIfNeeded()
         }
     }
-  
+
     @objc
     private func sendButtonTapped() {
         sendMessage()

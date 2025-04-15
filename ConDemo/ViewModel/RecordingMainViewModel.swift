@@ -11,8 +11,6 @@ final class RecordingMainViewModel {
 
     private let audioRecorder: AudioRecorder = .init()
 
-    private let audioRecorder: AudioRecorder = .init()
-
     private var isPlaying = false
     private var isPaused = false
 }
