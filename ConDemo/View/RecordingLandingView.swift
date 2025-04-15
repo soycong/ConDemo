@@ -58,7 +58,7 @@ final class RecordingLandingView: UIView {
     // MARK: - Functions
 
     private func setupView() {
-        backgroundColor = .systemBackground
+        backgroundColor = .baseBackground
     }
 
     private func setupSubviews() {

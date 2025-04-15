@@ -12,6 +12,7 @@ final class MessageView: UIView {
     // MARK: - Properties
 
     var messages: [Message] = Message.dummyMessages
+
     private(set) var addButton: UIButton = {
         let button: UIButton = .init()
 
@@ -30,7 +31,7 @@ final class MessageView: UIView {
         let label: UILabel = .init()
 
         label.font = .systemFont(ofSize: 24, weight: .bold)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "팩트 체크하기"
 
@@ -99,7 +100,7 @@ final class MessageView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .baseBackground
         inputTextField.delegate = self
 
         setUpTableView()
@@ -131,15 +132,8 @@ final class MessageView: UIView {
         messages.append(Message(text: "이미지입니다.", isFromCurrentUser: true, timestamp: Date(),
                                 image: image))
 
-        messageBubbleTableView.reloadData()
-
-        if !messages.isEmpty {
-            let indexPath: IndexPath = .init(row: messages.count - 1, section: 0)
-            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
-
         inputTextField.text = ""
-
+        messageBubbleTableView.reloadData()
         scrollToBottom()
     }
 
@@ -148,12 +142,6 @@ final class MessageView: UIView {
                                 audioURL: url, audioData: data))
 
         messageBubbleTableView.reloadData()
-
-        if !messages.isEmpty {
-            let indexPath: IndexPath = .init(row: messages.count - 1, section: 0)
-            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
-
         scrollToBottom()
     }
 
@@ -161,6 +149,7 @@ final class MessageView: UIView {
         messageBubbleTableView.delegate = self
         messageBubbleTableView.dataSource = self
 
+        messageBubbleTableView.backgroundColor = .baseBackground
         messageBubbleTableView.showsVerticalScrollIndicator = false
         messageBubbleTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 4, right: 0)
     }
@@ -224,7 +213,7 @@ final class MessageView: UIView {
         }
 
         let index: IndexPath = .init(row: messages.count - 1, section: 0)
-        messageBubbleTableView.scrollToRow(at: index, at: .bottom, animated: true)
+        messageBubbleTableView.scrollToRow(at: index, at: .bottom, animated: false)
     }
 
     private func setupActions() {
@@ -266,7 +255,6 @@ final class MessageView: UIView {
             self.layoutIfNeeded()
         }
 
-        // 맨 아래로 스크롤
         scrollToBottom()
     }
 
@@ -282,7 +270,8 @@ final class MessageView: UIView {
         }
     }
 
-    @objc private func sendButtonTapped() {
+    @objc
+    private func sendButtonTapped() {
         sendMessage()
     }
 
@@ -294,11 +283,6 @@ final class MessageView: UIView {
         messages.append(Message(text: text, isFromCurrentUser: true, timestamp: Date()))
 
         messageBubbleTableView.reloadData()
-
-        if !messages.isEmpty {
-            let indexPath: IndexPath = .init(row: messages.count - 1, section: 0)
-            messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-        }
 
         inputTextField.text = ""
 

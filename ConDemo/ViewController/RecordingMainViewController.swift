@@ -20,7 +20,7 @@ final class RecordingMainViewController: UIViewController {
 
     private var sheetViewController: VoiceNoteViewController = .init()
     private var didPresentSheet = false
-    
+
     private let calendarView: CalendarView = .init()
 
     // MARK: - Lifecycle
@@ -343,11 +343,11 @@ extension RecordingMainViewController: UISheetPresentationControllerDelegate {
 
 extension RecordingMainViewController: CalendarViewDelegate {
     private func pushToSummaryViewController() {
-        let summaryVC = SummaryViewController()
+        let summaryVC: SummaryViewController = .init()
         navigationController?.pushViewController(summaryVC, animated: true)
     }
-    
-    func calendarView(_ calendarView: CalendarView, didSelectDate date: Date) {
+
+    func calendarView(_: CalendarView, didSelectDate _: Date) {
         pushToSummaryViewController()
     }
 }

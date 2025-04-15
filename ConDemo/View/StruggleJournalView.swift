@@ -5,25 +5,11 @@
 //  Created by seohuibaek on 4/10/25.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 final class StruggleJournalView: UIView {
-  
-    private var isConfirmed = false
-    private let placeholderText = "왜 싸웠나요? \n\n어떤 게 제일 화가 났나요? \n\n하지 말아야 했던 말은 없었나요? \n\n듣고 싶었던 말은 무엇이었나요? \n\n상대에게 미안한 것은 무엇인가요? \n\n어떤 걸 고쳐나가고 싶나요?"
-    private var journalTextViewBottomConstraint: Constraint?
-    
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        
-        label.font = .systemFont(ofSize: 26, weight: .bold)
-        label.textColor = .black
-        label.textAlignment = .left
-        label.text = "싸움로그 남기기"
-        
-        return label
-    }()
+    // MARK: - Properties
 
     private(set) var confirmButton: UIButton = {
         let button: UIButton = .init()
@@ -42,23 +28,39 @@ final class StruggleJournalView: UIView {
         let textView: UITextView = .init()
 
         textView.layer.cornerRadius = 10
-        textView.backgroundColor = .white
-        
+        textView.backgroundColor = .baseBackground
+
         textView.isScrollEnabled = true
         textView.alwaysBounceVertical = true
         textView.showsVerticalScrollIndicator = false
 
-        textView.textColor = UIColor.lightGray
+        textView.textColor = .lightGray
         textView.font = UIFont(name: "Pretendard-Medium", size: 14)
 
         return textView
+    }()
+
+    private var isConfirmed = false
+    private let placeholderText =
+        "왜 싸웠나요? \n\n어떤 게 제일 화가 났나요? \n\n하지 말아야 했던 말은 없었나요? \n\n듣고 싶었던 말은 무엇이었나요? \n\n상대에게 미안한 것은 무엇인가요? \n\n어떤 걸 고쳐나가고 싶나요?"
+    private var journalTextViewBottomConstraint: Constraint?
+
+    private let titleLabel: UILabel = {
+        let label: UILabel = .init()
+
+        label.font = .systemFont(ofSize: 26, weight: .bold)
+        label.textColor = .label
+        label.textAlignment = .left
+        label.text = "싸움로그 남기기"
+
+        return label
     }()
 
     private let dateLabel: UILabel = {
         let label: UILabel = .init()
 
         label.font = UIFont(name: "Pretendard-Medium", size: 12)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "2025.04.10 오후 17:00"
 
@@ -92,27 +94,27 @@ final class StruggleJournalView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .baseBackground
 
         configureUI()
         setupTextView()
         setupActions()
-        
-        setupKeyboard(
-            bottomConstraint: journalTextViewBottomConstraint!,
-            defaultInset: 70,
-            textViews: [journalTextView]
-        )
+
+        setupKeyboard(bottomConstraint: journalTextViewBottomConstraint!,
+                      defaultInset: 70,
+                      textViews: [journalTextView])
     }
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     deinit {
         removeKeyboard()
     }
+
+    // MARK: - Functions
 
     private func configureUI() {
         addSubview(journalStackView)
@@ -146,7 +148,8 @@ final class StruggleJournalView: UIView {
 
         journalTextView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(40)
-            self.journalTextViewBottomConstraint = make.bottom.equalToSuperview().inset(30).constraint
+            self.journalTextViewBottomConstraint = make.bottom.equalToSuperview().inset(30)
+                .constraint
             make.horizontalEdges.equalToSuperview().inset(10)
         }
     }
@@ -170,15 +173,16 @@ final class StruggleJournalView: UIView {
         if confirmButton.backgroundColor == UIColor.gray {
             return
         }
-        
+
         dismissKeyboard()
 
         journalTextView.resignFirstResponder()
         confirmButton.backgroundColor = .gray
         isConfirmed = false
     }
-    
-    @objc private func textViewTapped(_ gesture: UITapGestureRecognizer) {
+
+    @objc
+    private func textViewTapped(_ gesture: UITapGestureRecognizer) {
         if let textView = gesture.view as? UITextView {
             if textView.isFirstResponder {
                 textView.resignFirstResponder()
@@ -193,9 +197,9 @@ extension StruggleJournalView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == placeholderText {
             textView.text = ""
-            textView.textColor = .black
+            textView.textColor = .label
         }
-        
+
         if textView.text.count >= 1 {
             confirmButton.backgroundColor = .pointBlue
             isConfirmed = true

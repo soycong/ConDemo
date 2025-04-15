@@ -5,8 +5,8 @@
 //  Created by seohuibaek on 4/10/25.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 final class PollRecommendView: UIView {
     // MARK: - Properties
@@ -28,18 +28,16 @@ final class PollRecommendView: UIView {
     private var isPosted = false
     private var currentPage = 0
     private var pollTextViewBottomConstraint: Constraint?
-    
-    private var pollContents: [PollContent] = [
-        PollContent.defaultTemplate(),
-        PollContent.defaultTemplate(),
-        PollContent.defaultTemplate()
-    ]
-  
+
+    private var pollContents: [PollContent] = [PollContent.defaultTemplate(),
+                                               PollContent.defaultTemplate(),
+                                               PollContent.defaultTemplate()]
+
     private let titleLabel: UILabel = {
         let label: UILabel = .init()
 
         label.font = .systemFont(ofSize: 26, weight: .bold)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "Poll 추천"
 
@@ -50,7 +48,7 @@ final class PollRecommendView: UIView {
         let label: UILabel = .init()
 
         label.font = UIFont(name: "Pretendard-Medium", size: 12)
-        label.textColor = .black
+        label.textColor = .label
         label.textAlignment = .left
         label.text = "2025.04.10 오후 17:00"
 
@@ -58,23 +56,23 @@ final class PollRecommendView: UIView {
     }()
 
     private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
+        let scrollView: UIScrollView = .init()
 
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.delegate = self
-        
+
         return scrollView
     }()
 
     private let pageControl: UIPageControl = {
-        let pageControl = UIPageControl()
+        let pageControl: UIPageControl = .init()
 
         pageControl.numberOfPages = 3
         pageControl.currentPage = 0
-        pageControl.currentPageIndicatorTintColor = .black
+        pageControl.currentPageIndicatorTintColor = .pointBlue
         pageControl.pageIndicatorTintColor = .lightGray
-        
+
         return pageControl
     }()
 
@@ -106,17 +104,15 @@ final class PollRecommendView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
+        backgroundColor = .baseBackground
 
         configureUI()
         setupTextViews()
         setupActions()
-        
-        setupKeyboard(
-            bottomConstraint: pollTextViewBottomConstraint!,
-            defaultInset: 70,
-            textViews: textViews
-        )
+
+        setupKeyboard(bottomConstraint: pollTextViewBottomConstraint!,
+                      defaultInset: 70,
+                      textViews: textViews)
     }
 
     @available(*, unavailable)
@@ -137,9 +133,39 @@ final class PollRecommendView: UIView {
                                     height: scrollView.frame.height)
         }
     }
-    
+
     deinit {
         removeKeyboard() // 키보드 리소스 해제
+    }
+
+    // MARK: - Functions
+
+    // 현재 TextView에서 Poll 데이터 추출
+    //    private func extractPollDataFromCurrentTextView() {
+    //        let textView = textViews[currentPage]
+    //        print("현재 페이지 \(currentPage+1)의 Poll 데이터 추출")
+    //    }
+
+    /// 모든 TextView의 텍스트 내용 가져오기
+    func getAllTextContents() -> [String] {
+        textViews.map(\.text)
+    }
+
+    func getTextViewCursor(_ textView: UITextView) {
+        if let index = textViews.firstIndex(of: textView) {
+            // 현재 선택된 범위 가져오기
+            if let selectedRange = textView.selectedTextRange {
+                // 현재 선택된 위치 사용
+                let cursorPosition = selectedRange.start
+
+                // 해당 위치에 커서 설정
+                textView.selectedTextRange = textView.textRange(from: cursorPosition,
+                                                                to: cursorPosition)
+
+                // 선택한 위치가 화면에 보이도록 스크롤
+                textView.scrollRangeToVisible(textView.selectedRange)
+            }
+        }
     }
 
     // 현재 TextView에서 Poll 데이터 추출
@@ -194,24 +220,26 @@ final class PollRecommendView: UIView {
     }
 
     private func setupTextViews() {
-        for i in 0..<3 { // TextView 3개
-            let textView = UITextView()
-            
+        for i in 0 ..< 3 { // TextView 3개
+            let textView: UITextView = .init()
+
             textView.layer.cornerRadius = 10
             textView.backgroundColor = .backgroundGray
+            textView.textColor = .label
             textView.delegate = self
-            
+
             textView.isScrollEnabled = true
             textView.alwaysBounceVertical = true
             textView.showsVerticalScrollIndicator = false
-            
+
             textView.textContainerInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
             textView.textContainer.lineFragmentPadding = 0
 
             // PollContent 적용
             applyFormattedPollContent(to: textView, with: pollContents[i])
-            
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(textViewTapped(_:)))
+
+            let tapGesture: UITapGestureRecognizer = .init(target: self,
+                                                           action: #selector(textViewTapped(_:)))
 
             textView.addGestureRecognizer(tapGesture)
             textView.isUserInteractionEnabled = true
@@ -223,10 +251,10 @@ final class PollRecommendView: UIView {
 
     /// 들여쓰기 문단 적용
     private func createParagraphStyle(withIndent indent: CGFloat) -> NSParagraphStyle {
-        let paragraphStyle = NSMutableParagraphStyle()
+        let paragraphStyle: NSMutableParagraphStyle = .init()
 
         paragraphStyle.firstLineHeadIndent = indent
-        
+
         return paragraphStyle
     }
 
@@ -240,9 +268,9 @@ final class PollRecommendView: UIView {
         if confirmButton.backgroundColor == UIColor.gray {
             return
         }
-      
+
         dismissKeyboard()
-        
+
         confirmButton.backgroundColor = .gray
         isPosted = false
 
@@ -253,7 +281,7 @@ final class PollRecommendView: UIView {
     private func textViewTapped(_ gesture: UITapGestureRecognizer) {
         if let textView = gesture.view as? UITextView {
             let location = gesture.location(in: textView)
-            
+
             if !textView.isFirstResponder {
                 // 터치한 위치에서 가장 가까운 텍스트 위치 찾기
                 if let position = textView.closestPosition(to: location) {
@@ -273,33 +301,6 @@ final class PollRecommendView: UIView {
         let xOffset = scrollView.frame.width * CGFloat(page)
         scrollView.setContentOffset(CGPoint(x: xOffset, y: 0), animated: true)
         currentPage = page
-    }
-    
-    // 현재 TextView에서 Poll 데이터 추출
-    //    private func extractPollDataFromCurrentTextView() {
-    //        let textView = textViews[currentPage]
-    //        print("현재 페이지 \(currentPage+1)의 Poll 데이터 추출")
-    //    }
-    
-    // 모든 TextView의 텍스트 내용 가져오기
-    func getAllTextContents() -> [String] {
-        return textViews.map { $0.text }
-    }
-    
-    func getTextViewCursor(_ textView: UITextView) {
-        if let index = textViews.firstIndex(of: textView) {
-            // 현재 선택된 범위 가져오기
-            if let selectedRange = textView.selectedTextRange {
-                // 현재 선택된 위치 사용
-                let cursorPosition = selectedRange.start
-                
-                // 해당 위치에 커서 설정
-                textView.selectedTextRange = textView.textRange(from: cursorPosition, to: cursorPosition)
-                
-                // 선택한 위치가 화면에 보이도록 스크롤
-                textView.scrollRangeToVisible(textView.selectedRange)
-            }
-        }
     }
 }
 
@@ -340,14 +341,14 @@ extension PollRecommendView {
         // 1. 제목 스타일
         let titleAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 24,
                                                                                        weight: .bold),
-                                                              .foregroundColor: UIColor.black]
+                                                              .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: content.title + "\n\n",
                                                  attributes: titleAttributes))
 
         // 2. 본문 스타일
         let bodyAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16,
                                                                                       weight: .regular),
-                                                             .foregroundColor: UIColor.black]
+                                                             .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: content.body + "\n\n",
                                                  attributes: bodyAttributes))
 
@@ -357,7 +358,7 @@ extension PollRecommendView {
             let speakerAttributes: [NSAttributedString.Key: Any] =
                 [.font: UIFont.systemFont(ofSize: 20,
                                           weight: .bold),
-                 .foregroundColor: UIColor.black]
+                 .foregroundColor: UIColor.label]
             attributedText.append(NSAttributedString(string: speaker + "\n",
                                                      attributes: speakerAttributes))
 
@@ -366,7 +367,7 @@ extension PollRecommendView {
                 [.font: UIFont.systemFont(ofSize: 16,
                                           weight: .regular),
                  .foregroundColor: UIColor
-                     .black]
+                     .label]
             attributedText.append(NSAttributedString(string: text + "\n\n",
                                                      attributes: dialogueAttributes))
         }
@@ -375,7 +376,7 @@ extension PollRecommendView {
         let questionAttributes: [NSAttributedString.Key: Any] =
             [.font: UIFont.systemFont(ofSize: 22,
                                       weight: .bold),
-             .foregroundColor: UIColor.black]
+             .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: content.question + "\n\n",
                                                  attributes: questionAttributes))
 
@@ -383,14 +384,14 @@ extension PollRecommendView {
         let pollIntroAttributes: [NSAttributedString.Key: Any] =
             [.font: UIFont.systemFont(ofSize: 16,
                                       weight: .regular),
-             .foregroundColor: UIColor.black]
+             .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: "Poll opt.\n",
                                                  attributes: pollIntroAttributes))
 
         // 6. 선택지 스타일
         let optionAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16,
                                                                                         weight: .regular),
-                                                               .foregroundColor: UIColor.black,
+                                                               .foregroundColor: UIColor.label,
                                                                .paragraphStyle: createParagraphStyle(withIndent: 20)]
 
         // 각 선택지 추가
@@ -406,6 +407,6 @@ extension PollRecommendView {
 
         // 타이핑 속성 설정 (유저가 텍스트 입력시 사용됨)
         textView.typingAttributes = [.font: UIFont.systemFont(ofSize: 16),
-                                     .foregroundColor: UIColor.black]
+                                     .foregroundColor: UIColor.label]
     }
 }
