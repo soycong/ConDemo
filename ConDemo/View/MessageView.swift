@@ -52,7 +52,7 @@ final class MessageView: UIView {
         let button: UIButton = .init()
 
         let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
-        let image: UIImage = .init(systemName: "arrow.up.circle.fill", withConfiguration: config)
+        let image: UIImage = .init(systemName: "arrow.up.circle.fill", withConfiguration: config)!
 
         button.setImage(image, for: .normal)
         button.tintColor = .pointBlue
