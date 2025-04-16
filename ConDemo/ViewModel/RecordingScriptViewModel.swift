@@ -1,19 +1,19 @@
 //
-//  VoiceNoteViewModel.swift
+//  RecordingScriptViewModel.swift
 //  ConDemo
 //
-//  Created by seohuibaek on 4/15/25.
+//  Created by seohuibaek on 4/16/25.
 //
 
 import Foundation
 
-final class VoiceNoteViewModel {
+final class RecordingScriptViewModel {
     // MARK: - Properties
 
     var onMessagesUpdated: (([Message]) -> Void)?
     var onError: ((Error) -> Void)?
 
-    private var streamingTranscriber: StreamingTranscriber?
+    private var transcriber: Transcriber?
 
     private var messages: [Message] = [] {
         didSet {
@@ -25,7 +25,7 @@ final class VoiceNoteViewModel {
 
     func setupTranscriber() {
         do {
-            streamingTranscriber = try StreamingTranscriber.parse(["--format", "flac",
+            transcriber = try Transcriber.parse(["--format", "flac",
                                                  "--path", "testAudio.flac"])
             fetchVoiceNote()
         } catch {
@@ -35,7 +35,7 @@ final class VoiceNoteViewModel {
     }
 
     private func fetchVoiceNote() {
-        guard let streamingTranscriber else {
+        guard let transcriber else {
             return
         }
 
@@ -43,8 +43,8 @@ final class VoiceNoteViewModel {
             do {
                 var lastUpdateTime: TimeInterval = 0
 
-                for await (text, speaker) in streamingTranscriber
-                    .transcribeWithMessageStream(encoding: streamingTranscriber.getMediaEncoding()) {
+                for await (text, speaker) in transcriber
+                    .transcribeWithMessageStream(encoding: transcriber.getMediaEncoding()) {
                     let now = Date().timeIntervalSince1970
 
                     if now - lastUpdateTime >= 1.0 { // 1초마다 UI업데이트
