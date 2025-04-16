@@ -13,7 +13,7 @@ final class VoiceNoteViewModel {
     var onMessagesUpdated: (([Message]) -> Void)?
     var onError: ((Error) -> Void)?
 
-    private var transcriber: Transcriber?
+    private var streamingTranscriber: StreamingTranscriber?
 
     private var messages: [Message] = [] {
         didSet {
@@ -25,7 +25,7 @@ final class VoiceNoteViewModel {
 
     func setupTranscriber() {
         do {
-            transcriber = try Transcriber.parse(["--format", "flac",
+            streamingTranscriber = try StreamingTranscriber.parse(["--format", "flac",
                                                  "--path", "testAudio.flac"])
             fetchVoiceNote()
         } catch {
@@ -35,7 +35,7 @@ final class VoiceNoteViewModel {
     }
 
     private func fetchVoiceNote() {
-        guard let transcriber else {
+        guard let streamingTranscriber else {
             return
         }
 
@@ -43,8 +43,8 @@ final class VoiceNoteViewModel {
             do {
                 var lastUpdateTime: TimeInterval = 0
 
-                for await (text, speaker) in transcriber
-                    .transcribeWithMessageStream(encoding: transcriber.getMediaEncoding()) {
+                for await (text, speaker) in streamingTranscriber
+                    .transcribeWithMessageStream(encoding: streamingTranscriber.getMediaEncoding()) {
                     let now = Date().timeIntervalSince1970
 
                     if now - lastUpdateTime >= 1.0 { // 1초마다 UI업데이트
