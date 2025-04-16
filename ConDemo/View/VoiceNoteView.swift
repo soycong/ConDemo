@@ -11,16 +11,17 @@ import UIKit
 final class VoiceNoteView: UIView {
     // MARK: - Properties
 
-    var messages: [Message] = Message.dummyMessages
+//    var messages: [Message] = Message.dummyMessages
+    var messages: [Message] = []
     var highlightText = ""
+
+    var messageBubbleTableView: MessageBubbleTableView = .init()
 
     private var messageStackViewBottomConstraint: Constraint?
 
     // 매칭 구현
     private var matchedWordIndexPaths: [IndexPath] = []
     private var currentMatchIndex: Int = -1
-
-    private var messageBubbleTableView: MessageBubbleTableView = .init()
 
     private var voiceNoteSearchBar: VoiceNoteSearchBar = .init()
 

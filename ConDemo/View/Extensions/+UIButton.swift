@@ -36,7 +36,7 @@ extension UIButton {
 
         UIGraphicsBeginImageContextWithOptions(newSize, false, 0)
         image.draw(in: rect)
-        let newImage: UIGraphicsGetImageFromCurrentImageContext = .init()
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 
         return newImage ?? image

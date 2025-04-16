@@ -27,7 +27,7 @@ final class PollRecommendView: UIView {
     private let placeholderText = "내용을 입력해주세요."
     private var isPosted = false
     private var currentPage = 0
-  
+
     private var pollTextViewBottomConstraint: Constraint?
     private var pollContents: [PollContent] = [PollContent.defaultTemplate(),
                                                PollContent.defaultTemplate(),
@@ -67,7 +67,7 @@ final class PollRecommendView: UIView {
 
     private let pageControl: UIPageControl = {
         let pageControl: UIPageControl = .init()
-      
+
         pageControl.numberOfPages = 3
         pageControl.currentPage = 0
         pageControl.currentPageIndicatorTintColor = .pointBlue
@@ -104,7 +104,7 @@ final class PollRecommendView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-      
+
         backgroundColor = .baseBackground
 
         configureUI()
@@ -134,7 +134,7 @@ final class PollRecommendView: UIView {
                                     height: scrollView.frame.height)
         }
     }
-  
+
     deinit {
         removeKeyboard() // 키보드 리소스 해제
     }
@@ -241,7 +241,7 @@ final class PollRecommendView: UIView {
 
             let tapGesture: UITapGestureRecognizer = .init(target: self,
                                                            action: #selector(textViewTapped(_:)))
-          
+
             textView.addGestureRecognizer(tapGesture)
             textView.isUserInteractionEnabled = true
 
@@ -269,7 +269,7 @@ final class PollRecommendView: UIView {
         if confirmButton.backgroundColor == UIColor.gray {
             return
         }
-      
+
         dismissKeyboard()
 
         confirmButton.backgroundColor = .gray
@@ -343,7 +343,7 @@ extension PollRecommendView {
         let titleAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 24,
                                                                                        weight: .bold),
                                                               .foregroundColor: UIColor.label]
-      
+
         attributedText.append(NSAttributedString(string: content.title + "\n\n",
                                                  attributes: titleAttributes))
 

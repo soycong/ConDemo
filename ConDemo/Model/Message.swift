@@ -11,10 +11,10 @@ import UIKit
 struct Message {
     // MARK: - Properties
 
-    let id: String
+    let id: String?
     let text: String
     let isFromCurrentUser: Bool
-    let timestamp: Date
+    let timestamp: Date?
     let image: UIImage?
     let audioURL: URL?
     let audioData: Data?
