@@ -50,10 +50,10 @@ extension AudioRecorder {
     }
 
     /// 녹음 중지
-    func stopRecording() {
+    func stopRecording() -> URL {
         audioRecorder?.stop()
         recordedURLs.append(audioRecorder!.url)
-        print("녹음 파일 위치: \(audioRecorder!.url)")
+        return audioRecorder!.url
     }
 }
 
