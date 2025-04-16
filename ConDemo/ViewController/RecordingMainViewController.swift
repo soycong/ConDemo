@@ -268,7 +268,7 @@ extension RecordingMainViewController {
         let customAlert: CustomAlertView = .init()
         customAlert
             .show(in: recordingMainView, message: "녹음을 시작한 부분부터\n현재까지 저장합니다") { [weak self] in
-                self?.viewModel.stopRecording()
+                let resultPath = self?.viewModel.stopRecording()
                 self?.navigationController?.popViewController(animated: true)
             }
     }
@@ -284,12 +284,14 @@ extension RecordingMainViewController {
                     return
                 }
 
-                if viewModel.isRecording {
-                    viewModel.pauseRecording()
-                    stopwatch.pause()
-                    updateRecordButtonImage()
-                }
-
+//                if viewModel.isRecording {
+//                    viewModel.pauseRecording()
+//                    stopwatch.pause()
+//                    updateRecordButtonImage()
+//                }
+                
+                // TODO: - 완료 페이지로 넘어간 후, 백버튼 누르면 랜딩 페이지로 가도록 수정.
+                let resultPath = viewModel.stopRecording()
                 navigationController?.pushViewController(SummaryViewController(), animated: true)
             }
     }
