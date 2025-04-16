@@ -26,7 +26,7 @@ final class RecordingScriptView: UIView {
     var scriptTextView: UITextView = {
         let textView = UITextView()
         
-        textView.text = "어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ?"
+        textView.text = "어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ? 어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ? 어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ?"
         
         textView.layer.cornerRadius = 10
 
@@ -147,9 +147,15 @@ final class RecordingScriptView: UIView {
 
     // MARK: - Functions
     
-//    private func setupTextView() {
-//        scriptTextView.text = messages.last?.text
-//    }
+    private func updateTextView() {
+        scriptTextView.text = messages.last?.text
+    }
+    
+    private func findWord(_ searchText: String) {
+        scriptTextView.attributedText = scriptTextView.text.makeAttributedString(searchText,
+                                                                        font: scriptTextView.font,
+                                                                        backgroundColor: .gray)
+    }
 
     private func setupKeyboardNotifications() {
         NotificationCenter.default.addObserver(self,
@@ -328,6 +334,8 @@ extension RecordingScriptView {
 
         // 마지막 결과로 현재 인덱스 설정
         currentMatchIndex = matchedWordIndexPaths.isEmpty ? -1 : matchedWordIndexPaths.count - 1
+        
+        findWord(searchText)
     }
 
     /// 매칭된 결과로 스크롤
