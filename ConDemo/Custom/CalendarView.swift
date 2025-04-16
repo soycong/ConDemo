@@ -18,6 +18,7 @@ final class CalendarView: UIView {
 
     private var isAnimating: Bool = false
     private var lastTouchTime: TimeInterval = 0
+    private var markedDates: [Date] = []
 
     private var backgroundView: UIView = {
         let view: UIView = .init()
@@ -75,18 +76,19 @@ extension CalendarView {
 
         containerView.snp.makeConstraints { make in
             make.width.equalTo(300)
-            make.height.equalTo(310)
+            make.height.equalTo(330)
             make.center.equalToSuperview()
         }
 
         calendarView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(10)
+            make.edges.equalToSuperview()/*.inset(10)*/
         }
     }
 
     private func setupActions() {
         let dateSelection: UICalendarSelectionSingleDate = .init(delegate: self)
         calendarView.selectionBehavior = dateSelection
+        calendarView.delegate = self
     }
 }
 
@@ -105,6 +107,11 @@ extension CalendarView {
             self.containerView.transform = .identity
             self.containerView.alpha = 1
         }
+    }
+    
+    func markDates(_ dates: [Date]) {
+        markedDates = dates
+        calendarView.reloadDecorations(forDateComponents: dates.map { Calendar.current.dateComponents([.year, .month, .day], from: $0) }, animated: true)
     }
 }
 
@@ -168,10 +175,34 @@ extension CalendarView: UICalendarSelectionSingleDateDelegate {
         }
     }
 
-    func calendarView(_: UICalendarView, decorationFor _: DateComponents) -> UICalendarView
+    func calendarView(_: UICalendarView, decorationFor dateComponents: DateComponents) -> UICalendarView
         .Decoration? {
-        // 특정 날짜에 장식 추가 (예: 이벤트가 있는 날에 점 표시)
-        // 현재 예제에서는 사용하지 않음
-        nil
-    }
+            // dateComponents에서 날짜 생성
+            guard let date = Calendar.current.date(from: dateComponents) else {
+                return nil
+            }
+                        
+            // 같은 날짜인지 확인하는 함수 (시간 무시하고 년/월/일만 비교)
+            func isSameDay(_ date1: Date, _ date2: Date) -> Bool {
+                let calendar = Calendar.current
+                return calendar.isDate(date1, equalTo: date2, toGranularity: .day)
+            }
+            
+            let view = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 8))
+            view.backgroundColor = .systemBlue
+            view.layer.cornerRadius = 4
+            
+            // markedDates 배열에 현재 날짜가 포함되어 있는지 확인
+            if markedDates.contains(where: { isSameDay($0, date) }) {
+//                return .customView {
+//                    let view = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 8))
+//                    view.backgroundColor = .pointBlue
+//                    view.layer.cornerRadius = 4
+//                    return view
+//                }
+                    return .default(color: .pointBlue)
+            }
+            
+            return nil
+        }
 }
