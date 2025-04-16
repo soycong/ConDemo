@@ -18,7 +18,7 @@ final class RecordingMainViewController: UIViewController {
     private var originalBrightness: CGFloat = 0
     private var brightnessTimer: Timer?
 
-    private var sheetViewController: VoiceNoteViewController = .init()
+    private var sheetViewController: RecordingScriptViewController = .init()
     private var didPresentSheet = false
 
     private let calendarView: CalendarView = .init()
