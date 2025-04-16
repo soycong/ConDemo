@@ -224,6 +224,14 @@ extension RecordingMainViewController {
     @objc
     private func calendarButtonTapped() {
         resetBrightnessTimer()
+        
+        let datesToMark = [
+            Date(), // 오늘
+            Calendar.current.date(byAdding: .day, value: 1, to: Date())!, // 내일
+            Calendar.current.date(byAdding: .day, value: 3, to: Date())!  // 5일 후
+        ]
+        
+        calendarView.markDates(datesToMark)
         calendarView.show(in: recordingMainView)
     }
 
