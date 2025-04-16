@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0F1F8F822DACA066009730B2 /* AWSTranscribeStreaming in Frameworks */ = {isa = PBXBuildFile; productRef = 0F1F8F812DACA066009730B2 /* AWSTranscribeStreaming */; };
 		0F1F90142DACAA4D009730B2 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 0F1F90132DACAA4D009730B2 /* ArgumentParser */; };
+		0F43132B2DADFA0800BD796F /* AWSTranscribe in Frameworks */ = {isa = PBXBuildFile; productRef = 0F43132A2DADFA0800BD796F /* AWSTranscribe */; };
+		0F4313BF2DAE06AF00BD796F /* AWSS3 in Frameworks */ = {isa = PBXBuildFile; productRef = 0F4313BE2DAE06AF00BD796F /* AWSS3 */; };
 		B3A44E0D2DA4CA2200C4872D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0C2DA4CA2200C4872D /* Alamofire */; };
 		B3A44E102DA4CA2F00C4872D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0F2DA4CA2F00C4872D /* SnapKit */; };
 /* End PBXBuildFile section */
@@ -43,8 +45,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F4313BF2DAE06AF00BD796F /* AWSS3 in Frameworks */,
 				B3A44E0D2DA4CA2200C4872D /* Alamofire in Frameworks */,
 				0F1F8F822DACA066009730B2 /* AWSTranscribeStreaming in Frameworks */,
+				0F43132B2DADFA0800BD796F /* AWSTranscribe in Frameworks */,
 				0F1F90142DACAA4D009730B2 /* ArgumentParser in Frameworks */,
 				B3A44E102DA4CA2F00C4872D /* SnapKit in Frameworks */,
 			);
@@ -94,6 +98,8 @@
 				B3A44E0F2DA4CA2F00C4872D /* SnapKit */,
 				0F1F8F812DACA066009730B2 /* AWSTranscribeStreaming */,
 				0F1F90132DACAA4D009730B2 /* ArgumentParser */,
+				0F43132A2DADFA0800BD796F /* AWSTranscribe */,
+				0F4313BE2DAE06AF00BD796F /* AWSS3 */,
 			);
 			productName = ConDemo;
 			productReference = B3A44DEE2DA4C37500C4872D /* ConDemo.app */;
@@ -441,6 +447,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0F1F90122DACAA4D009730B2 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
 			productName = ArgumentParser;
+		};
+		0F43132A2DADFA0800BD796F /* AWSTranscribe */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0F1F8F802DACA066009730B2 /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
+			productName = AWSTranscribe;
+		};
+		0F4313BE2DAE06AF00BD796F /* AWSS3 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0F1F8F802DACA066009730B2 /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
+			productName = AWSS3;
 		};
 		B3A44E0C2DA4CA2200C4872D /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -2,10 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>SecretKey</key>
-	<string>$(SecretKey)</string>
-	<key>AccessKey</key>
-	<string>$(AccessKey)</string>
+	<key>S3BucketName</key>
+	<string>$(S3BucketName)</string>
+	<key>AWS_SECRET_ACCESS_KEY</key>
+	<string>$(AWS_SECRET_ACCESS_KEY)</string>
+	<key>AWS_ACCESS_KEY_ID</key>
+	<string>$(AWS_ACCESS_KEY_ID)</string>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
 	<key>UIFileSharingEnabled</key>
