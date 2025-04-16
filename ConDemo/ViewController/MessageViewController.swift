@@ -176,7 +176,6 @@ final class MessageViewController: UIViewController {
     @objc
     private func addButtonTapped() {
         showAddOptions()
-        print("추가버튼눌림")
     }
 
     private func showAddOptions() {

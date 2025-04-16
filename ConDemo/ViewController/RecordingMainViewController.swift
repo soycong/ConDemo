@@ -18,7 +18,10 @@ final class RecordingMainViewController: UIViewController {
     private var originalBrightness: CGFloat = 0
     private var brightnessTimer: Timer?
 
+    private var sheetViewController: VoiceNoteViewController = .init()
     private var didPresentSheet = false
+
+    private let calendarView: CalendarView = .init()
 
     // MARK: - Lifecycle
 
@@ -45,9 +48,12 @@ extension RecordingMainViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.startRecording()
-        setupCurrentTime()
-        setupStopwatch()
+        if !viewModel.hasStartedRecordingOnce {
+            viewModel.startRecording()
+            viewModel.hasStartedRecordingOnce = true
+            setupStopwatch()
+            setupCurrentTime()
+        }
 
         if viewModel.isRecording {
             setupBrightnessTimer()
@@ -56,7 +62,7 @@ extension RecordingMainViewController {
         }
 
         if !didPresentSheet {
-            presentAsBottomSheet(VoiceNoteViewController())
+            presentAsBottomSheet(sheetViewController)
             didPresentSheet = true
         }
     }
@@ -71,6 +77,8 @@ extension RecordingMainViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         resetBrightnessTimer()
+
+        sheetViewController.dismiss(animated: true)
         didPresentSheet = false
     }
 
@@ -150,6 +158,7 @@ extension RecordingMainViewController {
 
     private func setupDelegates() {
         stopwatch.delegate = self
+        calendarView.delegate = self
     }
 }
 
@@ -215,8 +224,6 @@ extension RecordingMainViewController {
     @objc
     private func calendarButtonTapped() {
         resetBrightnessTimer()
-
-        let calendarView: CalendarView = .init()
         calendarView.show(in: recordingMainView)
     }
 
@@ -265,8 +272,17 @@ extension RecordingMainViewController {
         let customAlert: CustomAlertView = .init()
         customAlert
             .show(in: recordingMainView, message: "녹음을 종료합니다") { [weak self] in
-                self?.viewModel.stopRecording()
-                self?.navigationController?.popViewController(animated: true)
+                guard let self else {
+                    return
+                }
+
+                if viewModel.isRecording {
+                    viewModel.pauseRecording()
+                    stopwatch.pause()
+                    updateRecordButtonImage()
+                }
+
+                navigationController?.pushViewController(SummaryViewController(), animated: true)
             }
     }
 }
@@ -321,5 +337,16 @@ extension RecordingMainViewController: UISheetPresentationControllerDelegate {
 
             resetBrightnessTimer()
         }
+    }
+}
+
+extension RecordingMainViewController: CalendarViewDelegate {
+    private func pushToSummaryViewController() {
+        let summaryVC: SummaryViewController = .init()
+        navigationController?.pushViewController(summaryVC, animated: true)
+    }
+
+    func calendarView(_: CalendarView, didSelectDate _: Date) {
+        pushToSummaryViewController()
     }
 }

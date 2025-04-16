@@ -20,7 +20,7 @@ final class CustomAlertView: UIView {
 
     private var alertView: UIView = {
         let view: UIView = .init()
-        view.backgroundColor = .white
+        view.backgroundColor = .baseBackground
         view.layer.cornerRadius = 14
         view.layer.borderWidth = 1
         view.layer.borderColor = UIColor.black.cgColor
@@ -116,7 +116,7 @@ extension CustomAlertView {
 
         let attributes: [NSAttributedString.Key: Any] = [.font: UIFont(name: "Pretendard-SemiBold",
                                                                        size: 18),
-                                                         .foregroundColor: UIColor.black,
+                                                         .foregroundColor: UIColor.label,
                                                          .paragraphStyle: paragraphStyle]
 
         let attributedString: NSAttributedString = .init(string: message, attributes: attributes)

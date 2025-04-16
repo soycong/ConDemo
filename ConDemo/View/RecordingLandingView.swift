@@ -21,7 +21,6 @@ final class RecordingLandingView: UIView {
         imageView.image = .landingAD
         imageView.contentMode = .scaleAspectFit
         imageView.backgroundColor = .beigeGray
-        imageView.tintColor = .label
         imageView.layer.cornerRadius = 14
         return imageView
     }()
@@ -59,7 +58,7 @@ final class RecordingLandingView: UIView {
     // MARK: - Functions
 
     private func setupView() {
-        backgroundColor = .systemBackground
+        backgroundColor = .baseBackground
     }
 
     private func setupSubviews() {

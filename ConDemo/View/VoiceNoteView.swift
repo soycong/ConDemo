@@ -28,6 +28,7 @@ final class VoiceNoteView: UIView {
         let button: UIButton = .init()
 
         button.setButtonWithSystemImage(imageName: ButtonSystemIcon.upButtonImage)
+        button.tintColor = .label
 
         return button
     }()
@@ -36,6 +37,7 @@ final class VoiceNoteView: UIView {
         let button: UIButton = .init()
 
         button.setButtonWithSystemImage(imageName: ButtonSystemIcon.downButtonImage)
+        button.tintColor = .label
 
         return button
     }()
@@ -44,6 +46,7 @@ final class VoiceNoteView: UIView {
         let button: UIButton = .init()
 
         button.setButtonWithSystemImage(imageName: ButtonSystemIcon.cancelButtonImage)
+        button.tintColor = .label
 
         return button
     }()
@@ -188,7 +191,6 @@ final class VoiceNoteView: UIView {
         currentMatchIndex = (currentMatchIndex - 1 + matchedWordIndexPaths.count) %
             matchedWordIndexPaths.count
         scrollToCurrentMatch()
-
         updateMatchCounter()
     }
 
@@ -201,7 +203,6 @@ final class VoiceNoteView: UIView {
         // 다음 결과로 이동 (아래로)
         currentMatchIndex = (currentMatchIndex + 1) % matchedWordIndexPaths.count
         scrollToCurrentMatch()
-
         updateMatchCounter()
     }
 
@@ -243,11 +244,6 @@ final class VoiceNoteView: UIView {
         UIView.animate(withDuration: duration) {
             self.layoutIfNeeded()
         }
-    }
-
-    @objc
-    private func dismissKeyboard() {
-        endEditing(true)
     }
 }
 

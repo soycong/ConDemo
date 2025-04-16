@@ -7,8 +7,14 @@
 
 import UIKit
 
+protocol CalendarViewDelegate: AnyObject {
+    func calendarView(_ calendarView: CalendarView, didSelectDate date: Date)
+}
+
 final class CalendarView: UIView {
     // MARK: - Properties
+
+    weak var delegate: CalendarViewDelegate?
 
     private var isAnimating: Bool = false
     private var lastTouchTime: TimeInterval = 0
@@ -46,6 +52,7 @@ final class CalendarView: UIView {
 
         setupSubviews()
         setupConstratins()
+        setupActions()
     }
 
     @available(*, unavailable)
@@ -75,6 +82,11 @@ extension CalendarView {
         calendarView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(10)
         }
+    }
+
+    private func setupActions() {
+        let dateSelection: UICalendarSelectionSingleDate = .init(delegate: self)
+        calendarView.selectionBehavior = dateSelection
     }
 }
 
@@ -141,5 +153,25 @@ extension CalendarView {
             // 터치 이벤트를 처리했으므로 true 반환
             return true
         }
+    }
+}
+
+extension CalendarView: UICalendarViewDelegate { }
+
+extension CalendarView: UICalendarSelectionSingleDateDelegate {
+    func dateSelection(_: UICalendarSelectionSingleDate,
+                       didSelectDate dateComponents: DateComponents?) {
+        if let date = dateComponents, let selectedDate = Calendar.current.date(from: date) {
+            delegate?.calendarView(self, didSelectDate: selectedDate)
+
+            dismiss()
+        }
+    }
+
+    func calendarView(_: UICalendarView, decorationFor _: DateComponents) -> UICalendarView
+        .Decoration? {
+        // 특정 날짜에 장식 추가 (예: 이벤트가 있는 날에 점 표시)
+        // 현재 예제에서는 사용하지 않음
+        nil
     }
 }
