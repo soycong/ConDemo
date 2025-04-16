@@ -25,7 +25,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
 
-        /// AWS 테스트용 코드(추후 삭제)
+        // AWS 테스트용 코드(추후 삭제)
         Task {
             let args: Array = .init(CommandLine.arguments.dropFirst())
 
@@ -65,7 +65,6 @@ enum StreamingTranscribeError: Error {
         }
     }
 }
-
 
 enum TranscribeError: Error {
     case noTranscriptionResponse

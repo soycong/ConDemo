@@ -8,6 +8,7 @@
 import Foundation
 
 // MARK: - 데이터 모델 정의
+
 struct TranscriptionResult: Codable {
     let jobName: String
     let accountId: String
@@ -16,16 +17,21 @@ struct TranscriptionResult: Codable {
 }
 
 struct Results: Codable {
+    // MARK: - Nested Types
+
+    enum CodingKeys: String, CodingKey {
+        case transcripts
+        case items
+        case audioSegments = "audio_segments"
+        case speakerLabels = "speaker_labels"
+    }
+
+    // MARK: - Properties
+
     let transcripts: [Transcript]
     let items: [Item]
     let audioSegments: [AudioSegment]?
     let speakerLabels: SpeakerLabels?
-    
-    enum CodingKeys: String, CodingKey {
-        case transcripts, items
-        case audioSegments = "audio_segments"
-        case speakerLabels = "speaker_labels"
-    }
 }
 
 struct Transcript: Codable {
@@ -33,19 +39,25 @@ struct Transcript: Codable {
 }
 
 struct Item: Codable {
+    // MARK: - Nested Types
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case type
+        case alternatives
+        case startTime = "start_time"
+        case endTime = "end_time"
+        case speakerLabel = "speaker_label"
+    }
+
+    // MARK: - Properties
+
     let id: Int
     let type: String
     let alternatives: [Alternative]
     let startTime: String?
     let endTime: String?
     let speakerLabel: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case id, type, alternatives
-        case startTime = "start_time"
-        case endTime = "end_time"
-        case speakerLabel = "speaker_label"
-    }
 }
 
 struct Alternative: Codable {
@@ -54,57 +66,75 @@ struct Alternative: Codable {
 }
 
 struct AudioSegment: Codable {
+    // MARK: - Nested Types
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case transcript
+        case items
+        case startTime = "start_time"
+        case endTime = "end_time"
+        case speakerLabel = "speaker_label"
+    }
+
+    // MARK: - Properties
+
     let id: Int
     let transcript: String
     let startTime: String
     let endTime: String
     let speakerLabel: String?
     let items: [Int]
-    
-    enum CodingKeys: String, CodingKey {
-        case id, transcript, items
-        case startTime = "start_time"
-        case endTime = "end_time"
-        case speakerLabel = "speaker_label"
-    }
 }
 
 struct SpeakerLabels: Codable {
-    let segments: [Segment]
-    let channelLabel: String
-    let speakers: Int
-    
+    // MARK: - Nested Types
+
     enum CodingKeys: String, CodingKey {
         case segments
         case channelLabel = "channel_label"
         case speakers
     }
+
+    // MARK: - Properties
+
+    let segments: [Segment]
+    let channelLabel: String
+    let speakers: Int
 }
 
 struct Segment: Codable {
-    let startTime: String
-    let endTime: String
-    let speakerLabel: String
-    let items: [SegmentItem]
-    
+    // MARK: - Nested Types
+
     enum CodingKeys: String, CodingKey {
         case startTime = "start_time"
         case endTime = "end_time"
         case speakerLabel = "speaker_label"
         case items
     }
+
+    // MARK: - Properties
+
+    let startTime: String
+    let endTime: String
+    let speakerLabel: String
+    let items: [SegmentItem]
 }
 
 struct SegmentItem: Codable {
-    let speakerLabel: String
-    let startTime: String
-    let endTime: String
-    
+    // MARK: - Nested Types
+
     enum CodingKeys: String, CodingKey {
         case speakerLabel = "speaker_label"
         case startTime = "start_time"
         case endTime = "end_time"
     }
+
+    // MARK: - Properties
+
+    let speakerLabel: String
+    let startTime: String
+    let endTime: String
 }
 
 extension TranscriptionResult {
@@ -114,12 +144,14 @@ extension TranscriptionResult {
             transcript.components(separatedBy: ". ").forEach { print($0) }
         }
     }
-    
+
     func printSpeakersTranscript() {
-        guard let speakerLabels = results.speakerLabels else { return }
-        
+        guard let speakerLabels = results.speakerLabels else {
+            return
+        }
+
         print("\n[화자별 스크립트]")
-        speakerLabels.segments.forEach { segment in
+        for segment in speakerLabels.segments {
             let transcript = segment.items.map { item -> String in
                 if let matchingItem = results.items.first(where: {
                     $0.startTime == item.startTime && $0.endTime == item.endTime
@@ -128,7 +160,7 @@ extension TranscriptionResult {
                 }
                 return ""
             }.joined(separator: " ")
-            
+
             print("화자 \(segment.speakerLabel.dropFirst(4))")
             print("- \(transcript)\n")
         }
