@@ -18,6 +18,7 @@ final class MessageView: UIView {
 
         button.setTitle("Add", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
         button.backgroundColor = .pointBlue
         button.layer.cornerRadius = 4
 
