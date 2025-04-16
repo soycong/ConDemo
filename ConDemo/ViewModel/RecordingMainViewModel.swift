@@ -5,6 +5,8 @@
 //  Created by 이명지 on 4/10/25.
 //
 
+import Foundation
+
 final class RecordingMainViewModel {
     private(set) var isRecording = false
 
@@ -33,10 +35,10 @@ extension RecordingMainViewModel {
         print("녹음 재시작")
     }
 
-    func stopRecording() {
-        audioRecorder.stopRecording()
+    func stopRecording() -> URL {
         isRecording = false
         print("녹음 종료")
+        return audioRecorder.stopRecording()
     }
 
     func recordToggle() {

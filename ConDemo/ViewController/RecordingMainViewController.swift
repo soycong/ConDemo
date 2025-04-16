@@ -207,7 +207,7 @@ extension RecordingMainViewController {
         let customAlert: CustomAlertView = .init()
         customAlert
             .show(in: recordingMainView, message: "녹음을 중단하시겠습니까?") { [weak self] in
-                self?.viewModel.stopRecording()
+                let resultPath = self?.viewModel.stopRecording()
                 self?.navigationController?.popViewController(animated: true)
             }
     }
