@@ -47,7 +47,7 @@ final class VoiceNoteViewModel {
                     .transcribeWithMessageStream(encoding: transcriber.getMediaEncoding()) {
                     let now = Date().timeIntervalSince1970
 
-                    if now - lastUpdateTime >= 3.0 { // 3초마다 UI업데이트
+                    if now - lastUpdateTime >= 1.0 { // 1초마다 UI업데이트
                         await MainActor.run {
                             print("실시간 대화 시작")
                             let isCurrentUser = speaker == "0"
