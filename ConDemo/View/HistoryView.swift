@@ -21,7 +21,7 @@ final class HistoryView: UIView {
     private(set) var calenderButton: UIButton = {
         let button: UIButton = .init()
 
-        let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .bold)
+        let config = UIImage.SymbolConfiguration(pointSize: 24, weight: .light)
         let image: UIImage = .init(systemName: "calendar", withConfiguration: config)!
 
         button.setImage(image, for: .normal)
