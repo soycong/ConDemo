@@ -12,9 +12,8 @@ final class HistoryViewController: UIViewController {
     // MARK: - Properties
 
     private let historyView: HistoryView = .init()
-    private let calendarView: CalendarView = .init()
-    
     private(set) var viewModel = HistoryViewModel()
+    private let calendarView: CalendarView = .init()
 
     // MARK: - Lifecycle
 
@@ -98,6 +97,12 @@ extension HistoryViewController {
 
     @objc
     private func calendarButtonTapped() {
+        // CoreData에서 분석 데이터가 있는 날짜 가져오기
+        /// 나중에 calendarViewModel만들기
+        let analysisAvailableDates = viewModel.fetchAnalysisAvailableDates()
+        
+        // 가져온 날짜들만 달력에 마킹
+        calendarView.markDates(analysisAvailableDates)
         calendarView.show(in: historyView)
     }
 
@@ -133,29 +138,29 @@ extension HistoryViewController: HistoryViewDelegate {
     }
 }
 
-extension HistoryViewController: CalendarViewDelegate {
-    func calendarView(_: CalendarView, didSelectDate date: Date) {
-        // 선택된 날짜로 Analysis 필터링
-        viewModel.fetchAnalyses(for: date)
-        updateView()
-        
-        // 필터링된 결과가 있으면 첫 번째 항목으로 이동
-        if viewModel.hasAnalyses(),
-           let analysis = viewModel.getAnalysis(at: 0),
-           let title = analysis.title {
-            pushToSummaryViewController(with: title)
-        } else {
-            // 필터링된 결과가 없으면 사용자에게 알림
-            let alert = UIAlertController(
-                title: "알림",
-                message: "선택한 날짜에 대화 기록이 없습니다.",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true)
-        }
-    }
-}
+//extension HistoryViewController: CalendarViewDelegate {
+//    func calendarView(_: CalendarView, didSelectDate date: Date) {
+//        // 선택된 날짜로 Analysis 필터링
+//        viewModel.fetchAnalyses(for: date)
+//        updateView()
+//        
+//        // 필터링된 결과가 있으면 첫 번째 항목으로 이동
+//        if viewModel.hasAnalyses(),
+//           let analysis = viewModel.getAnalysis(at: 0),
+//           let title = analysis.title {
+//            pushToSummaryViewController(with: title)
+//        } else {
+//            // 필터링된 결과가 없으면 사용자에게 알림
+//            let alert = UIAlertController(
+//                title: "알림",
+//                message: "선택한 날짜에 대화 기록이 없습니다.",
+//                preferredStyle: .alert
+//            )
+//            alert.addAction(UIAlertAction(title: "확인", style: .default))
+//            present(alert, animated: true)
+//        }
+//    }
+//}
 
 // 테스트 코드
 extension HistoryViewController {
@@ -270,6 +275,25 @@ extension HistoryViewController {
             print("----------------------------------")
         } catch {
             print("데이터 조회 실패: \(error)")
+        }
+    }
+}
+
+extension HistoryViewController: CalendarViewDelegate {
+    func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
+        if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
+            // 해당 날짜의 summary로 이동
+            let summaryVC = SummaryViewController(analysisTitle: title)
+            navigationController?.pushViewController(summaryVC, animated: true)
+        } else {
+            // 분석 데이터가 없을 경우 알림
+            let alert = UIAlertController(
+                title: "알림",
+                message: "선택한 날짜에 분석 데이터가 없습니다.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true)
         }
     }
 }
