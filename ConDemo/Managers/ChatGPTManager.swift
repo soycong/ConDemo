@@ -88,6 +88,7 @@ final class ChatGPTManager {
                 .responseDecodable(of: ChatGPTResponse.self) { response in
                     switch response.result {
                     case .success(let gptResponse):
+                        print(gptResponse)
                         continuation.resume(returning: gptResponse)
                     case .failure(let error):
                         continuation.resume(throwing: error)

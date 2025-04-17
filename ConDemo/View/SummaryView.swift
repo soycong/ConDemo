@@ -140,7 +140,7 @@ extension SummaryView {
 
         emotionLevelIndicator.snp.makeConstraints { make in
             make.top.equalTo(summaryLabel.snp.bottom).offset(20)
-            make.horizontalEdges.equalToSuperview().inset(13)
+            make.horizontalEdges.equalToSuperview().inset(25)
             // make.height.equalTo(60)
         }
 

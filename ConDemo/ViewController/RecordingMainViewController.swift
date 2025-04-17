@@ -281,85 +281,107 @@ extension RecordingMainViewController {
     private func completeButtonTapped() {
         resetBrightnessTimer()
 
-        // 비동기 작업을 Task로 래핑
-        Task {
-            do {
-                let customAlert: CustomAlertView = .init()
+        let customAlert: CustomAlertView = .init()
+        
+        // 알림창 표시 (메인 스레드)
+        customAlert.show(in: recordingMainView, message: "녹음을 종료합니다") { [weak self] in
+            guard let self else { return }
 
-                // 알림창 표시
-                await MainActor.run {
-                    customAlert.show(in: recordingMainView, message: "녹음을 종료합니다") { [weak self] in
-                        guard let self else {
-                            return
-                        }
+            // 녹음 중지 로직
+            if self.viewModel.isRecording {
+                self.viewModel.pauseRecording()
+                self.stopwatch.pause()
+                self.updateRecordButtonImage()
+            }
 
-                        // 녹음 중지 로직
-                        if viewModel.isRecording {
-                            viewModel.pauseRecording()
-                            stopwatch.pause()
-                            updateRecordButtonImage()
-                        }
+            // 녹음 파일 저장 및 경로 얻기
+            let resultPath = self.viewModel.stopRecording()
+            
+            // ⭐️ UI 작업은 메인 스레드에서 진행 - 로딩 인디케이터 표시
+            let loadingIndicator = LoadingIndicatorView(
+                title: "분석 중",
+                message: "대화 내용을 분석하고 있습니다...",
+                showProgressBar: true
+            )
+            
+            // UIWindow의 키 윈도우에 추가하여 확실히 최상위에 표시
+            if let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+                DispatchQueue.main.async {
+                    loadingIndicator.show(in: keyWindow)
+                }
+            } else {
+                // 폴백: 현재 뷰에 추가
+                DispatchQueue.main.async {
+                    loadingIndicator.show(in: self.view)
+                }
+            }
+            
+            // 비동기로 트랜스크립션/챗지피티 분석 시작
+            Task {
+                do {
+                    // 1. 트랜스크립션 요청 (상태 업데이트)
+                    await MainActor.run {
+                        loadingIndicator.updateMessage("음성을 텍스트로 변환 중...")
+                        loadingIndicator.updateProgress(0.3)
+                    }
+                    
+                    let messagesData = try await TranscribeManager.shared
+                        .transcribeAudioFile(at: resultPath)
 
-                        // 녹음 파일 저장 및 경로 얻기
-                        let resultPath = viewModel.stopRecording()
+                    // 2. chatGPT 분석 요청 (상태 업데이트)
+                    await MainActor.run {
+                        loadingIndicator.updateMessage("대화 내용을 분석 중...")
+                        loadingIndicator.updateProgress(0.6)
+                    }
+                    
+                    let analysisData = try await ChatGPTManager.shared
+                        .analyzeTranscript(messages: messagesData)
+                    
+                    print()
+                    print(analysisData)
+                    print()
+                    
+                    // 3. CoreData에 분석 결과 저장 (상태 업데이트)
+                    await MainActor.run {
+                        loadingIndicator.updateMessage("분석 결과를 저장 중...")
+                        loadingIndicator.updateProgress(0.9)
+                    }
+                    
+                    let analysisTitle = CoreDataManager.shared.saveAnalysis(data: analysisData)
+                    
+                    // 4. 처리 완료 후 UI 업데이트
+                    await MainActor.run {
+                        loadingIndicator.updateProgress(1.0)
                         
-                        // 로딩 인디케이터 표시
-                        let loadingAlert = UIAlertController(title: "분석 중",
-                                                           message: "대화 내용을 분석하고 있습니다...",
-                                                           preferredStyle: .alert)
-                        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
-                        loadingIndicator.hidesWhenStopped = true
-                        loadingIndicator.style = .medium
-                        loadingIndicator.startAnimating()
-                        loadingAlert.view.addSubview(loadingIndicator)
-                        self.present(loadingAlert, animated: true)
+                        // 로딩 인디케이터 닫기
+                        loadingIndicator.dismiss {
+                            // 분석 완료 후 SummaryViewController로 이동
+                            let summaryVC = SummaryViewController(analysisTitle: analysisTitle)
+                            self.navigationController?.pushViewController(summaryVC, animated: true)
+                        }
+                    }
+                    
+                } catch {
+                    // 에러 처리
+                    await MainActor.run {
+                        // 로딩 인디케이터 닫기
+                        loadingIndicator.dismiss {
+                            print("음성 분석 실패: \(error)")
 
-                        // 비동기로 트랜스크립션/챗지피티 분석 시작
-                        Task {
-                            do {
-                                // 1. 트랜스크립션 요청
-                                let messagesData = try await TranscribeManager.shared
-                                    .transcribeAudioFile(at: resultPath)
-
-                                // 2. chatGPT 분석 요청
-                                let analysisData = try await ChatGPTManager.shared
-                                    .analyzeTranscript(messages: messagesData)
-                                
-                                // 3. CoreData에 분석 결과 저장
-                                let analysisTitle = CoreDataManager.shared.saveAnalysis(data: analysisData)
-                                
-                                // 4. 처리 완료 후 메인 스레드에서 UI 업데이트
-                                await MainActor.run {
-                                    // 로딩 알림 닫기
-                                    loadingAlert.dismiss(animated: true) {
-                                        // 분석 완료 후 SummaryViewController로 이동
-                                        let summaryVC = SummaryViewController(analysisTitle: analysisTitle)
-                                        self.navigationController?.pushViewController(summaryVC, animated: true)
-                                    }
-                                }
-                                
-                            } catch {
-                                // 에러 처리
-                                await MainActor.run {
-                                    // 로딩 알림 닫기
-                                    loadingAlert.dismiss(animated: true) {
-                                        print("음성 분석 실패: \(error)")
-
-                                        // 에러 메시지 표시
-                                        let errorAlert: UIAlertController = .init(title: "음성 분석 실패",
-                                                                                  message: "음성 분석 중 오류가 발생했습니다: \(error.localizedDescription)",
-                                                                                  preferredStyle: .alert)
-                                        errorAlert.addAction(UIAlertAction(title: "확인",
-                                                                           style: .default))
-                                        self.present(errorAlert, animated: true)
-                                    }
-                                }
-                            }
+                            // 에러 메시지 표시
+                            let errorAlert: UIAlertController = .init(
+                                title: "음성 분석 실패",
+                                message: "음성 분석 중 오류가 발생했습니다: \(error.localizedDescription)",
+                                preferredStyle: .alert
+                            )
+                            errorAlert.addAction(UIAlertAction(
+                                title: "확인",
+                                style: .default
+                            ))
+                            self.present(errorAlert, animated: true)
                         }
                     }
                 }
-            } catch {
-                print("Failed to show alert: \(error)")
             }
         }
     }
