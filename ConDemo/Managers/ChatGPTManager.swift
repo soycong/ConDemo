@@ -24,6 +24,44 @@ final class ChatGPTManager {
     private init() { }
 
     // MARK: - Functions
+    
+    // 단순 채팅 기능 - 사용자 메시지에 대한 응답 얻기
+    func getResponse(to userMessage: String, completion: @escaping (Result<String, Error>) -> Void) {
+        let parameters: [String: Any] = [
+            "model": "gpt-4-1106-preview",
+            "messages": [
+                ["role": "system", "content": "당신은 사용자의 질문에 도움을 주는 AI 어시스턴트입니다. 친절하고 자연스럽게 대화하세요. 한국어로 답변해주세요."],
+                ["role": "user", "content": userMessage]
+            ],
+            "temperature": 0.7
+        ]
+        
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Authorization": "Bearer \(APIKey.chatGPT)"
+        ]
+        
+        AF.request(endpoint, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
+            .validate()
+            .responseDecodable(of: ChatGPTResponse.self) { response in
+                switch response.result {
+                case .success(let chatGPTResponse):
+                    if let content = chatGPTResponse.choices.first?.message.content {
+                        completion(.success(content))
+                    } else {
+                        completion(.failure(NSError(domain: "ChatGPTManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "응답 내용이 없습니다"])))
+                    }
+                case .failure(let error):
+                    print("ChatGPT API 에러: \(error)")
+                    // 응답 데이터가 있다면 출력
+                    if let data = response.data {
+                        let str = String(data: data, encoding: .utf8) ?? "데이터를 문자열로 변환할 수 없습니다"
+                        print("응답 데이터: \(str)")
+                    }
+                    completion(.failure(error))
+                }
+            }
+    }
 
     func analyzeTranscript(messages: [MessageData]) async throws -> AnalysisData {
         let transcript = messages.map {

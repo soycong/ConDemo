@@ -16,6 +16,7 @@ final class MessageViewController: UIViewController {
     
     private let messageView: MessageView = .init()
     private var sheetViewController: VoiceNoteViewController = .init()
+    private let viewModel = MessageViewModel()
 
     private var picker: PHPickerViewController?
     private var camera: UIImagePickerController = .init()
@@ -49,6 +50,7 @@ final class MessageViewController: UIViewController {
         messageView.setAudioDelegate(self)
 
         setupActions()
+        setupDelegates()
 
         // 야매 코드
         sheetViewController.viewModel.messages = CoreDataManager.shared
@@ -61,6 +63,14 @@ final class MessageViewController: UIViewController {
     }
 
     // MARK: - Functions
+    
+    private func setupDelegates() {
+        // View에 대한 델리게이트 설정
+        messageView.delegate = self
+        
+        // ViewModel에 대한 델리게이트 설정
+        viewModel.delegate = self
+    }
 
     /// 오디오 재생 메서드
     func playAudio(from cell: MessageBubbleCell, url: URL, data: Data?) {
@@ -400,5 +410,49 @@ extension MessageViewController: UISheetPresentationControllerDelegate {
                 sheetPresentationController.presentedViewController.dismiss(animated: true)
             }
         }
+    }
+}
+
+// MARK: - MessageViewModelDelegate
+extension MessageViewController: MessageViewModelDelegate {
+    func messageViewModelDidUpdateMessages(_ viewModel: MessageViewModel) {
+        DispatchQueue.main.async { [weak self] in
+            self?.messageView.messages = viewModel.messages
+        }
+    }
+    
+    func messageViewModel(_ viewModel: MessageViewModel, didChangeLoadingState isLoading: Bool) {
+        // 로딩 상태 업데이트
+//        DispatchQueue.main.async { [weak self] in
+//            if isLoading {
+//                self?.messageView.loadingIndicator.startAnimating()
+//            } else {
+//                self?.messageView.loadingIndicator.stopAnimating()
+//            }
+//        }
+    }
+    
+    func messageViewModel(_ viewModel: MessageViewModel, didReceiveError error: Error) {
+        // 에러 처리
+        DispatchQueue.main.async { [weak self] in
+            let alertController = UIAlertController(
+                title: "오류",
+                message: "메시지 처리 중 오류가 발생했습니다: \(error.localizedDescription)",
+                preferredStyle: .alert
+            )
+            
+            alertController.addAction(UIAlertAction(
+                title: "확인",
+                style: .default
+            ))
+            
+            self?.present(alertController, animated: true)
+        }
+    }
+}
+
+extension MessageViewController: MessageViewDelegate {
+    func messageViewDidSendMessage(_ view: MessageView, message: String) {
+        viewModel.sendMessage(message)
     }
 }

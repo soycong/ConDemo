@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 protocol TranscriptionDelegate: AnyObject {
     func didReceiveTranscription(text: String, speaker: String)
@@ -114,7 +115,7 @@ extension RecordingMainViewModel {
         Task {
             if let fileSize = fileSize, fileSize > lastProcessedByteOffset {
                 do {
-                    let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".wav")
+                    let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".flac")
                     
                     // 파일의 새 부분만 추출
                     let fileHandle = try FileHandle(forReadingFrom: fileURL)
@@ -127,7 +128,7 @@ extension RecordingMainViewModel {
                     
                     // 트랜스크라이버로 처리
                     streamingTranscriber = try StreamingTranscriber.parse([
-                        "--format", "pcm",
+                        "--format", "flac",
                         "--path", tempFile.path,
                         "--show-partial", "false"
                     ])
@@ -153,6 +154,45 @@ extension RecordingMainViewModel {
                     print("청크 처리 오류: \(error)")
                 }
             }
+        }
+    }
+}
+
+extension RecordingMainViewModel {
+    func fetchAnalysisAvailableDates() -> [Date] {
+        // CoreData에서 모든 Analysis 객체의 날짜 가져오기
+        let fetchRequest: NSFetchRequest<Analysis> = Analysis.fetchRequest()
+        fetchRequest.propertiesToFetch = ["date"] // 날짜만 가져오기
+        
+        do {
+            let analyses = try CoreDataManager.shared.context.fetch(fetchRequest)
+            
+            // nil이 아닌 날짜만 반환
+            return analyses.compactMap { $0.date }
+        } catch {
+            print("분석 날짜 조회 실패: \(error)")
+            return []
+        }
+    }
+    
+    func fetchAnalysisForDate(_ date: Date) -> Analysis? {
+        let calendar = Calendar.current
+        
+        // 선택된 날짜의 시작과 끝 시간 계산
+        let startOfDay = calendar.startOfDay(for: date)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        // 해당 날짜 범위에 있는 Analysis 찾기
+        let fetchRequest: NSFetchRequest<Analysis> = Analysis.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        
+        do {
+            let analyses = try CoreDataManager.shared.context.fetch(fetchRequest)
+            return analyses.first
+        } catch {
+            print("분석 데이터 조회 실패: \(error)")
+            return nil
         }
     }
 }

@@ -17,7 +17,7 @@ final class HistoryCell: UITableViewCell {
     private let emotionImageView: UIImageView = {
         let imageView: UIImageView = .init()
 
-        imageView.image = UIImage(named: "level9")
+        // imageView.image = UIImage(named: "level9")
 
         return imageView
     }()
@@ -40,7 +40,7 @@ final class HistoryCell: UITableViewCell {
     private let unreadIcon: UIImageView = {
         let imageView: UIImageView = .init()
 
-        imageView.image = UIImage(named: "unreadIcon")
+        // imageView.image = UIImage(named: "unreadIcon")
 
         return imageView
     }()
@@ -100,8 +100,11 @@ final class HistoryCell: UITableViewCell {
     }
 
     // MARK: - Functions
-
-    func configure() { }
+    func configure(imageName: String, dateText: String, titleText: String) {
+        emotionImageView.image = UIImage(named: imageName)
+        dateLabel.text = "\(dateText) "
+        titleLabel.text = titleText
+    }
 
     private func configureUI() {
         for item in [emotionImageView, dateLabel, unreadIcon, titleLabel] {
