@@ -106,7 +106,7 @@ extension SummaryViewController {
         case 1:
             destinationVC = MessageViewController(analysisTitle: analysisTitle)
         case 2:
-            destinationVC = StruggleJournalViewController()
+            destinationVC = StruggleJournalViewController(analysisTitle: analysisTitle)
         case 3:
             destinationVC = PollRecommendViewController(analysisTitle: analysisTitle)
         case 4:
