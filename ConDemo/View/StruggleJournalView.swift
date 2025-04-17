@@ -42,7 +42,7 @@ final class StruggleJournalView: UIView {
     }()
 
     private var isConfirmed = false
-    private let placeholderText =
+    var placeholderText =
         "왜 싸웠나요? \n\n어떤 게 제일 화가 났나요? \n\n하지 말아야 했던 말은 없었나요? \n\n듣고 싶었던 말은 무엇이었나요? \n\n상대에게 미안한 것은 무엇인가요? \n\n어떤 걸 고쳐나가고 싶나요?"
 
     private var journalTextViewBottomConstraint: Constraint?
@@ -226,5 +226,54 @@ extension StruggleJournalView: UITextViewDelegate {
             confirmButton.backgroundColor = .pointBlue
             isConfirmed = true
         }
+    }
+}
+
+// SummaryEditView.swift에 추가할 확장 메소드들
+
+extension StruggleJournalView {
+    // 날짜 업데이트
+    func updateDate(_ date: String) {
+        if !date.isEmpty {
+            dateLabel.text = date
+        }
+    }
+    
+    // 제목 업데이트
+    func updateTitle(_ title: String) {
+        if !title.isEmpty {
+            titleLabel.text = title
+        }
+    }
+    
+    // 내용 업데이트
+    func updateContent(_ content: String) {
+        if !content.isEmpty && content != placeholderText {
+            journalTextView.text = content
+            journalTextView.textColor = .label
+            
+            // 내용이 있으면 확인 버튼 활성화
+            confirmButton.backgroundColor = .pointBlue
+            isConfirmed = true
+        }
+    }
+    
+    // 현재 내용 가져오기
+    func getCurrentContent() -> String {
+        // 플레이스홀더가 아닌 경우에만 내용 반환
+        if journalTextView.textColor == .lightGray || journalTextView.text == placeholderText {
+            return ""
+        }
+        return journalTextView.text
+    }
+    
+    // 텍스트뷰가 비어있는지 확인
+    var isEmpty: Bool {
+        return journalTextView.text.isEmpty || journalTextView.text == placeholderText || journalTextView.textColor == .lightGray
+    }
+    
+    // 플레이스홀더 텍스트 반환
+    var getPlaceholderText: String {
+        return placeholderText
     }
 }
