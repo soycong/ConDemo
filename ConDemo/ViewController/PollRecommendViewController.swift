@@ -11,15 +11,25 @@ final class PollRecommendViewController: UIViewController {
     // MARK: - Properties
 
     private let pollRecommendView: PollRecommendView = .init()
-
+    private var viewModel: PollRecommendViewModel
+    
     // MARK: - Lifecycle
+    
+    init(analysisTitle: String) {
+        self.viewModel = PollRecommendViewModel(analysisTitle: analysisTitle)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view = pollRecommendView
-
         setupNavigationBar()
+        updateViewWithData()
     }
 
     // MARK: - Functions
@@ -40,6 +50,14 @@ final class PollRecommendViewController: UIViewController {
 
         navigationItem.leftBarButtonItem = backButton
         navigationItem.rightBarButtonItem = waveButton
+    }
+    
+    private func updateViewWithData() {
+        // 날짜 업데이트
+        pollRecommendView.updateDate(viewModel.date)
+        
+        // Poll 콘텐츠 업데이트
+        pollRecommendView.updatePollContents(viewModel.pollContents)
     }
 
     @objc

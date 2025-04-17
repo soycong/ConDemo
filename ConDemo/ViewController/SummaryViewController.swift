@@ -10,10 +10,22 @@ import UIKit
 final class SummaryViewController: UIViewController {
     // MARK: - Properties
 
+    private var analysisTitle: String
     private let summaryView: SummaryView = .init()
-
+    private var viewModel: SummaryViewModel
+    
     // MARK: - Lifecycle
-
+    
+    init(analysisTitle: String) {
+        self.analysisTitle = analysisTitle
+        self.viewModel = SummaryViewModel(analysisTitle: analysisTitle)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -25,6 +37,10 @@ final class SummaryViewController: UIViewController {
 
 extension SummaryViewController {
     private func setupView() {
+        // viewModel.analysis가 있으면 해당 데이터로 뷰 설정
+        if let analysis = viewModel.analysis {
+            summaryView.setupText(analysis: analysis)
+        }
         view = summaryView
     }
 
@@ -77,13 +93,13 @@ extension SummaryViewController {
 
         switch sender.tag {
         case 1:
-            destinationVC = MessageViewController()
+            destinationVC = MessageViewController(analysisTitle: analysisTitle)
         case 2:
             destinationVC = StruggleJournalViewController()
         case 3:
-            destinationVC = PollRecommendViewController()
+            destinationVC = PollRecommendViewController(analysisTitle: analysisTitle)
         case 4:
-            destinationVC = SummaryEditViewController()
+            destinationVC = SummaryEditViewController(analysisTitle: analysisTitle)
         default:
             return
         }

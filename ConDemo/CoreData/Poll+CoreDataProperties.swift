@@ -2,25 +2,30 @@
 //  Poll+CoreDataProperties.swift
 //  ConDemo
 //
-//  Created by 이명지 on 4/16/25.
+//  Created by 이명지 on 4/17/25.
 //
 //
 
-import CoreData
 import Foundation
+import CoreData
 
-public extension Poll {
-    @nonobjc
-    class func fetchRequest() -> NSFetchRequest<Poll> {
-        NSFetchRequest<Poll>(entityName: "Poll")
+
+extension Poll {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Poll> {
+        return NSFetchRequest<Poll>(entityName: "Poll")
     }
 
-    @NSManaged var date: Date?
-    @NSManaged var title: String?
-    @NSManaged var contents: String?
-    @NSManaged var hers: String?
-    @NSManaged var his: String?
-    @NSManaged var option: NSObject?
+    @NSManaged public var contents: String?
+    @NSManaged public var date: Date?
+    @NSManaged public var hers: String?
+    @NSManaged public var his: String?
+    @NSManaged public var option: NSObject?
+    @NSManaged public var title: String?
+    @NSManaged public var analysis: Analysis?
+
 }
 
-extension Poll: Identifiable { }
+extension Poll : Identifiable {
+
+}

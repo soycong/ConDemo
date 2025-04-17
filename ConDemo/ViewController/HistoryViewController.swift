@@ -105,7 +105,7 @@ extension HistoryViewController {
 //    private func profileButtonTapped() { }
 
     private func pushToSummaryViewController() {
-        let summaryVC: SummaryViewController = .init()
+        let summaryVC: SummaryViewController = .init(analysisTitle: "")
         navigationController?.pushViewController(summaryVC, animated: true)
     }
     
