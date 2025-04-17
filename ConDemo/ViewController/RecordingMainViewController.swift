@@ -47,7 +47,7 @@ extension RecordingMainViewController {
         setupAddTargets()
         setupDelegates()
         
-        // viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
+        viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
     }
 
     override func viewWillAppear(_ animated: Bool) {
