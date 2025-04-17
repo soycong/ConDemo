@@ -39,6 +39,17 @@ final class SummaryEditView: UIView {
 
         textView.textContainerInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
         textView.textContainer.lineFragmentPadding = 0
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 10
+        
+        let attributedString = NSAttributedString(
+            string: "",
+            attributes: [
+                .paragraphStyle: paragraphStyle
+            ]
+            )
+        textView.attributedText = attributedString
 
         return textView
     }()
@@ -159,7 +170,28 @@ final class SummaryEditView: UIView {
 
     private func setupTextView() {
         summaryTextView.delegate = self
-        summaryTextView.text = placeholderText
+        
+        // 플레이스홀더 텍스트에 행간 적용
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 10
+        
+        let attributedString = NSAttributedString(
+            string: placeholderText,
+            attributes: [
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: UIColor.lightGray,
+                .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14)
+            ]
+        )
+        
+        summaryTextView.attributedText = attributedString
+        
+        // 타이핑 속성 설정 (사용자가 입력할 때 사용될 속성)
+        summaryTextView.typingAttributes = [
+            .paragraphStyle: paragraphStyle,
+            .foregroundColor: UIColor.label,
+            .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14)
+        ]
 
         let tapGesture: UITapGestureRecognizer = .init(target: self,
                                                        action: #selector(textViewTapped))
@@ -198,12 +230,24 @@ final class SummaryEditView: UIView {
 
 extension SummaryEditView: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == placeholderText {
-            textView.text = ""
-            textView.textColor = .label
+        if textView.attributedText.string == placeholderText {
+            // 빈 문자열로 설정하되, 같은 스타일 유지
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 10
+            
+            let attributedString = NSAttributedString(
+                string: "",
+                attributes: [
+                    .paragraphStyle: paragraphStyle,
+                    .foregroundColor: UIColor.label,
+                    .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14)
+                ]
+            )
+            
+            textView.attributedText = attributedString
         }
 
-        if textView.text.count >= 1 {
+        if textView.text.count >= 1 && textView.text != placeholderText {
             confirmButton.backgroundColor = .pointBlue
             isPosted = true
         } else {
@@ -214,8 +258,20 @@ extension SummaryEditView: UITextViewDelegate {
 
     func textViewDidEndEditing(_ textView: UITextView) {
         if textView.text.isEmpty {
-            textView.text = placeholderText
-            textView.textColor = .lightGray
+            // 플레이스홀더 설정, 스타일 유지
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 10
+            
+            let attributedString = NSAttributedString(
+                string: placeholderText,
+                attributes: [
+                    .paragraphStyle: paragraphStyle,
+                    .foregroundColor: UIColor.lightGray,
+                    .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14)
+                ]
+            )
+            
+            textView.attributedText = attributedString
         }
     }
 
@@ -247,8 +303,20 @@ extension SummaryEditView {
     // 내용 업데이트
     func updateContent(_ content: String) {
         if !content.isEmpty && content != placeholderText {
-            summaryTextView.text = content
-            summaryTextView.textColor = .label
+            // 내용 업데이트할 때도 행간 유지
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 10
+            
+            let attributedString = NSAttributedString(
+                string: content,
+                attributes: [
+                    .paragraphStyle: paragraphStyle,
+                    .foregroundColor: UIColor.label,
+                    .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14)
+                ]
+            )
+            
+            summaryTextView.attributedText = attributedString
             
             // 내용이 있으면 확인 버튼 활성화
             confirmButton.backgroundColor = .pointBlue

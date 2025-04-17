@@ -255,6 +255,7 @@ final class PollRecommendView: UIView {
         let paragraphStyle: NSMutableParagraphStyle = .init()
 
         paragraphStyle.firstLineHeadIndent = indent
+        paragraphStyle.lineSpacing = 10
 
         return paragraphStyle
     }
@@ -371,17 +372,21 @@ extension PollRecommendView {
     // 튜플 배열 구조의 PollContent에 맞게 수정된 함수
     func applyFormattedPollContent(to textView: UITextView, with content: PollContent) {
         let attributedText: NSMutableAttributedString = .init()
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 8
 
         // 1. 제목 스타일
         let titleAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 24, weight: .bold),
-                                                              .foregroundColor: UIColor.label]
+                                                              .foregroundColor: UIColor.label,
+                                                              .paragraphStyle: paragraphStyle]
 
         attributedText.append(NSAttributedString(string: content.title + "\n\n",
                                                  attributes: titleAttributes))
 
         // 2. 본문 스타일
         let bodyAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16, weight: .regular),
-                                                             .foregroundColor: UIColor.label]
+                                                             .foregroundColor: UIColor.label,
+                                                             .paragraphStyle: paragraphStyle]
         attributedText.append(NSAttributedString(string: content.body + "\n\n",
                                                  attributes: bodyAttributes))
 
@@ -390,14 +395,16 @@ extension PollRecommendView {
             // 화자(Speaker) 스타일
             let speakerAttributes: [NSAttributedString.Key: Any] =
                 [.font: UIFont.systemFont(ofSize: 20, weight: .bold),
-                 .foregroundColor: UIColor.label]
+                 .foregroundColor: UIColor.label,
+                 .paragraphStyle: paragraphStyle]
             attributedText.append(NSAttributedString(string: dialogue.speaker + "\n",
                                                      attributes: speakerAttributes))
 
             // 대화 내용 스타일
             let dialogueAttributes: [NSAttributedString.Key: Any] =
                 [.font: UIFont.systemFont(ofSize: 16, weight: .regular),
-                 .foregroundColor: UIColor.label]
+                 .foregroundColor: UIColor.label,
+                 .paragraphStyle: paragraphStyle]
 
             attributedText.append(NSAttributedString(string: dialogue.text + "\n\n",
                                                      attributes: dialogueAttributes))
@@ -406,7 +413,8 @@ extension PollRecommendView {
         // 4. 질문 스타일
         let questionAttributes: [NSAttributedString.Key: Any] =
             [.font: UIFont.systemFont(ofSize: 22, weight: .bold),
-             .foregroundColor: UIColor.label]
+             .foregroundColor: UIColor.label,
+             .paragraphStyle: paragraphStyle]
 
         attributedText.append(NSAttributedString(string: content.question + "\n\n",
                                                  attributes: questionAttributes))
@@ -414,9 +422,10 @@ extension PollRecommendView {
         // 5. Poll 옵션 소개 스타일
         let pollIntroAttributes: [NSAttributedString.Key: Any] =
             [.font: UIFont.systemFont(ofSize: 16, weight: .regular),
-             .foregroundColor: UIColor.label]
+             .foregroundColor: UIColor.label,
+             .paragraphStyle: paragraphStyle]
 
-        attributedText.append(NSAttributedString(string: "Poll opt.\n",
+        attributedText.append(NSAttributedString(string: "\n",
                                                  attributes: pollIntroAttributes))
 
         // 6. 선택지 스타일

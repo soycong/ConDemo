@@ -79,26 +79,26 @@ final class ChatGPTManager {
 
     private func requestAnalysis(transcript: String) async throws -> ChatGPTResponse {
         let text = """
-                다음은 두 사람 간의 대화 내용입니다:
+                다음은 두 사람 간의 대화 내용임.
 
                 \(transcript)
 
-                이 대화를 분석하여 다음 정보를 제공해주세요:
+                이 대화를 다음 조건에 맞게 분석 부탁.
 
-                1. 대화를 요약하는 제목(10자 이하)과 주요 쟁점 3가지를 추출해주세요. 재밌고 매력적이게 추출해주세요.
+                1. 대화를 요약하는 제목(한글 10자 이하)과 주요 쟁점 3가지를 재밌고 매력적이게 추출.
         
-                2. 싸움의 격한 정도를 1~9단계로 나타내주세요.
+                2. 싸움의 격한 정도를 1~10단계로 표현. 대화가 감지되지 않은 경우는 1단계로 표시.
 
-                3. 3개 쟁점 각각에 대한 poll을 생성해주세요. 각 poll은 다음 형식을 따라야 합니다:
+                3. 3개 쟁점 각각에 대한 poll을 생성. 커뮤니티에 올라갈 투표. 제목을 재밌고 매력적이고 자극적이게 뽑아주고, 옵션도 재밌고 자극적이게 뽑아줘.각 poll은 다음 형식을 따라야함:
                    - 쟁점 제목: [제목]
                    - 내용: [내용 설명]
                    - 나의 의견: [첫 번째 화자의 의견]
                    - 상대방 의견: [두 번째 화자의 의견]
                    - 옵션: [투표 옵션들, 쉼표로 구분, 총 4개]
 
-                4. 커뮤니티에 게시글로 올라갈 요약본을 작성해주세요. 다음 형식을 따라야 합니다:
+                4. 커뮤니티에 게시글로 올라갈 요약본 작성 부탁. 제목은 자극적이고 재밌게 생성. 두 화자의 의견이 극명하게 갈리도록 내용 생성. 나의 입장에서 글 내용 생성. 나의 입장과 상대방의 입장을 요약, 스크립트도 일부 출력해줘도 됨. 내가 무슨 말을 했고 상대방이 무슨 말을 했는지. 공감이 가고 흥미로운 스타일로 구성. 최대한 재밌고 매력있고 끌릴만하게 표현. 다음 형식을 따라야함:
                    - 제목: [대화 주제를 반영한 간결하고 매력적인 제목]
-                   - 내용: [대화의 핵심 내용과 결론을 포함한 300자 이내의 요약]
+                   - 내용: [500자 이내의 요약]
 
                 각 섹션을 명확히 구분해서 응답해주고, 이모지를 포함해 재밌는 요소를 넣어주세요.
         """
@@ -165,38 +165,125 @@ final class ChatGPTManager {
         
         // 2. contents 추출 시도
         do {
-            let issuePattern = "쟁점 (\\d+): ([^\n]+)"
-            let issueRegex = try NSRegularExpression(pattern: issuePattern)
-            let nsString = content as NSString
-            let issueMatch = issueRegex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
-            
+            let lines = content.components(separatedBy: "\n")
             var issues = [String]()
-            issueMatch.forEach { match in
-                if match.numberOfRanges > 2 {
-                    let issueNumber = nsString.substring(with: match.range(at: 1))
-                    let issueText = nsString.substring(with: match.range(at: 2))
-                        .replacingOccurrences(of: "\"", with: "")
-                    issues.append("\(issueNumber). \(issueText)")
+            var capturingIssues = false
+            var inMainSection = false
+            
+            for (index, line) in lines.enumerated() {
+                let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                // 쟁점 섹션 시작 감지 (여러 가능한 형식)
+                if trimmedLine.contains("주요 쟁점:") ||
+                   trimmedLine.contains("쟁점 추출") ||
+                   trimmedLine.contains("대화 요약 제목 및 쟁점") {
+                    capturingIssues = true
+                    inMainSection = true
+                    continue
+                }
+                
+                // 다음 섹션 시작 감지 (쟁점 섹션 종료)
+                if inMainSection && (
+                    trimmedLine.contains("싸움의 격한 정도") ||
+                    trimmedLine.contains("각 쟁점에 대한 poll") ||
+                    trimmedLine.contains("poll 생성")
+                ) {
+                    inMainSection = false
+                    break
+                }
+                
+                // 쟁점 항목 캡처 - 다양한 형식 지원
+                if inMainSection && (
+                    trimmedLine.matches(of: /- 쟁점 \d+:/).first != nil ||
+                    trimmedLine.matches(of: /쟁점 \d+:/).first != nil ||
+                    trimmedLine.matches(of: /- 쟁점 \d+\./).first != nil ||
+                    trimmedLine.matches(of: /\d+\)/).first != nil
+                ) {
+                    // 번호 추출 시도
+                    var issueNumber = issues.count + 1
+                    var issueContent = ""
+                    
+                    // 번호와 콜론/점/괄호 이후의 내용 추출
+                    if let numberRange = trimmedLine.firstRange(of: /\d+/) {
+                        issueNumber = Int(trimmedLine[numberRange]) ?? issueNumber
+                        
+                        // 콜론(:) 또는 닫는 괄호()) 이후의 텍스트를 쟁점 내용으로 추출
+                        if let contentRange = trimmedLine.range(of: "(?::|\\.|\\))\\s*(.+)", options: .regularExpression) {
+                            let startIndex = trimmedLine.index(contentRange.lowerBound, offsetBy: 1)
+                            issueContent = String(trimmedLine[startIndex...]).trimmingCharacters(in: .whitespacesAndNewlines)
+                        } else if let contentRange = trimmedLine.range(of: "\\d+:?\\s*(.+)", options: .regularExpression) {
+                            issueContent = String(trimmedLine[contentRange.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+                        } else {
+                            // "- 쟁점 1: 내용" 형식에서 내용 부분 추출
+                            let parts = trimmedLine.split(separator: ":")
+                            if parts.count > 1 {
+                                issueContent = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
+                            } else {
+                                // 내용 부분을 찾지 못한 경우, 전체 라인 사용
+                                issueContent = trimmedLine
+                            }
+                        }
+                        
+                        if !issueContent.isEmpty {
+                            issues.append("\(issueNumber). \(issueContent)")
+                        }
+                    }
+                }
+            }
+            
+            // 첫 번째 방법으로 쟁점을 찾지 못한 경우, 다른 패턴으로 재시도
+            if issues.isEmpty {
+                print("첫 번째 방법으로 쟁점을 찾지 못했습니다. 다른 방법 시도 중...")
+                
+                // 단순히 "- 쟁점" 또는 "쟁점" 이 포함된 줄 찾기
+                for line in lines {
+                    let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    // "- 쟁점" 패턴 확인 (번호가 없어도 처리)
+                    if trimmedLine.contains("- 쟁점") || (trimmedLine.contains("쟁점") && !trimmedLine.contains("쟁점별") && !trimmedLine.contains("각 쟁점")) {
+                        if let colonIndex = trimmedLine.firstIndex(of: ":") {
+                            let content = trimmedLine[colonIndex...].dropFirst().trimmingCharacters(in: .whitespacesAndNewlines)
+                            if !content.isEmpty {
+                                issues.append("\(issues.count + 1). \(content)")
+                            }
+                        } else if trimmedLine.contains("-") {
+                            // "- 쟁점 내용" 형식 (콜론 없음)
+                            let parts = trimmedLine.split(separator: "-")
+                            if parts.count > 1 {
+                                let content = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
+                                if content.contains("쟁점") {
+                                    let subparts = content.split(separator: " ", maxSplits: 1)
+                                    if subparts.count > 1 {
+                                        issues.append("\(issues.count + 1). \(subparts[1])")
+                                    }
+                                } else {
+                                    issues.append("\(issues.count + 1). \(content)")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // 그래도 쟁점을 찾지 못한 경우, Poll의 제목을 대체 쟁점으로 사용
+            if issues.isEmpty && !analysisData.polls!.isEmpty {
+                print("쟁점을 직접 찾지 못했습니다. Poll 제목을 쟁점으로 사용합니다.")
+                for (index, poll) in analysisData.polls!.enumerated() {
+                    issues.append("\(index + 1). \(poll.title)")
                 }
             }
             
             if !issues.isEmpty {
                 analysisData.contents = issues.joined(separator: "\n")
+                print("최종 추출된 쟁점 내용: \(issues)")
             } else {
-                // 이슈를 찾지 못한 경우, 직접 파싱 시도
-                let lines = content.components(separatedBy: "\n")
-                for line in lines where line.contains("쟁점") || line.contains("주요 내용") {
-                    if issues.isEmpty {
-                        issues.append(line.replacingOccurrences(of: "\"", with: ""))
-                    }
-                }
-                
-                if !issues.isEmpty {
-                    analysisData.contents = issues.joined(separator: "\n")
-                }
+                // 기본 내용 설정
+                analysisData.contents = "쟁점을 추출할 수 없습니다."
+                print("모든 방법으로 쟁점 추출 실패. 응답 내용을 확인해 보세요.")
             }
         } catch {
-            print("정규식 오류: \(error)")
+            print("쟁점 추출 중 오류 발생: \(error)")
+            analysisData.contents = "쟁점 분석 처리 중 오류 발생"
         }
         
         // 3. level 추출 시도
