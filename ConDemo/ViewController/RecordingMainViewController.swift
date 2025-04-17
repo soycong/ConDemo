@@ -18,7 +18,7 @@ final class RecordingMainViewController: UIViewController {
     private var originalBrightness: CGFloat = 0
     private var brightnessTimer: Timer?
 
-    private var sheetViewController: VoiceNoteViewController = .init()
+    private var sheetViewController: RecordingScriptViewController = .init()
     private var didPresentSheet = false
 
     private let calendarView: CalendarView = .init()
@@ -41,9 +41,12 @@ extension RecordingMainViewController {
         super.viewDidLoad()
         view = recordingMainView
         originalBrightness = UIScreen.main.brightness
+        
         setupNavigationBar()
         setupAddTargets()
         setupDelegates()
+        
+        // viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -427,7 +430,7 @@ extension RecordingMainViewController: CalendarViewDelegate {
         let summaryVC: SummaryViewController = .init()
         navigationController?.pushViewController(summaryVC, animated: true)
     }
-
+    
     func calendarView(_: CalendarView, didSelectDate _: Date) {
         pushToSummaryViewController()
     }
