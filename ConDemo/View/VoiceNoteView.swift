@@ -12,7 +12,7 @@ final class VoiceNoteView: UIView {
     // MARK: - Properties
 
 //    var messages: [Message] = Message.dummyMessages
-    var messages: [Message] = []
+    var messages: [MessageData] = []
     var highlightText = ""
 
     var messageBubbleTableView: MessageBubbleTableView = .init()

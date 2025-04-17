@@ -12,7 +12,7 @@ final class RecordingScriptView: UIView {
     // MARK: - Properties
 
 //    var messages: [Message] = Message.dummyMessages
-    var messages: [Message] = []
+    var messages: [MessageData] = []
     var highlightText = ""
 
     private var scriptStackViewBottomConstraint: Constraint?
