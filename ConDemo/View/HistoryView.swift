@@ -157,10 +157,8 @@ extension HistoryView: UITableViewDataSource {
         let dateFormatter: DateFormatter = .init()
         dateFormatter.dateFormat = "yyyy.MM.dd"
         
-        guard let date = analysis.date else { return cell }
+        guard let date = analysis.date,  let title = analysis.title else { return cell }
         let dateText = dateFormatter.string(from: date)
-        
-        let title = analysis.title
         let titleText = "\(title) | 매운맛 \(analysis.level)"
         
         cell.configure(imageName: imageName, dateText: dateText, titleText: titleText)
