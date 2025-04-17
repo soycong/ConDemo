@@ -56,6 +56,9 @@ final class ChatGPTManager {
                 이 대화를 분석하여 다음 정보를 제공해주세요:
 
                 1. 대화를 요약하는 제목과 주요 쟁점 3가지를 추출해주세요. 재밌고 매력적이게 추출해주세요.
+                    1. [쟁점1]
+                    2. [쟁점2]
+                    3. [쟁점3]
 
                 2. 3개 쟁점 각각에 대한 poll을 생성해주세요. 각 poll은 다음 형식을 따라야 합니다:
                    - 쟁점 제목: [제목]
@@ -68,7 +71,7 @@ final class ChatGPTManager {
                    - 제목: [대화 주제를 반영한 간결하고 매력적인 제목]
                    - 내용: [대화의 핵심 내용과 결론을 포함한 300자 이내의 요약]
 
-                각 섹션을 명확히 구분해서 응답해주세요.
+                각 섹션을 명확히 구분해서 응답해주고, 이모지를 포함해 재밌는 요소를 넣어주세요.
         """
 
         let parameters: [String: Any] = ["model": "gpt-4-1106-preview",
@@ -152,7 +155,8 @@ final class ChatGPTManager {
 //        summary.title
 //    }
 //
+//    // String으로 반환되는 ChatGPT response를 커스텀 모델로 파싱
 //    private func parseResponse(_ response: String) throws -> AnalysisData {
-//
+//        
 //    }
 }
