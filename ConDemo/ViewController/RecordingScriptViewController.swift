@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class RecordingScriptViewController: UIViewController {
+final class RecordingScriptViewController: UIViewController, TranscriptionDelegate {
     // MARK: - Properties
 
     private let recordingScriptView: RecordingScriptView = .init()
@@ -18,33 +18,23 @@ final class RecordingScriptViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view = recordingScriptView
-        // bind()
     }
-
-    // MARK: - Functions
-
-    private func bind() {
-        viewModel.setupTranscriber()
-
-        viewModel.onMessagesUpdated = { [weak self] messages in
-            guard let self else {
-                return
-            }
-
-            recordingScriptView.messages = messages
-            recordingScriptView.scriptTextView.text = messages.last?.text
-            
-            // recordingScriptView.messageBubbleTableView.reloadData()
-
-//            if let lastRow = messages.indices.last {
-//                let indexPath: IndexPath = .init(row: lastRow, section: 0)
-//                voiceNoteView.messageBubbleTableView.scrollToRow(at: indexPath, at: .bottom,
-//                                                                 animated: true)
-//            }
-        }
-
-        viewModel.onError = { [weak self] _ in
-            // 에러 알러트 추가
-        }
+    
+    // TranscriptionDelegate 메서드 구현
+    func didReceiveTranscription(text: String, speaker: String) {
+        // 마침표를 기준으로 줄바꿈 적용
+        let formattedText = text.replacingOccurrences(of: " \\. ",
+                                                     with: ".\n",
+                                                     options: .regularExpression)
+                                .replacingOccurrences(of: " \\? ",
+                                                     with: "?\n",
+                                                     options: .regularExpression)
+        
+        let isCurrentUser = speaker == "0"
+        let newMessage = Message(text: formattedText, isFromCurrentUser: isCurrentUser)
+        
+        // 기존 메시지에 추가하거나 새로운 메시지로 설정
+        // viewModel.addMessage(newMessage)
+        recordingScriptView.updateTextView(newMessage.text)
     }
 }
