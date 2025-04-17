@@ -18,7 +18,7 @@ final class RecordingScriptView: UIView {
     private var scriptStackViewBottomConstraint: Constraint?
 
     // 매칭 구현
-    private var matchedWordIndexPaths: [IndexPath] = []
+    private var matchedWords: [NSRange] = []
     private var currentMatchIndex: Int = -1
 
     private var voiceNoteSearchBar: VoiceNoteSearchBar = .init()
@@ -26,7 +26,7 @@ final class RecordingScriptView: UIView {
     var scriptTextView: UITextView = {
         let textView = UITextView()
         
-        textView.text = "어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ? 어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ? 어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ?"
+//        textView.text = "어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ? 어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ? 어 영상 좀 그만 봐 . 아 이거 내가 하루 스트레스 푸는거 아니야 또 뭐 맨날 피곤하다 . 왜 또 그래 . 지금 새벽 두시잖아 , 지금 . 내가 이걸로 좀 뭐라 하지 말라달라고 그랬잖아 . 내가 이거 오늘 하루 내가 이거 피로 겨우 푸는 건데 이걸로 뭐라고 . 아니 근데 영상을 보고 싶으면 다음날 그럼 피곤하다고 하지나 말던가 . 피곤할 수는 있지 . 근데 이것 이것조차 안 하면 내가 더 피곤하니까 해서 그래 . 잠을 자야 안 피곤 나지 . 이게 무슨 말이야 , 이게 도대체 ?"
         
         textView.layer.cornerRadius = 10
 
@@ -34,26 +34,10 @@ final class RecordingScriptView: UIView {
 
         textView.isScrollEnabled = true
         textView.alwaysBounceVertical = true
-        textView.showsVerticalScrollIndicator = false
+        // textView.showsVerticalScrollIndicator = false
 
         textView.textColor = .label
         textView.font = UIFont(name: "Pretendard-Medium", size: 14)
-        
-        // 문장 간격 조정
-        let attributedString = NSMutableAttributedString(string: textView.text)
-
-        let currentFont = textView.font ?? UIFont.systemFont(ofSize: 14)
-
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 10.0 // 줄 간격
-
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: currentFont,
-            .paragraphStyle: paragraphStyle
-        ]
-
-        attributedString.addAttributes(attributes, range: NSRange(location: 0, length: attributedString.length))
-        textView.attributedText = attributedString
 
         return textView
     }()
@@ -147,14 +131,37 @@ final class RecordingScriptView: UIView {
 
     // MARK: - Functions
     
-    private func updateTextView() {
-        scriptTextView.text = messages.last?.text
+    func updateTextView(_ scriptText: String?) {
+        if let scriptText = scriptText {
+            scriptTextView.text = scriptTextView.text + "\n" + scriptText
+            setupTextViewStyle(scriptTextView)
+        } else {
+            scriptTextView.text = "출력이 불가능 합니다."
+        }
+    }
+    
+    private func setupTextViewStyle(_ textView: UITextView) {
+        // 문장 간격 조정
+        let attributedString = NSMutableAttributedString(string: textView.text)
+
+        let currentFont = textView.font ?? UIFont.systemFont(ofSize: 14)
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 10.0 // 줄 간격
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: currentFont,
+            .paragraphStyle: paragraphStyle
+        ]
+
+        attributedString.addAttributes(attributes, range: NSRange(location: 0, length: attributedString.length))
+        textView.attributedText = attributedString
     }
     
     private func findWord(_ searchText: String) {
         scriptTextView.attributedText = scriptTextView.text.makeAttributedString(searchText,
                                                                         font: scriptTextView.font,
-                                                                        backgroundColor: .gray)
+                                                                                 backgroundColor: .gray, textViewStyle: true)
     }
 
     private func setupKeyboardNotifications() {
@@ -220,25 +227,24 @@ final class RecordingScriptView: UIView {
 
     @objc
     private func upButtonTapped() {
-        guard !matchedWordIndexPaths.isEmpty else {
+        guard !matchedWords.isEmpty else {
             return
         }
 
         // 이전 결과로 이동 (위로)
-        currentMatchIndex = (currentMatchIndex - 1 + matchedWordIndexPaths.count) %
-            matchedWordIndexPaths.count
+        currentMatchIndex = (currentMatchIndex - 1 + matchedWords.count) % matchedWords.count
         scrollToCurrentMatch()
         updateMatchCounter()
     }
 
     @objc
     private func downButtonTapped() {
-        guard !matchedWordIndexPaths.isEmpty else {
+        guard !matchedWords.isEmpty else {
             return
         }
 
         // 다음 결과로 이동 (아래로)
-        currentMatchIndex = (currentMatchIndex + 1) % matchedWordIndexPaths.count
+        currentMatchIndex = (currentMatchIndex + 1) % matchedWords.count
         scrollToCurrentMatch()
         updateMatchCounter()
     }
@@ -248,7 +254,9 @@ final class RecordingScriptView: UIView {
         voiceNoteSearchBar.text = nil
         voiceNoteSearchBar.resignFirstResponder()
         highlightText = ""
-
+        
+        setupTextViewStyle(scriptTextView)
+        
         hideSearchModeButtons()
     }
 
@@ -288,13 +296,12 @@ extension RecordingScriptView: UISearchBarDelegate {
         guard let searchText = searchBar.text else {
             return
         }
-        highlightText = searchText
-
+        
         findAllMatchMessages(for: searchText)
 
         voiceNoteSearchBar.resignFirstResponder()
 
-        if !matchedWordIndexPaths.isEmpty {
+        if !matchedWords.isEmpty {
             scrollToCurrentMatch()
             updateMatchCounter()
         }
@@ -318,37 +325,70 @@ extension RecordingScriptView: UISearchBarDelegate {
 extension RecordingScriptView {
     private func findAllMatchMessages(for searchText: String) {
         guard !searchText.isEmpty else {
-            matchedWordIndexPaths = []
+            matchedWords = []
             currentMatchIndex = -1
             return
         }
-
-        matchedWordIndexPaths = []
-
-        // 더 좋은 방법은 없을까?
-        for (index, message) in messages.enumerated() {
-            if message.text.range(of: searchText, options: .caseInsensitive) != nil {
-                matchedWordIndexPaths.append(IndexPath(row: index, section: 0))
+        
+        matchedWords = []
+        
+        let text = scriptTextView.text
+        
+        if let nsText = text as? NSString {
+            var searchRange = NSRange(location: 0, length: nsText.length)
+            
+            while searchRange.location < nsText.length {
+                let foundRange = nsText.range(of: searchText, options: .caseInsensitive, range: searchRange)
+                if foundRange.location != NSNotFound {
+                    matchedWords.append(foundRange)
+                    searchRange.location = foundRange.location + foundRange.length
+                    searchRange.length = nsText.length - searchRange.location
+                } else {
+                    break
+                }
             }
         }
-
+        
         // 마지막 결과로 현재 인덱스 설정
-        currentMatchIndex = matchedWordIndexPaths.isEmpty ? -1 : matchedWordIndexPaths.count - 1
+        currentMatchIndex = matchedWords.isEmpty ? -1 : 0
         
         findWord(searchText)
     }
-
-    /// 매칭된 결과로 스크롤
+    
+    // 매칭된 결과로 스크롤
     private func scrollToCurrentMatch() {
-        guard currentMatchIndex >= 0 && currentMatchIndex < matchedWordIndexPaths.count else {
+        guard currentMatchIndex >= 0 && currentMatchIndex < matchedWords.count else {
             return
         }
-
-        let indexPath = matchedWordIndexPaths[currentMatchIndex]
+        
+        let range = matchedWords[currentMatchIndex]
+        
+        // 해당 위치로 스크롤
+        scriptTextView.scrollRangeToVisible(range)
+        
+        // 현재 검색어에 다른 배경색
+        updateHighlight()
     }
-
+    
+    // StringExtension에 하이라이트 코드 추가
+    private func updateHighlight() {
+        guard let searchText = voiceNoteSearchBar.text, !searchText.isEmpty else {
+            return
+        }
+        
+        scriptTextView.attributedText = scriptTextView.text.makeAttributedString(
+            searchText,
+            font: UIFont(name: "Pretendard-Medium", size: 14),
+            backgroundColor: UIColor.gray.withAlphaComponent(0.3),
+            selectedHighlightColor: UIColor.pointBlue.withAlphaComponent(0.5),
+            selectedTextColor: .white,
+            currentMatchIndex: currentMatchIndex,
+            textViewStyle: true
+        )
+    }
+    
     /// 결과 카운트
     private func updateMatchCounter() {
-        print("현재 검색 위치: \(currentMatchIndex + 1)/\(matchedWordIndexPaths.count)")
+        print("현재 검색 위치: \(currentMatchIndex + 1)/\(matchedWords.count)")
     }
 }
