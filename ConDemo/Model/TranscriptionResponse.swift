@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - 데이터 모델 정의
 
-struct TranscriptionResult: Codable {
+struct TranscriptionResponse: Codable {
     let jobName: String
     let accountId: String
     let status: String
@@ -145,12 +145,12 @@ extension TranscriptionResult {
         }
     }
 
-    func printSpeakersTranscript() {
+    func getTranscript() -> [MessageData] {
         guard let speakerLabels = results.speakerLabels else {
-            return
+            return []
         }
-
-        print("\n[화자별 스크립트]")
+        
+        var messages = [MessageData]()
         for segment in speakerLabels.segments {
             let transcript = segment.items.map { item -> String in
                 if let matchingItem = results.items.first(where: {
@@ -161,8 +161,13 @@ extension TranscriptionResult {
                 return ""
             }.joined(separator: " ")
 
+            let isFromCurrentUser = segment.speakerLabel.dropFirst(4) == "0" ? true : false
+            messages.append(MessageData(text: transcript, isFromCurrentUser: isFromCurrentUser))
+            
             print("화자 \(segment.speakerLabel.dropFirst(4))")
             print("- \(transcript)\n")
         }
+        
+        return messages
     }
 }
