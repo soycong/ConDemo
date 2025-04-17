@@ -10,12 +10,12 @@ import Foundation
 final class VoiceNoteViewModel {
     // MARK: - Properties
 
-    var onMessagesUpdated: (([Message]) -> Void)?
+    var onMessagesUpdated: (([MessageData]) -> Void)?
     var onError: ((Error) -> Void)?
 
     private var streamingTranscriber: StreamingTranscriber?
 
-    private var messages: [Message] = [] {
+    var messages: [MessageData] = [] {
         didSet {
             onMessagesUpdated?(messages)
         }
@@ -51,7 +51,7 @@ final class VoiceNoteViewModel {
                         await MainActor.run {
                             print("실시간 대화 시작")
                             let isCurrentUser = speaker == "0"
-                            let newMessage: Message = .init(text: text,
+                            let newMessage: MessageData = .init(text: text,
                                                             isFromCurrentUser: isCurrentUser)
 
                             messages.append(newMessage)

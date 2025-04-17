@@ -10,12 +10,12 @@ import Foundation
 final class RecordingScriptViewModel {
     // MARK: - Properties
 
-    var onMessagesUpdated: (([Message]) -> Void)?
+    var onMessagesUpdated: (([MessageData]) -> Void)?
     var onError: ((Error) -> Void)?
 
-    private var transcriber: Transcriber?
+    private var streamingTranscriber: StreamingTranscriber?
 
-    private var messages: [Message] = [] {
+    private var messages: [MessageData] = [] {
         didSet {
             onMessagesUpdated?(messages)
         }
@@ -25,7 +25,7 @@ final class RecordingScriptViewModel {
 
     func setupTranscriber() {
         do {
-            transcriber = try Transcriber.parse(["--format", "flac",
+            streamingTranscriber = try StreamingTranscriber.parse(["--format", "flac",
                                                  "--path", "testAudio.flac"])
             fetchVoiceNote()
         } catch {
@@ -35,7 +35,7 @@ final class RecordingScriptViewModel {
     }
 
     private func fetchVoiceNote() {
-        guard let transcriber else {
+        guard let streamingTranscriber else {
             return
         }
 
@@ -43,15 +43,15 @@ final class RecordingScriptViewModel {
             do {
                 var lastUpdateTime: TimeInterval = 0
 
-                for await (text, speaker) in transcriber
-                    .transcribeWithMessageStream(encoding: transcriber.getMediaEncoding()) {
+                for await (text, speaker) in streamingTranscriber
+                    .transcribeWithMessageStream(encoding: streamingTranscriber.getMediaEncoding()) {
                     let now = Date().timeIntervalSince1970
 
                     if now - lastUpdateTime >= 1.0 { // 1초마다 UI업데이트
                         await MainActor.run {
                             print("실시간 대화 시작")
                             let isCurrentUser = speaker == "0"
-                            let newMessage: Message = .init(text: text,
+                            let newMessage: MessageData = .init(text: text,
                                                             isFromCurrentUser: isCurrentUser)
 
                             messages.append(newMessage)
