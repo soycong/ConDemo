@@ -247,24 +247,24 @@ extension RecordingMainViewController {
         viewModel.recordToggle()
         stopwatch.toggle()
         updateRecordButtonImage()
-
+        
         if viewModel.isRecording {
             setupBrightnessTimer()
         } else {
             resetBrightnessTimer()
         }
     }
-
+    
     private func updateRecordButtonImage() {
         let image = stopwatch
             .isRunning ? UIImage(systemName: "pause.fill") : UIImage(systemName: "play.fill")
         recordingMainView.recordButton.setImage(image, for: .normal)
     }
-
+    
     @objc
     private func saveButtonTapped() {
         resetBrightnessTimer()
-
+        
         let customAlert: CustomAlertView = .init()
         customAlert
             .show(in: recordingMainView, message: "녹음을 시작한 부분부터\n현재까지 저장합니다") { [weak self] in
@@ -272,30 +272,99 @@ extension RecordingMainViewController {
                 self?.navigationController?.popViewController(animated: true)
             }
     }
+}
 
+extension RecordingMainViewController {
     @objc
     private func completeButtonTapped() {
         resetBrightnessTimer()
-
-        let customAlert: CustomAlertView = .init()
-        customAlert
-            .show(in: recordingMainView, message: "녹음을 종료합니다") { [weak self] in
-                guard let self else {
-                    return
-                }
-
-//                if viewModel.isRecording {
-//                    viewModel.pauseRecording()
-//                    stopwatch.pause()
-//                    updateRecordButtonImage()
-//                }
+        
+        // 비동기 작업을 Task로 래핑
+        Task {
+            do {
+                let customAlert = CustomAlertView.init()
                 
-                // TODO: - 완료 페이지로 넘어간 후, 백버튼 누르면 랜딩 페이지로 가도록 수정.
-                let resultPath = viewModel.stopRecording()
-                navigationController?.pushViewController(SummaryViewController(), animated: true)
+                // 알림창 표시
+                await MainActor.run {
+                    customAlert.show(in: recordingMainView, message: "녹음을 종료합니다") { [weak self] in
+                        guard let self = self else { return }
+                        
+                        // 녹음 중지 로직
+                        if self.viewModel.isRecording {
+                            self.viewModel.pauseRecording()
+                            self.stopwatch.pause()
+                            self.updateRecordButtonImage()
+                        }
+                        
+                        // 녹음 파일 저장 및 경로 얻기
+                        let resultPath = self.viewModel.stopRecording()
+                        navigationController?.pushViewController(SummaryViewController(), animated: true)
+                        
+                        // 비동기로 트랜스크립션/챗지피티 분석 시작
+                        Task {
+                            do {
+                                // 1. 트랜스크립션 요청
+                                let messagesData = try await TranscribeManager.shared.transcribeAudioFile(at: resultPath)
+                                
+//                                // 분석 결과 저장
+//                                await MainActor.run {
+//                                    print("분석 완료: \(messagesData.count)개의 메시지가 생성되었습니다")
+//                                    
+//                                    // 분석 결과 저장 및 표시
+//                                    if !messagesData.isEmpty {
+//                                        // CoreData에 저장
+//                                        let coreDataManager = CoreDataManager.shared
+//                                        let analysis = coreDataManager.createAnalysis(messages: messagesData)
+//                                        
+//                                        // 야매 코드
+//                                        CoreDataManager.title = analysis.title!
+//                                        
+//                                        // 메시지 출력 (디버깅용)
+//                                        messagesData.forEach {
+//                                            print($0.text)
+//                                        }
+//                                    } else {
+//                                        print("분석 결과가 없습니다")
+//                                    }
+//                                }
+                                
+                                // 2. chatGPT 분석 요청
+                                await ChatGPTManager.shared.analyzeTranscript(messages: messagesData) { result in
+                                    DispatchQueue.main.async {
+                                        switch result {
+                                        case .success(let analysis):
+                                            // TODO: - 추후 변경
+                                            print(analysis)
+                                        case .failure(let error):
+                                            print("ChatGPT 분석 실패: \(error)")
+                                        }
+                                    }
+                                }
+                            } catch {
+                                // 에러 처리
+                                await MainActor.run {
+                                    print("음성 분석 실패: \(error)")
+                                    
+                                    // 에러 메시지 표시
+                                    let errorAlert = UIAlertController(
+                                        title: "음성 분석 실패",
+                                        message: "음성 분석 중 오류가 발생했습니다: \(error.localizedDescription)",
+                                        preferredStyle: .alert
+                                    )
+                                    errorAlert.addAction(UIAlertAction(title: "확인", style: .default))
+                                    self.present(errorAlert, animated: true)
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch {
+                print("Failed to show alert: \(error)")
             }
+        }
     }
 }
+
 
 extension RecordingMainViewController: StopwatchDelegate {
     func stopwatchDidUpdate(_: Stopwatch, elapsedTime: TimeInterval) {
