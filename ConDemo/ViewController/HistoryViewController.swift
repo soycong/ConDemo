@@ -33,18 +33,18 @@ final class HistoryViewController: UIViewController {
         setupAddTargets()
  
         // 테스트 코드
-#if DEBUG
-        // 기존 데이터 확인
-        CoreDataManager.shared.printAllAnalyses()
-        
-        // 데이터가 없으면 테스트 데이터 생성
-        let analyses = viewModel.analyses
-        if analyses.isEmpty {
-            print("저장된 데이터가 없어 테스트 데이터를 생성합니다.")
-            _ = CoreDataManager.shared.createTestData(count: 10)
-            fetchData() // 데이터 다시 불러오기
-        }
-#endif
+//#if DEBUG
+//        // 기존 데이터 확인
+//        CoreDataManager.shared.printAllAnalyses()
+//        
+//        // 데이터가 없으면 테스트 데이터 생성
+//        let analyses = viewModel.analyses
+//        if analyses.isEmpty {
+//            print("저장된 데이터가 없어 테스트 데이터를 생성합니다.")
+//            _ = CoreDataManager.shared.createTestData(count: 10)
+//            fetchData() // 데이터 다시 불러오기
+//        }
+//#endif
         
     }
 
@@ -110,7 +110,7 @@ extension HistoryViewController {
     }
     
     private func pushToSummaryViewController(with analysisTitle: String) {
-        let summaryVC: SummaryViewController = .init()
+        let summaryVC: SummaryViewController = .init(analysisTitle: analysisTitle)
         // 필요하다면 선택된 Analysis를 SummaryViewController에 전달
         // summaryVC.selectedAnalysis = viewModel.getAnalysis(at: analysisIndex)
         navigationController?.pushViewController(summaryVC, animated: true)
