@@ -28,18 +28,26 @@ extension AudioRecorder {
     /// 녹음 시작
 func startRecording() {
         let fileURL = getSharedDocumentsDirectory()
-            .appendingPathComponent("OurVoices-\(Date().timeIntervalSince1970).wav") // .wav로 변경
+            .appendingPathComponent("OurVoices-\(Date().timeIntervalSince1970).flac") // .flac로 변경
         
         // PCM 형식으로 설정 변경
-        let settings = [
-            AVFormatIDKey: Int(kAudioFormatLinearPCM),
-            AVSampleRateKey: 48000,  // AWS Transcribe와 동일한 샘플레이트 사용
-            AVNumberOfChannelsKey: 1,
-            AVLinearPCMBitDepthKey: 16,
-            AVLinearPCMIsFloatKey: false,
-            AVLinearPCMIsBigEndianKey: false,
-            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-        ] as [String : Any]
+//        let settings = [
+//            AVFormatIDKey: Int(kAudioFormatLinearPCM),
+//            AVSampleRateKey: 48000,  // AWS Transcribe와 동일한 샘플레이트 사용
+//            AVNumberOfChannelsKey: 1,
+//            AVLinearPCMBitDepthKey: 16,
+//            AVLinearPCMIsFloatKey: false,
+//            AVLinearPCMIsBigEndianKey: false,
+//            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+//        ] as [String : Any]
+    
+    // flac파일
+    let settings = [
+        AVFormatIDKey: Int(kAudioFormatFLAC),  // FLAC 형식으로 변경
+        AVSampleRateKey: 48000,
+        AVNumberOfChannelsKey: 1,
+        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+    ]
         
         do {
             audioRecorder = try AVAudioRecorder(url: fileURL, settings: settings)
