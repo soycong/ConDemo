@@ -137,7 +137,7 @@ struct SegmentItem: Codable {
     let endTime: String
 }
 
-extension TranscriptionResult {
+extension TranscriptionResponse {
     func printTranscript() {
         if let transcript = results.transcripts.first?.transcript {
             print("\n[전체 스크립트]")
