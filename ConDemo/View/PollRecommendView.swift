@@ -362,6 +362,10 @@ extension PollRecommendView {
             scrollView.setContentOffset(.zero, animated: false)
             currentPage = 0
         }
+        
+        print()
+        print(pollContents)
+        print()
     }
     
     // 튜플 배열 구조의 PollContent에 맞게 수정된 함수

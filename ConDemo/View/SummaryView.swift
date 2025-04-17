@@ -189,7 +189,7 @@ extension SummaryView {
         }
 
         summaryLabel
-            .text = analysis.summary?.description
+            .text = analysis.contents?.description
         summaryLabel.attributedText = setupParagraphStyle(text: summaryLabel.text ?? "")
         
         // 감정 레벨 설정

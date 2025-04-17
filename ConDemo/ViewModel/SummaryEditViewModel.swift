@@ -59,6 +59,10 @@ class SummaryEditViewModel {
                 }
             }
             
+            print()
+            print(summaryContent)
+            print()
+            
         } catch {
             print("분석 결과 조회 실패: \(error)")
         }
