@@ -9,12 +9,14 @@ import UIKit
 
 protocol HistoryViewDelegate: AnyObject {
     func didSelectHistory(at index: Int)
+    func deleteHistory(at index: Int)
 }
 
 final class HistoryView: UIView {
     // MARK: - Properties
 
     weak var delegate: HistoryViewDelegate?
+    private var analyses: [Analysis] = []
 
     private(set) var calenderButton: UIButton = {
         let button: UIButton = .init()
@@ -83,6 +85,11 @@ final class HistoryView: UIView {
     }
 
     // MARK: - Functions
+    
+    func updateData(with analyses: [Analysis]) {
+        self.analyses = analyses
+        historyTableView.reloadData()
+    }
 
     private func setupADimage() {
         adBanner.image = UIImage(named: "landingAD")
@@ -133,7 +140,7 @@ extension HistoryView: UITableViewDelegate {
 
 extension HistoryView: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        20
+        analyses.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -141,9 +148,23 @@ extension HistoryView: UITableViewDataSource {
                                                        for: indexPath) as? HistoryCell else {
             return UITableViewCell()
         }
-
-        cell.configure()
-
+        
+        let analysis = analyses[indexPath.row]
+        
+        // ViewController에서 설정 정보 전달
+        let imageName = "level\(analysis.level)"
+        
+        let dateFormatter: DateFormatter = .init()
+        dateFormatter.dateFormat = "yyyy.MM.dd"
+        
+        guard let date = analysis.date else { return cell }
+        let dateText = dateFormatter.string(from: date)
+        
+        let title = analysis.title
+        let titleText = "\(title) | 매운맛 \(analysis.level)"
+        
+        cell.configure(imageName: imageName, dateText: dateText, titleText: titleText)
+        
         return cell
     }
 
