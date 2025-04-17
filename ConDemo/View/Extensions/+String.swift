@@ -9,38 +9,54 @@ import Foundation
 import UIKit
 
 extension String {
-    // 검색한 텍스트 속성 변경
-    // - Parameters:
-    //   - searchText: 검색할 문자열
-    //   - font: 변경할 폰트
-    //   - color: 변경할 색상
-    //   - isAll: 모든 동일한 텍스트 변경 여부 (default = true)
-    // - Returns: 속성이 적용된 NSAttributedString
-
     func makeAttributedString(_ searchText: String, font: UIFont? = UIFont.systemFont(ofSize: 14),
-                              backgroundColor: UIColor? = .gray,
-                              isAll: Bool = true) -> NSAttributedString {
-        let attributedText: NSMutableAttributedString = .init(string: self)
+                              backgroundColor: UIColor = UIColor.gray.withAlphaComponent(0.3),
+                              selectedHighlightColor: UIColor = UIColor.systemBlue.withAlphaComponent(0.5),
+                              selectedTextColor: UIColor = .white,
+                              currentMatchIndex: Int = -1,
+                              textViewStyle: Bool = false
+    ) -> NSAttributedString {
+        let attributedText = NSMutableAttributedString(string: self)
+        
+        // 모든 매치 찾기
+        var allMatches: [NSRange] = []
+        
         if let regex = try? NSRegularExpression(pattern: searchText, options: .caseInsensitive) {
-            let range: NSRange = .init(startIndex..., in: self)
+            let range = NSRange(startIndex..., in: self)
             let matches = regex.matches(in: self, options: [], range: range)
-
-            if isAll {
-                for match in matches {
-                    var attributes: [NSAttributedString.Key: Any] = [.font: font]
-                    if let backgroundColor {
-                        attributes[.backgroundColor] = backgroundColor
-                    }
-                    attributedText.addAttributes(attributes, range: match.range)
-                }
-            } else if let firstItem = matches.first {
-                var attributes: [NSAttributedString.Key: Any] = [.font: font]
-                if let backgroundColor {
-                    attributes[.backgroundColor] = backgroundColor
-                }
-                attributedText.addAttributes(attributes, range: firstItem.range)
-            }
+            allMatches = matches.map { $0.range }
         }
+        
+        // 일반 배경색 적용
+        for match in allMatches {
+            attributedText.addAttributes([
+                .backgroundColor: backgroundColor,
+                .font: font as Any
+            ], range: match)
+        }
+        
+        // 선택된 매치에 다른 색상 적용
+        if currentMatchIndex >= 0 && currentMatchIndex < allMatches.count {
+            let selectedRange = allMatches[currentMatchIndex]
+            attributedText.addAttributes([
+                .backgroundColor: selectedHighlightColor,
+                .foregroundColor: selectedTextColor
+            ], range: selectedRange)
+        }
+        
+        // 텍스트뷰 스타일 적용 (줄 간격 등)
+        if textViewStyle {
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineSpacing = 10.0 // 줄 간격
+            
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont(name: "Pretendard-Medium", size: 14) ?? font as Any,
+                .paragraphStyle: paragraphStyle
+            ]
+            
+            attributedText.addAttributes(attributes, range: NSRange(location: 0, length: attributedText.length))
+        }
+        
         return attributedText
     }
 }
