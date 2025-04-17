@@ -116,7 +116,7 @@ final class MessageBubbleCell: UITableViewCell {
     //        }
     //    }
 
-    func configure(with message: Message, searchText: String = "") {
+    func configure(with message: MessageData, searchText: String = "") {
         messageLabel.text = message.text
         bubbleBackgroundView.snp.removeConstraints()
 

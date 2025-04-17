@@ -10,12 +10,12 @@ import Foundation
 final class RecordingScriptViewModel {
     // MARK: - Properties
 
-    var onMessagesUpdated: (([Message]) -> Void)?
+    var onMessagesUpdated: (([MessageData]) -> Void)?
     var onError: ((Error) -> Void)?
 
     private var streamingTranscriber: StreamingTranscriber?
 
-    private var messages: [Message] = [] {
+    private var messages: [MessageData] = [] {
         didSet {
             onMessagesUpdated?(messages)
         }

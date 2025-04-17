@@ -10,21 +10,21 @@ import UIKit
 final class VoiceNoteViewController: UIViewController {
     // MARK: - Properties
 
-    private let voiceNoteView: VoiceNoteView = .init()
-    private let viewModel: VoiceNoteViewModel = .init()
+    private(set) var voiceNoteView: VoiceNoteView = .init()
+    private(set) var viewModel: VoiceNoteViewModel = .init()
 
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view = voiceNoteView
-        // bind()
+        bind()
     }
 
     // MARK: - Functions
 
     private func bind() {
-        viewModel.setupTranscriber()
+//        viewModel.setupTranscriber()
 
         viewModel.onMessagesUpdated = { [weak self] messages in
             guard let self else {
@@ -41,8 +41,8 @@ final class VoiceNoteViewController: UIViewController {
             }
         }
 
-        viewModel.onError = { [weak self] _ in
-            // 에러 알러트 추가
-        }
+//        viewModel.onError = { [weak self] _ in
+//            // 에러 알러트 추가
+//        }
     }
 }

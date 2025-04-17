@@ -11,7 +11,7 @@ import UIKit
 final class MessageView: UIView {
     // MARK: - Properties
 
-    var messages: [Message] = Message.dummyMessages
+    var messages: [MessageData] = MessageData.dummyMessages
 
     private(set) var addButton: UIButton = {
         let button: UIButton = .init()
@@ -130,8 +130,8 @@ final class MessageView: UIView {
     }
 
     func sendImage(image: UIImage) {
-        messages.append(Message(text: "이미지입니다.", isFromCurrentUser: true, timestamp: Date(),
-                                image: image))
+        messages.append(MessageData(text: "이미지입니다.", isFromCurrentUser: true, timestamp: Date(),
+                                    image: image))
 
         inputTextField.text = ""
         messageBubbleTableView.reloadData()
@@ -139,8 +139,9 @@ final class MessageView: UIView {
     }
 
     func sendAudioMessage(url: URL, data: Data) {
-        messages.append(Message(text: "오디오", isFromCurrentUser: true, timestamp: Date(), image: nil,
-                                audioURL: url, audioData: data))
+        messages.append(MessageData(text: "오디오", isFromCurrentUser: true, timestamp: Date(),
+                                    image: nil,
+                                    audioURL: url, audioData: data))
 
         messageBubbleTableView.reloadData()
         scrollToBottom()
@@ -281,7 +282,7 @@ final class MessageView: UIView {
             return
         }
 
-        messages.append(Message(text: text, isFromCurrentUser: true, timestamp: Date()))
+        messages.append(MessageData(text: text, isFromCurrentUser: true, timestamp: Date()))
 
         messageBubbleTableView.reloadData()
         inputTextField.text = ""

@@ -12,10 +12,11 @@ final class RecordingScriptView: UIView {
     // MARK: - Properties
 
 //    var messages: [Message] = Message.dummyMessages
-    var messages: [Message] = []
+    var messages: [MessageData] = []
     var highlightText = ""
 
-    private var scriptStackViewBottomConstraint: Constraint?
+    var scriptTextView: UITextView = {
+        let textView: UITextView = .init()
 
     // 매칭 구현
     private var matchedWords: [NSRange] = []
@@ -41,6 +42,14 @@ final class RecordingScriptView: UIView {
 
         return textView
     }()
+
+    private var scriptStackViewBottomConstraint: Constraint?
+
+    // 매칭 구현
+    private var matchedWordIndexPaths: [IndexPath] = []
+    private var currentMatchIndex: Int = -1
+
+    private var voiceNoteSearchBar: VoiceNoteSearchBar = .init()
 
     private let upButton: UIButton = {
         let button: UIButton = .init()
@@ -109,7 +118,7 @@ final class RecordingScriptView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .backgroundGray
-        
+
         // setupTextView()
         setupKeyboardNotifications()
         setUpSearchBar()
@@ -129,8 +138,7 @@ final class RecordingScriptView: UIView {
         NotificationCenter.default.removeObserver(self)
     }
 
-    // MARK: - Functions
-    
+    // MARK: - Functions    
     func updateTextView(_ scriptText: String?) {
         if let scriptText = scriptText {
             scriptTextView.text = scriptTextView.text + "\n" + scriptText

@@ -19,7 +19,7 @@ final class RecordingScriptViewController: UIViewController, TranscriptionDelega
         super.viewDidLoad()
         view = recordingScriptView
     }
-    
+
     // TranscriptionDelegate 메서드 구현
     func didReceiveTranscription(text: String, speaker: String) {
         // 마침표를 기준으로 줄바꿈 적용
