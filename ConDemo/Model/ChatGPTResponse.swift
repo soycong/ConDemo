@@ -118,6 +118,10 @@ extension ChatGPTResponse {
         
         analysisData.summary!.date = Date()
         
+        print("아날리시스 데이터")
+        print(analysisData)
+        print()
+        
         // 최종 데이터 리턴
         return analysisData
     }
