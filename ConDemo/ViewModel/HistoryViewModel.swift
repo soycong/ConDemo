@@ -55,12 +55,19 @@ final class HistoryViewModel {
     }
     
     // 타이틀 포맷팅
-    func formatTitle(_ title: String?, level: Int32) -> String {
-        guard let title = title, !title.isEmpty else {
-            return "대화 분석 | 매운맛 \(level)"
-        }
-        
-        return "\(title) | 매운맛 \(level)"
-    }
+//    func formatTitle(_ title: String?, level: Int32) -> String {
+//        guard let title = title, !title.isEmpty else {
+//            return "대화 분석 | 매운맛 \(level)"
+//        }
+//        
+//        switch level {
+//        case 1 ... 5:
+//            return "\(title) | 순한맛 \(level)단계"
+//        case 6 ... 10:
+//            return "\(title) | 순한맛 \(level)단계"
+//        default:
+//            return "분석이 어렵습니다."
+//        }
+//    }
 }
 
