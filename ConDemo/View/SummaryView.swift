@@ -176,7 +176,7 @@ extension SummaryView {
     }
 
     func setupText(analysis: Analysis) {
-        summaryTitleLabel.text = analysis.title ?? "제목 없음"
+        summaryTitleLabel.text = analysis.title?.replacingOccurrences(of: "\"", with: "") ?? "제목 없음"
         
         // 날짜 설정
         if let date = analysis.date {
@@ -188,26 +188,31 @@ extension SummaryView {
             summaryDateLabel.text = "날짜 정보 없음"
         }
 
-        summaryLabel
-            .text = analysis.contents?.description
-        summaryLabel.attributedText = setupParagraphStyle(text: summaryLabel.text ?? "")
+        // 내용 설정 - 줄바꿈 보존
+        if let contents = analysis.contents {
+            summaryLabel.attributedText = setupParagraphStyle(text: contents)
+        } else {
+            summaryLabel.text = "내용 없음"
+        }
         
         // 감정 레벨 설정
         emotionLevelIndicator.emotionLevel = Int(analysis.level)
     }
-}
 
-extension SummaryView {
     private func setupParagraphStyle(text: String) -> NSAttributedString {
-        let paragraphStyle: NSMutableParagraphStyle = .init()
+        let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineSpacing = 10.0
+        paragraphStyle.paragraphSpacing = 8.0 // 문단 사이 간격 추가
+        
+        // 줄바꿈 보존
+        let cleanText = text.replacingOccurrences(of: "\"", with: "")
+        
+        let attributes: [NSAttributedString.Key: Any] = [
+            .paragraphStyle: paragraphStyle,
+            .font: UIFont(name: "Pretendard-Medium", size: 14) ?? UIFont.systemFont(ofSize: 14),
+            .foregroundColor: UIColor.label
+        ]
 
-        let attributes: [NSAttributedString.Key: Any] = [.paragraphStyle: paragraphStyle,
-                                                         .font: UIFont(name: "Pretendard-Medium",
-                                                                       size: 12),
-                                                         .foregroundColor: UIColor.label]
-
-        return NSAttributedString(string: text, attributes: attributes)
+        return NSAttributedString(string: cleanText, attributes: attributes)
     }
 }
-

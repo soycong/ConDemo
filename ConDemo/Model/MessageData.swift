@@ -42,7 +42,7 @@ extension MessageData {
         let calendar: Calendar = .current
         let now: Date = .init()
 
-        return [MessageData(text: "안녕하세요? TROBL AI입니다.", isFromCurrentUser: true,
+        return [MessageData(text: "안녕하세요? TROBL AI입니다.", isFromCurrentUser: false,
                             timestamp: calendar.date(byAdding: .minute, value: -120, to: now)!)]
     }
 }

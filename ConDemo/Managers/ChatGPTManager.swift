@@ -103,36 +103,66 @@ final class ChatGPTManager {
             [NSLocalizedDescriptionKey: "ChatGPT 응답 내용이 없습니다"])
         }
         
+        // ChatGPT가 에러 메시지를 반환한 경우 처리
+        if content.contains("대화 내용이 제공되지 않아") || content.contains("분석을 진행할 수 없습니다") {
+            throw NSError(domain: String(describing: ChatGPTManager.self), code: 3, userInfo:
+            [NSLocalizedDescriptionKey: "ChatGPT가 대화 내용을 분석할 수 없습니다: \(content)"])
+        }
+        
+        // 기본값으로 초기화된 객체 생성
         var analysisData = AnalysisData()
         analysisData.date = Date()
+        analysisData.title = "대화 분석"  // 기본 제목 설정
+        analysisData.contents = ""       // 기본 내용 설정
+        analysisData.level = 0           // 기본 레벨 설정
+        analysisData.polls = []          // 빈 배열로 초기화
         
-        // 1. title 추출
+        // 1. title 추출 시도
         if let titleMatch = content.range(of: "제목: ([^\n]+)", options: .regularExpression) {
             let titleRange = titleMatch.lowerBound ..< titleMatch.upperBound
             let titleString = String(content[titleRange])
             analysisData.title = titleString.replacingOccurrences(of: "제목: ", with: "")
+                .replacingOccurrences(of: "\"", with: "")
         }
         
-        // 2. contents 추출
-        let issuePattern = "쟁점 (\\d+): ([^\n]+)"
-        let issueRegex = try NSRegularExpression(pattern: issuePattern)
-        let nsString = content as NSString
-        let issueMatch = issueRegex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
-        
-        var issues = [String]()
-        issueMatch.forEach { match in
-            if match.numberOfRanges > 2 {
-                let issueNumber = nsString.substring(with: match.range(at: 1))
-                let issueText = nsString.substring(with: match.range(at: 2))
-                issues.append("\(issueNumber). \(issueText)")
+        // 2. contents 추출 시도
+        do {
+            let issuePattern = "쟁점 (\\d+): ([^\n]+)"
+            let issueRegex = try NSRegularExpression(pattern: issuePattern)
+            let nsString = content as NSString
+            let issueMatch = issueRegex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
+            
+            var issues = [String]()
+            issueMatch.forEach { match in
+                if match.numberOfRanges > 2 {
+                    let issueNumber = nsString.substring(with: match.range(at: 1))
+                    let issueText = nsString.substring(with: match.range(at: 2))
+                        .replacingOccurrences(of: "\"", with: "")
+                    issues.append("\(issueNumber). \(issueText)")
+                }
             }
+            
+            if !issues.isEmpty {
+                analysisData.contents = issues.joined(separator: "\n")
+            } else {
+                // 이슈를 찾지 못한 경우, 직접 파싱 시도
+                let lines = content.components(separatedBy: "\n")
+                for line in lines where line.contains("쟁점") || line.contains("주요 내용") {
+                    if issues.isEmpty {
+                        issues.append(line.replacingOccurrences(of: "\"", with: ""))
+                    }
+                }
+                
+                if !issues.isEmpty {
+                    analysisData.contents = issues.joined(separator: "\n")
+                }
+            }
+        } catch {
+            print("정규식 오류: \(error)")
         }
         
-        analysisData.contents = issues.joined(separator: "\n")
-        
-        // 3. level 추출
-        let levelPattern = "싸움의 격한 정도: (\\d+)"
-        if let levelMatch = content.range(of: levelPattern, options: .regularExpression) {
+        // 3. level 추출 시도
+        if let levelMatch = content.range(of: "싸움의 격한 정도: (\\d+)", options: .regularExpression) {
             let levelString = String(content[levelMatch])
             if let levelDigit = levelString.components(separatedBy: ": ").last,
                let level = Int(levelDigit) {
@@ -141,52 +171,172 @@ final class ChatGPTManager {
         }
         
         // 4. poll 추출
-        analysisData.polls = []
-        let pollPatern = "쟁점 제목: ([^\n]+)\\s*내용: ([^\n]+)\\s*나의 의견: ([^\n]+)\\s*상대방 의견: ([^\n]+)\\s*옵션: ([^\n]+)"
-        let pollRegex = try NSRegularExpression(pattern: pollPatern, options: [])
-        let pollMatchs = pollRegex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
+        let pollPattern = "쟁점 제목:\\s*([^\\n]+)[\\s\\n]*-?\\s*내용:\\s*([^\\n]+)[\\s\\n]*-?\\s*나의 의견:\\s*([^\\n]+)[\\s\\n]*-?\\s*상대방 의견:\\s*([^\\n]+)[\\s\\n]*-?\\s*옵션:\\s*([^\\n]+)"
         
-        pollMatchs.forEach { match in
-            if match.numberOfRanges > 5 {
-                var pollData = PollData()
-                pollData.title = nsString.substring(with: match.range(at: 1))
-                pollData.contents = nsString.substring(with: match.range(at: 2))
-                pollData.his = nsString.substring(with: match.range(at: 3))
-                pollData.hers = nsString.substring(with: match.range(at: 4))
-                pollData.date = Date()
-                
-                let optionString = nsString.substring(with: match.range(at: 5))
-                let rawOptions = optionString.components(separatedBy: ", ")
-                let optionLabels = ["A", "B", "C", "D"]
-                
-                pollData.options = []
-                for i in 0 ..< min(4, rawOptions.count) {
-                    pollData.options.append("\(optionLabels[i]). \(rawOptions[i])")
+        do {
+            let pollRegex = try NSRegularExpression(pattern: pollPattern, options: [.dotMatchesLineSeparators])
+            let nsString = content as NSString
+            let pollMatches = pollRegex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
+            
+            print("찾은 Poll 수: \(pollMatches.count)")
+            
+            for match in pollMatches {
+                if match.numberOfRanges > 5 {
+                    var pollData = PollData()
+                    pollData.title = nsString.substring(with: match.range(at: 1))
+                        .replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                    pollData.contents = nsString.substring(with: match.range(at: 2))
+                        .replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                    pollData.his = nsString.substring(with: match.range(at: 3))
+                        .replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                    pollData.hers = nsString.substring(with: match.range(at: 4))
+                        .replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                    pollData.date = Date()
+                    
+                    let optionString = nsString.substring(with: match.range(at: 5))
+                    let rawOptions = optionString.components(separatedBy: ", ")
+                    let optionLabels = ["A", "B", "C", "D"]
+                    
+                    pollData.options = []
+                    for i in 0 ..< min(4, rawOptions.count) {
+                        let option = rawOptions[i].replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        pollData.options.append("\(optionLabels[i]). \(option)")
+                    }
+                    
+                    analysisData.polls!.append(pollData)
                 }
-                
-                analysisData.polls!.append(pollData)
+            }
+            
+            // 디버깅 - Poll 추출 결과 출력
+            if analysisData.polls!.isEmpty {
+                print("Poll을 추출하지 못했습니다. 원본 내용:")
+                print(content)
+            } else {
+                print("Poll 추출 성공: \(analysisData.polls!.count)개")
+            }
+            
+        } catch {
+            print("Poll 정규식 오류: \(error)")
+        }
+        
+        // Poll 추출 실패 시 fallback - 간단한 구분자로 2차 시도
+        if analysisData.polls!.isEmpty {
+            print("정규식을 통한 Poll 추출 실패. 내용 기반 추출 시도 중...")
+            
+            // 출력된 GPT 응답의 예제를 기준으로 파싱
+            let polls = extractPollsFromContent(content)
+            if !polls.isEmpty {
+                analysisData.polls = polls
+                print("내용 기반 Poll 추출 성공: \(polls.count)개")
+            } else {
+                print("내용 기반 Poll 추출 실패")
             }
         }
         
-        // 5. Summary 추출
-        analysisData.summary = SummaryData()
+        // 5. Summary 추출 시도
+        var summaryData = SummaryData()
+        summaryData.date = Date()
+        summaryData.title = "대화 요약"  // 기본 제목
+        summaryData.contents = "대화 내용에 대한 요약입니다."  // 기본 내용
+        
+        // 커뮤니티 요약 제목 추출 시도
         if let summaryStartRange = content.range(of: "커뮤니티", options: .caseInsensitive),
            let summaryTitleMatch = content.range(of: "제목: ([^\n]+)", options: .regularExpression, range: summaryStartRange.upperBound ..< content.endIndex) {
             let summaryTitleRange = summaryTitleMatch.lowerBound ..< summaryTitleMatch.upperBound
             let summaryTitleString = String(content[summaryTitleRange])
-            analysisData.summary!.title = summaryTitleString.replacingOccurrences(of: "제목: ", with: "")
+            summaryData.title = summaryTitleString.replacingOccurrences(of: "제목: ", with: "")
+                .replacingOccurrences(of: "\"", with: "")
         }
         
+        // 커뮤니티 요약 내용 추출 시도
         if let summaryStartRange = content.range(of: "커뮤니티", options: .caseInsensitive),
            let summaryContentMatch = content.range(of: "내용: ([\\s\\S]+)", options: .regularExpression, range: summaryStartRange.upperBound ..< content.endIndex) {
             let summaryContentRange = summaryContentMatch.lowerBound ..< summaryContentMatch.upperBound
             let summaryContentString = String(content[summaryContentRange])
-            analysisData.summary!.contents = summaryContentString.replacingOccurrences(of: "내용: ", with: "")
+            summaryData.contents = summaryContentString.replacingOccurrences(of: "내용: ", with: "")
+                .replacingOccurrences(of: "\"", with: "")
         }
         
-        analysisData.summary!.date = Date()
+        // 제목/내용 없이 분석이 필요한 경우 대화 내용으로 대체
+        if summaryData.title == "대화 요약" && content.count > 30 {
+            // API가 분석을 거부한 경우가 아니라면 응답의 일부를 요약으로 사용
+            if !content.contains("대화 내용이 제공되지 않아") {
+                summaryData.contents = String(content.prefix(300)).replacingOccurrences(of: "\"", with: "")
+            }
+        }
         
-        // 최종 데이터 리턴
+        analysisData.summary = summaryData
+        
         return analysisData
+    }
+}
+
+extension ChatGPTManager {
+    private func extractPollsFromContent(_ content: String) -> [PollData] {
+        var polls: [PollData] = []
+        let lines = content.components(separatedBy: "\n")
+        
+        var currentPoll: PollData? = nil
+        
+        for line in lines {
+            let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            if trimmedLine.contains("쟁점 제목:") {
+                // 이전 Poll 저장
+                if let poll = currentPoll, !poll.title.isEmpty {
+                    polls.append(poll)
+                }
+                
+                // 새 Poll 시작
+                currentPoll = PollData()
+                currentPoll?.date = Date()
+                currentPoll?.title = trimmedLine.replacingOccurrences(of: "쟁점 제목:", with: "")
+                    .replacingOccurrences(of: "-", with: "")
+                    .replacingOccurrences(of: "\"", with: "")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                
+            } else if var poll = currentPoll {
+                // 기존 Poll에 정보 추가
+                if trimmedLine.contains("내용:") {
+                    poll.contents = trimmedLine.replacingOccurrences(of: "내용:", with: "")
+                        .replacingOccurrences(of: "-", with: "")
+                        .replacingOccurrences(of: "\"", with: "")
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                } else if trimmedLine.contains("나의 의견:") {
+                    poll.his = trimmedLine.replacingOccurrences(of: "나의 의견:", with: "")
+                        .replacingOccurrences(of: "-", with: "")
+                        .replacingOccurrences(of: "\"", with: "")
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                } else if trimmedLine.contains("상대방 의견:") {
+                    poll.hers = trimmedLine.replacingOccurrences(of: "상대방 의견:", with: "")
+                        .replacingOccurrences(of: "-", with: "")
+                        .replacingOccurrences(of: "\"", with: "")
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                } else if trimmedLine.contains("옵션:") {
+                    let optionsText = trimmedLine.replacingOccurrences(of: "옵션:", with: "")
+                        .replacingOccurrences(of: "-", with: "")
+                        .replacingOccurrences(of: "\"", with: "")
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    let rawOptions = optionsText.components(separatedBy: ", ")
+                    let optionLabels = ["A", "B", "C", "D"]
+                    
+                    poll.options = []
+                    for i in 0 ..< min(4, rawOptions.count) {
+                        poll.options.append("\(optionLabels[i]). \(rawOptions[i].trimmingCharacters(in: .whitespaces))")
+                    }
+                }
+            }
+        }
+        
+        // 마지막 Poll 저장
+        if let poll = currentPoll, !poll.title.isEmpty, !poll.options.isEmpty {
+            polls.append(poll)
+        }
+        
+        return polls
     }
 }
