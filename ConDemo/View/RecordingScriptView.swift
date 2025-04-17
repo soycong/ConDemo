@@ -15,9 +15,6 @@ final class RecordingScriptView: UIView {
     var messages: [MessageData] = []
     var highlightText = ""
 
-    var scriptTextView: UITextView = {
-        let textView: UITextView = .init()
-
     // 매칭 구현
     private var matchedWords: [NSRange] = []
     private var currentMatchIndex: Int = -1
@@ -44,12 +41,6 @@ final class RecordingScriptView: UIView {
     }()
 
     private var scriptStackViewBottomConstraint: Constraint?
-
-    // 매칭 구현
-    private var matchedWordIndexPaths: [IndexPath] = []
-    private var currentMatchIndex: Int = -1
-
-    private var voiceNoteSearchBar: VoiceNoteSearchBar = .init()
 
     private let upButton: UIButton = {
         let button: UIButton = .init()

@@ -23,8 +23,8 @@ final class RecordingScriptViewModel {
 
     // MARK: - Functions
     
-    func addMessage(_ message: Message) {
-        messages.append(message)
+    func addMessage(_ messageData: MessageData) {
+        messages.append(messageData)
     }
 
     func setupTranscriber() {

@@ -61,8 +61,8 @@ extension RecordingMainViewModel {
         startSegmentTimer()
     }
 
-    func stopRecording() {
-        audioRecorder.stopRecording()
+    func stopRecording() -> URL {
+        let resultPath = audioRecorder.stopRecording()
         isRecording = false
         hasStartedRecordingOnce = false
         print("녹음 종료")
@@ -72,6 +72,8 @@ extension RecordingMainViewModel {
         
         // 마지막 세그먼트 처리
         processCurrentSegment()
+        
+        return resultPath
     }
 
     func recordToggle() {

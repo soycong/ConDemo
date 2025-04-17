@@ -31,7 +31,7 @@ final class RecordingScriptViewController: UIViewController, TranscriptionDelega
                                                      options: .regularExpression)
         
         let isCurrentUser = speaker == "0"
-        let newMessage = Message(text: formattedText, isFromCurrentUser: isCurrentUser)
+        let newMessage = MessageData(text: formattedText, isFromCurrentUser: isCurrentUser)
         
         // 기존 메시지에 추가하거나 새로운 메시지로 설정
         // viewModel.addMessage(newMessage)
