@@ -2,8 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>S3BucketName</key>
-	<string>$(S3BucketName)</string>
+	<key>CHATGPT_API_KEY</key>
+	<string>$(CHATGPT_API_KEY)</string>
+	<key>S3_BUCKET_NAME</key>
+	<string>$(S3_BUCKET_NAME)</string>
 	<key>AWS_SECRET_ACCESS_KEY</key>
 	<string>$(AWS_SECRET_ACCESS_KEY)</string>
 	<key>AWS_ACCESS_KEY_ID</key>
