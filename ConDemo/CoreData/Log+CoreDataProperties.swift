@@ -6,19 +6,14 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
-
-extension Log {
-
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Log> {
-        return NSFetchRequest<Log>(entityName: "Log")
+public extension Log {
+    @nonobjc
+    class func fetchRequest() -> NSFetchRequest<Log> {
+        NSFetchRequest<Log>(entityName: "Log")
     }
-
-
 }
 
-extension Log : Identifiable {
-
-}
+extension Log: Identifiable { }

@@ -8,15 +8,8 @@
 import Foundation
 
 struct AnalysisData {
-    let title: String
-    let date: Date
-    let contents: String
-    let level: Int
-    let messages: [MessageData]
-    let log: LogData
-    let polls: [PollData]
-    let summary: SummaryData
-    
+    // MARK: - Nested Types
+
     struct LogData {
         let date: Date
         let contents: String
@@ -36,4 +29,15 @@ struct AnalysisData {
         let contents: String
         let date: Date
     }
+
+    // MARK: - Properties
+
+    let title: String
+    let date: Date
+    let contents: String
+    let level: Int
+    let messages: [MessageData]
+    let log: LogData
+    let polls: [PollData]
+    let summary: SummaryData
 }

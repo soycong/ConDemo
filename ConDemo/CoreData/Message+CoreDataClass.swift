@@ -6,10 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(Message)
-public class Message: NSManagedObject {
-
-}
+public class Message: NSManagedObject { }

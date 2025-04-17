@@ -6,25 +6,21 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
-
-extension Poll {
-
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Poll> {
-        return NSFetchRequest<Poll>(entityName: "Poll")
+public extension Poll {
+    @nonobjc
+    class func fetchRequest() -> NSFetchRequest<Poll> {
+        NSFetchRequest<Poll>(entityName: "Poll")
     }
 
-    @NSManaged public var date: Date?
-    @NSManaged public var title: String?
-    @NSManaged public var contents: String?
-    @NSManaged public var hers: String?
-    @NSManaged public var his: String?
-    @NSManaged public var option: NSObject?
-
+    @NSManaged var date: Date?
+    @NSManaged var title: String?
+    @NSManaged var contents: String?
+    @NSManaged var hers: String?
+    @NSManaged var his: String?
+    @NSManaged var option: NSObject?
 }
 
-extension Poll : Identifiable {
-
-}
+extension Poll: Identifiable { }

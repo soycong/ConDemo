@@ -33,7 +33,7 @@ final class RecordingScriptViewController: UIViewController {
 
             recordingScriptView.messages = messages
             recordingScriptView.scriptTextView.text = messages.last?.text
-            
+
             // recordingScriptView.messageBubbleTableView.reloadData()
 
 //            if let lastRow = messages.indices.last {

@@ -6,22 +6,18 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
-
-extension Summary {
-
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Summary> {
-        return NSFetchRequest<Summary>(entityName: "Summary")
+public extension Summary {
+    @nonobjc
+    class func fetchRequest() -> NSFetchRequest<Summary> {
+        NSFetchRequest<Summary>(entityName: "Summary")
     }
 
-    @NSManaged public var title: String?
-    @NSManaged public var contents: String?
-    @NSManaged public var date: Date?
-
+    @NSManaged var title: String?
+    @NSManaged var contents: String?
+    @NSManaged var date: Date?
 }
 
-extension Summary : Identifiable {
-
-}
+extension Summary: Identifiable { }

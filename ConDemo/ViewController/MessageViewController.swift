@@ -38,9 +38,10 @@ final class MessageViewController: UIViewController {
         messageView.setAudioDelegate(self)
 
         setupActions()
-        
+
         // 야매 코드
-        sheetViewController.viewModel.messages = CoreDataManager.shared.fetchMessages(from: CoreDataManager.title)
+        sheetViewController.viewModel.messages = CoreDataManager.shared
+            .fetchMessages(from: CoreDataManager.title)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -176,20 +177,20 @@ final class MessageViewController: UIViewController {
     private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
     }
-    
+
     @objc
     private func waveButtonTapped() {
         // 트랜스크립트 데이터 로드
         let messages = CoreDataManager.shared.fetchMessages(from: CoreDataManager.title)
-        
+
         // VoiceNoteViewController의 viewModel에 메시지 설정
         sheetViewController.viewModel.messages = messages
-        
+
         // VoiceNoteView에 메시지 직접 설정
         // TODO: - 뷰에서 메세지 참조하는 거 없애야됨...
         sheetViewController.voiceNoteView.messages = messages
         sheetViewController.voiceNoteView.messageBubbleTableView.reloadData()
-        
+
         // 바텀 시트로 표시
         presentAsBottomSheet(sheetViewController)
     }
@@ -378,10 +379,11 @@ extension MessageViewController: UISheetPresentationControllerDelegate {
 
         present(viewController, animated: true)
     }
-    
+
     func sheetPresentationControllerDidChangeSelectedDetentIdentifier(_ sheetPresentationController: UISheetPresentationController) {
         // 시트가 custom20 높이로 변경되면 dismiss
-        if sheetPresentationController.selectedDetentIdentifier == UISheetPresentationController.Detent.Identifier("custom20") {
+        if sheetPresentationController.selectedDetentIdentifier == UISheetPresentationController
+            .Detent.Identifier("custom20") {
             // 약간의 지연 후에 dismiss 실행 (애니메이션이 자연스럽게 보이도록)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 sheetPresentationController.presentedViewController.dismiss(animated: true)

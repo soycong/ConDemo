@@ -6,10 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(Summary)
-public class Summary: NSManagedObject {
-
-}
+public class Summary: NSManagedObject { }

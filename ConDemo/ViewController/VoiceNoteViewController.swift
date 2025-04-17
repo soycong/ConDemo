@@ -18,7 +18,7 @@ final class VoiceNoteViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view = voiceNoteView
-         bind()
+        bind()
     }
 
     // MARK: - Functions

@@ -6,31 +6,27 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
-
-extension Analysis {
- 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Analysis> {
-        return NSFetchRequest<Analysis>(entityName: "Analysis")
+public extension Analysis {
+    @nonobjc
+    class func fetchRequest() -> NSFetchRequest<Analysis> {
+        NSFetchRequest<Analysis>(entityName: "Analysis")
     }
 
-    @NSManaged public var title: String?
-    @NSManaged public var date: Date?
-    @NSManaged public var contents: String?
-    @NSManaged public var level: Int32
-    @NSManaged public var messages: NSObject?
-    @NSManaged public var log: NSObject?
-    @NSManaged public var polls: NSObject?
-    @NSManaged public var summary: NSObject?
-    @NSManaged public var analysismessages: Message?
-    @NSManaged public var analysislog: Log?
-    @NSManaged public var analysispoll: Poll?
-    @NSManaged public var analysissummary: Summary?
-
+    @NSManaged var title: String?
+    @NSManaged var date: Date?
+    @NSManaged var contents: String?
+    @NSManaged var level: Int32
+    @NSManaged var messages: NSObject?
+    @NSManaged var log: NSObject?
+    @NSManaged var polls: NSObject?
+    @NSManaged var summary: NSObject?
+    @NSManaged var analysismessages: Message?
+    @NSManaged var analysislog: Log?
+    @NSManaged var analysispoll: Poll?
+    @NSManaged var analysissummary: Summary?
 }
 
-extension Analysis : Identifiable {
-
-}
+extension Analysis: Identifiable { }

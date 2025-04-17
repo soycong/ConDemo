@@ -6,10 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(Poll)
-public class Poll: NSManagedObject {
-
-}
+public class Poll: NSManagedObject { }

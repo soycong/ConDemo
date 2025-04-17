@@ -6,10 +6,8 @@
 //
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 @objc(Log)
-public class Log: NSManagedObject {
-
-}
+public class Log: NSManagedObject { }

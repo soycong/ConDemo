@@ -131,7 +131,7 @@ final class MessageView: UIView {
 
     func sendImage(image: UIImage) {
         messages.append(MessageData(text: "이미지입니다.", isFromCurrentUser: true, timestamp: Date(),
-                                image: image))
+                                    image: image))
 
         inputTextField.text = ""
         messageBubbleTableView.reloadData()
@@ -139,8 +139,9 @@ final class MessageView: UIView {
     }
 
     func sendAudioMessage(url: URL, data: Data) {
-        messages.append(MessageData(text: "오디오", isFromCurrentUser: true, timestamp: Date(), image: nil,
-                                audioURL: url, audioData: data))
+        messages.append(MessageData(text: "오디오", isFromCurrentUser: true, timestamp: Date(),
+                                    image: nil,
+                                    audioURL: url, audioData: data))
 
         messageBubbleTableView.reloadData()
         scrollToBottom()

@@ -1,5 +1,5 @@
 //
-//  TranscriptionResult.swift
+//  TranscriptionResponse.swift
 //  ConDemo
 //
 //  Created by 이명지 on 4/15/25.
@@ -149,8 +149,8 @@ extension TranscriptionResponse {
         guard let speakerLabels = results.speakerLabels else {
             return []
         }
-        
-        var messages = [MessageData]()
+
+        var messages: [MessageData] = .init()
         for segment in speakerLabels.segments {
             let transcript = segment.items.map { item -> String in
                 if let matchingItem = results.items.first(where: {
@@ -163,11 +163,11 @@ extension TranscriptionResponse {
 
             let isFromCurrentUser = segment.speakerLabel.dropFirst(4) == "0" ? true : false
             messages.append(MessageData(text: transcript, isFromCurrentUser: isFromCurrentUser))
-            
+
             print("화자 \(segment.speakerLabel.dropFirst(4))")
             print("- \(transcript)\n")
         }
-        
+
         return messages
     }
 }
