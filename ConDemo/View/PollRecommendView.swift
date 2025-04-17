@@ -336,49 +336,72 @@ extension PollRecommendView: UITextViewDelegate {
 }
 
 extension PollRecommendView {
-    private func applyFormattedPollContent(to textView: UITextView, with content: PollContent) {
+    // 날짜 업데이트
+    func updateDate(_ date: String) {
+        if !date.isEmpty {
+            dateLabel.text = date
+        }
+    }
+    
+    // Poll 콘텐츠 업데이트
+    func updatePollContents(_ contents: [PollContent]) {
+        // 최대 3개까지만 처리
+        let count = min(contents.count, 3)
+        
+        for i in 0..<count {
+            if i < textViews.count && i < contents.count {
+                pollContents[i] = contents[i]
+                applyFormattedPollContent(to: textViews[i], with: contents[i])
+            }
+        }
+        
+        // 페이지 컨트롤 업데이트
+        pageControl.numberOfPages = count
+        if count > 0 {
+            pageControl.currentPage = 0
+            scrollView.setContentOffset(.zero, animated: false)
+            currentPage = 0
+        }
+    }
+    
+    // 튜플 배열 구조의 PollContent에 맞게 수정된 함수
+    func applyFormattedPollContent(to textView: UITextView, with content: PollContent) {
         let attributedText: NSMutableAttributedString = .init()
 
         // 1. 제목 스타일
-        let titleAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 24,
-                                                                                       weight: .bold),
+        let titleAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 24, weight: .bold),
                                                               .foregroundColor: UIColor.label]
 
         attributedText.append(NSAttributedString(string: content.title + "\n\n",
                                                  attributes: titleAttributes))
 
         // 2. 본문 스타일
-        let bodyAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16,
-                                                                                      weight: .regular),
+        let bodyAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16, weight: .regular),
                                                              .foregroundColor: UIColor.label]
         attributedText.append(NSAttributedString(string: content.body + "\n\n",
                                                  attributes: bodyAttributes))
 
-        // 3. 대화 스타일
-        for (speaker, text) in content.dialogues {
+        // 3. 대화 스타일 - 튜플 배열로 처리하도록 수정
+        for dialogue in content.dialogues {
             // 화자(Speaker) 스타일
             let speakerAttributes: [NSAttributedString.Key: Any] =
-                [.font: UIFont.systemFont(ofSize: 20,
-                                          weight: .bold),
+                [.font: UIFont.systemFont(ofSize: 20, weight: .bold),
                  .foregroundColor: UIColor.label]
-            attributedText.append(NSAttributedString(string: speaker + "\n",
+            attributedText.append(NSAttributedString(string: dialogue.speaker + "\n",
                                                      attributes: speakerAttributes))
 
             // 대화 내용 스타일
             let dialogueAttributes: [NSAttributedString.Key: Any] =
-                [.font: UIFont.systemFont(ofSize: 16,
-                                          weight: .regular),
-                 .foregroundColor: UIColor
-                     .label]
+                [.font: UIFont.systemFont(ofSize: 16, weight: .regular),
+                 .foregroundColor: UIColor.label]
 
-            attributedText.append(NSAttributedString(string: text + "\n\n",
+            attributedText.append(NSAttributedString(string: dialogue.text + "\n\n",
                                                      attributes: dialogueAttributes))
         }
 
         // 4. 질문 스타일
         let questionAttributes: [NSAttributedString.Key: Any] =
-            [.font: UIFont.systemFont(ofSize: 22,
-                                      weight: .bold),
+            [.font: UIFont.systemFont(ofSize: 22, weight: .bold),
              .foregroundColor: UIColor.label]
 
         attributedText.append(NSAttributedString(string: content.question + "\n\n",
@@ -386,16 +409,14 @@ extension PollRecommendView {
 
         // 5. Poll 옵션 소개 스타일
         let pollIntroAttributes: [NSAttributedString.Key: Any] =
-            [.font: UIFont.systemFont(ofSize: 16,
-                                      weight: .regular),
+            [.font: UIFont.systemFont(ofSize: 16, weight: .regular),
              .foregroundColor: UIColor.label]
 
         attributedText.append(NSAttributedString(string: "Poll opt.\n",
                                                  attributes: pollIntroAttributes))
 
         // 6. 선택지 스타일
-        let optionAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16,
-                                                                                        weight: .regular),
+        let optionAttributes: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 16, weight: .regular),
                                                                .foregroundColor: UIColor.label,
                                                                .paragraphStyle: createParagraphStyle(withIndent: 20)]
 

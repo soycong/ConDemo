@@ -25,29 +25,21 @@ final class ChatGPTManager {
 
     // MARK: - Functions
 
-    func analyzeTranscript(messages: [MessageData],
-                           completion: @escaping (Result<String, Error>) -> Void) async {
+    func analyzeTranscript(messages: [MessageData]) async throws -> AnalysisData {
         let transcript = messages.map {
             "\($0.isFromCurrentUser ? "나" : "상대방"): \($0.text)"
         }.joined(separator: "\n")
 
-        await requestAnalysis(transcript: transcript) { result in
-            switch result {
-            case let .success(response):
-                do {
-//                    let analysis = try self.saveAnalysis(messages: messages, response: response)
-                    completion(.success(response.choices.first!.message.content))
-                } catch {
-                    completion(.failure(error))
-                }
-            case let .failure(error):
-                completion(.failure(error))
-            }
-        }
+        let response = try await requestAnalysis(transcript: transcript)
+        var analysisData = try convertToAnalysisData(response)
+        
+        // 분석 데이터에 메시지 포함
+        analysisData.messages = messages
+        
+        return analysisData
     }
 
-    private func requestAnalysis(transcript: String,
-                                 completion: @escaping (Result<ChatGPTResponse, Error>) -> Void) {
+    private func requestAnalysis(transcript: String) async throws -> ChatGPTResponse {
         let text = """
                 다음은 두 사람 간의 대화 내용입니다:
 
@@ -55,19 +47,18 @@ final class ChatGPTManager {
 
                 이 대화를 분석하여 다음 정보를 제공해주세요:
 
-                1. 대화를 요약하는 제목과 주요 쟁점 3가지를 추출해주세요. 재밌고 매력적이게 추출해주세요.
-                    1. [쟁점1]
-                    2. [쟁점2]
-                    3. [쟁점3]
+                1. 대화를 요약하는 제목(10자 이하)과 주요 쟁점 3가지를 추출해주세요. 재밌고 매력적이게 추출해주세요.
+        
+                2. 싸움의 격한 정도를 1~9단계로 나타내주세요.
 
-                2. 3개 쟁점 각각에 대한 poll을 생성해주세요. 각 poll은 다음 형식을 따라야 합니다:
+                3. 3개 쟁점 각각에 대한 poll을 생성해주세요. 각 poll은 다음 형식을 따라야 합니다:
                    - 쟁점 제목: [제목]
                    - 내용: [내용 설명]
                    - 나의 의견: [첫 번째 화자의 의견]
                    - 상대방 의견: [두 번째 화자의 의견]
                    - 옵션: [투표 옵션들, 쉼표로 구분, 총 4개]
 
-                3. 커뮤니티에 게시글로 올라갈 요약본을 작성해주세요. 다음 형식을 따라야 합니다:
+                4. 커뮤니티에 게시글로 올라갈 요약본을 작성해주세요. 다음 형식을 따라야 합니다:
                    - 제목: [대화 주제를 반영한 간결하고 매력적인 제목]
                    - 내용: [대화의 핵심 내용과 결론을 포함한 300자 이내의 요약]
 
@@ -85,78 +76,116 @@ final class ChatGPTManager {
         let headers: HTTPHeaders = ["Content-Type": "application/json",
                                     "Authorization": "Bearer \(APIKey.chatGPT)"]
 
-        AF.request(endpoint, method: .post, parameters: parameters, encoding: JSONEncoding.default,
-                   headers: headers)
-            .validate()
-            .responseDecodable(of: ChatGPTResponse.self) { response in
-                switch response.result {
-                case let .success(chatGPTResponse):
-                    completion(.success(chatGPTResponse))
-                case let .failure(error):
-                    completion(.failure(error))
+        return try await withCheckedThrowingContinuation { continuation in
+            // requestModifier를 사용하여 timeoutInterval 설정
+            AF.request(endpoint,
+                       method: .post,
+                       parameters: parameters,
+                       encoding: JSONEncoding.default,
+                       headers: headers,
+                       requestModifier: { $0.timeoutInterval = 300 }) // 타임아웃을 120초(2분)으로 늘림
+                .validate()
+                .responseDecodable(of: ChatGPTResponse.self) { response in
+                    switch response.result {
+                    case .success(let gptResponse):
+                        continuation.resume(returning: gptResponse)
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    }
                 }
-            }
+        }
     }
-
-//    private func saveAnalysis(messages: [MessageData], response: ChatGPTResponse) throws ->
-//    Analysis {
-//        guard let content = response.choices.first?.message.content else {
-//            throw NSError(domain: String(describing: ChatGPTManager.self), code: 1, userInfo:
-//            [NSLocalizedDescriptionKey: "ChatGPT 응답 내용이 없습니다"])
-//        }
-//
-//        let parsedData = try parseResponse(content)
-//
-//        let context = CoreDataManager.shared.context
-//
-//        // 1. 아날리시스부터 저장
-//        let analysis = Analysis(context: context)
-//        analysis.title = parsedData.title
-//        analysis.date = parsedData.date
-//        analysis.contents = parsedData.contents
-//        analysis.level = Int32(parsedData.level)
-//
-//        // 2. 메세지 Object 생성, 아날리시스에도 저장
-//        messages.forEach { messageData in
-//            let message = Message(context: context)
-//            message.id = messageData.id
-//            message.text = messageData.text
-//            message.isFromCurrentUser = messageData.isFromCurrentUser
-//            message.timestamp = messageData.timestamp
-//            message.image = messageData.image?.description
-//            message.audioURL = messageData.audioURL?.description
-//            message.audioData = messageData.audioData
-//
-//            message.analysis = analysis
-//        }
-//
-//        // 3. poll
-//        parsedData.polls.forEach { pollData in
-//            let poll = Poll(context: context)
-//            poll.date = pollData.date
-//            poll.title = pollData.title
-//            poll.contents = pollData.contents
-//            poll.hers = pollData.hers
-//            poll.his = pollData.his
-//
-//            // [String]을 NSObject로 변환
-//            do {
-//                let optionsData = try JSONSerialization.data(withJSONObject: pollData.options)
-//                poll.option = optionsData as NSObject
-//            } catch {
-//                print("옵션 NSObject 변환 오류: \(error)")
-//                print("옵션에 빈 배열 저장")
-//                poll.option = "[]" as NSObject
-//            }
-//        }
-//
-//        // 4. Summary
-//        let summary = Summary(context: context)
-//        summary.title
-//    }
-//
-//    // String으로 반환되는 ChatGPT response를 커스텀 모델로 파싱
-//    private func parseResponse(_ response: String) throws -> AnalysisData {
-//        
-//    }
+    
+    private func convertToAnalysisData(_ response: ChatGPTResponse) throws -> AnalysisData {
+        guard let content = response.choices.first?.message.content else {
+            throw NSError(domain: String(describing: ChatGPTManager.self), code: 1, userInfo:
+            [NSLocalizedDescriptionKey: "ChatGPT 응답 내용이 없습니다"])
+        }
+        
+        var analysisData = AnalysisData()
+        analysisData.date = Date()
+        
+        // 1. title 추출
+        if let titleMatch = content.range(of: "제목: ([^\n]+)", options: .regularExpression) {
+            let titleRange = titleMatch.lowerBound ..< titleMatch.upperBound
+            let titleString = String(content[titleRange])
+            analysisData.title = titleString.replacingOccurrences(of: "제목: ", with: "")
+        }
+        
+        // 2. contents 추출
+        let issuePattern = "쟁점 (\\d+): ([^\n]+)"
+        let issueRegex = try NSRegularExpression(pattern: issuePattern)
+        let nsString = content as NSString
+        let issueMatch = issueRegex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
+        
+        var issues = [String]()
+        issueMatch.forEach { match in
+            if match.numberOfRanges > 2 {
+                let issueNumber = nsString.substring(with: match.range(at: 1))
+                let issueText = nsString.substring(with: match.range(at: 2))
+                issues.append("\(issueNumber). \(issueText)")
+            }
+        }
+        
+        analysisData.contents = issues.joined(separator: "\n")
+        
+        // 3. level 추출
+        let levelPattern = "싸움의 격한 정도: (\\d+)"
+        if let levelMatch = content.range(of: levelPattern, options: .regularExpression) {
+            let levelString = String(content[levelMatch])
+            if let levelDigit = levelString.components(separatedBy: ": ").last,
+               let level = Int(levelDigit) {
+                analysisData.level = level
+            }
+        }
+        
+        // 4. poll 추출
+        analysisData.polls = []
+        let pollPatern = "쟁점 제목: ([^\n]+)\\s*내용: ([^\n]+)\\s*나의 의견: ([^\n]+)\\s*상대방 의견: ([^\n]+)\\s*옵션: ([^\n]+)"
+        let pollRegex = try NSRegularExpression(pattern: pollPatern, options: [])
+        let pollMatchs = pollRegex.matches(in: content, options: [], range: NSRange(location: 0, length: nsString.length))
+        
+        pollMatchs.forEach { match in
+            if match.numberOfRanges > 5 {
+                var pollData = PollData()
+                pollData.title = nsString.substring(with: match.range(at: 1))
+                pollData.contents = nsString.substring(with: match.range(at: 2))
+                pollData.his = nsString.substring(with: match.range(at: 3))
+                pollData.hers = nsString.substring(with: match.range(at: 4))
+                pollData.date = Date()
+                
+                let optionString = nsString.substring(with: match.range(at: 5))
+                let rawOptions = optionString.components(separatedBy: ", ")
+                let optionLabels = ["A", "B", "C", "D"]
+                
+                pollData.options = []
+                for i in 0 ..< min(4, rawOptions.count) {
+                    pollData.options.append("\(optionLabels[i]). \(rawOptions[i])")
+                }
+                
+                analysisData.polls!.append(pollData)
+            }
+        }
+        
+        // 5. Summary 추출
+        analysisData.summary = SummaryData()
+        if let summaryStartRange = content.range(of: "커뮤니티", options: .caseInsensitive),
+           let summaryTitleMatch = content.range(of: "제목: ([^\n]+)", options: .regularExpression, range: summaryStartRange.upperBound ..< content.endIndex) {
+            let summaryTitleRange = summaryTitleMatch.lowerBound ..< summaryTitleMatch.upperBound
+            let summaryTitleString = String(content[summaryTitleRange])
+            analysisData.summary!.title = summaryTitleString.replacingOccurrences(of: "제목: ", with: "")
+        }
+        
+        if let summaryStartRange = content.range(of: "커뮤니티", options: .caseInsensitive),
+           let summaryContentMatch = content.range(of: "내용: ([\\s\\S]+)", options: .regularExpression, range: summaryStartRange.upperBound ..< content.endIndex) {
+            let summaryContentRange = summaryContentMatch.lowerBound ..< summaryContentMatch.upperBound
+            let summaryContentString = String(content[summaryContentRange])
+            analysisData.summary!.contents = summaryContentString.replacingOccurrences(of: "내용: ", with: "")
+        }
+        
+        analysisData.summary!.date = Date()
+        
+        // 최종 데이터 리턴
+        return analysisData
+    }
 }

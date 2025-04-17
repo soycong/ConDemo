@@ -2,18 +2,26 @@
 //  Log+CoreDataProperties.swift
 //  ConDemo
 //
-//  Created by 이명지 on 4/16/25.
+//  Created by 이명지 on 4/17/25.
 //
 //
 
-import CoreData
 import Foundation
+import CoreData
 
-public extension Log {
-    @nonobjc
-    class func fetchRequest() -> NSFetchRequest<Log> {
-        NSFetchRequest<Log>(entityName: "Log")
+
+extension Log {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Log> {
+        return NSFetchRequest<Log>(entityName: "Log")
     }
+
+    @NSManaged public var date: Date?
+    @NSManaged public var contents: String?
+    @NSManaged public var analysis: Analysis?
+
 }
 
-extension Log: Identifiable { }
+extension Log : Identifiable {
+
+}

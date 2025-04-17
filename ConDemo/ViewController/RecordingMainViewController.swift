@@ -302,8 +302,17 @@ extension RecordingMainViewController {
 
                         // 녹음 파일 저장 및 경로 얻기
                         let resultPath = viewModel.stopRecording()
-                        navigationController?.pushViewController(SummaryViewController(),
-                                                                 animated: true)
+                        
+                        // 로딩 인디케이터 표시
+                        let loadingAlert = UIAlertController(title: "분석 중",
+                                                           message: "대화 내용을 분석하고 있습니다...",
+                                                           preferredStyle: .alert)
+                        let loadingIndicator = UIActivityIndicatorView(frame: CGRect(x: 10, y: 5, width: 50, height: 50))
+                        loadingIndicator.hidesWhenStopped = true
+                        loadingIndicator.style = .medium
+                        loadingIndicator.startAnimating()
+                        loadingAlert.view.addSubview(loadingIndicator)
+                        self.present(loadingAlert, animated: true)
 
                         // 비동기로 트랜스크립션/챗지피티 분석 시작
                         Task {
@@ -312,54 +321,38 @@ extension RecordingMainViewController {
                                 let messagesData = try await TranscribeManager.shared
                                     .transcribeAudioFile(at: resultPath)
 
-//                                // 분석 결과 저장
-//                                await MainActor.run {
-//                                    print("분석 완료: \(messagesData.count)개의 메시지가 생성되었습니다")
-//
-//                                    // 분석 결과 저장 및 표시
-//                                    if !messagesData.isEmpty {
-//                                        // CoreData에 저장
-//                                        let coreDataManager = CoreDataManager.shared
-//                                        let analysis = coreDataManager.createAnalysis(messages:
-//                                        messagesData)
-//
-//                                        // 야매 코드
-//                                        CoreDataManager.title = analysis.title!
-//
-//                                        // 메시지 출력 (디버깅용)
-//                                        messagesData.forEach {
-//                                            print($0.text)
-//                                        }
-//                                    } else {
-//                                        print("분석 결과가 없습니다")
-//                                    }
-//                                }
-
                                 // 2. chatGPT 분석 요청
-                                await ChatGPTManager.shared
-                                    .analyzeTranscript(messages: messagesData) { result in
-                                        DispatchQueue.main.async {
-                                            switch result {
-                                            case let .success(analysis):
-                                                // TODO: - 추후 변경
-                                                print(analysis)
-                                            case let .failure(error):
-                                                print("ChatGPT 분석 실패: \(error)")
-                                            }
-                                        }
+                                let analysisData = try await ChatGPTManager.shared
+                                    .analyzeTranscript(messages: messagesData)
+                                
+                                // 3. CoreData에 분석 결과 저장
+                                let analysisTitle = CoreDataManager.shared.saveAnalysis(data: analysisData)
+                                
+                                // 4. 처리 완료 후 메인 스레드에서 UI 업데이트
+                                await MainActor.run {
+                                    // 로딩 알림 닫기
+                                    loadingAlert.dismiss(animated: true) {
+                                        // 분석 완료 후 SummaryViewController로 이동
+                                        let summaryVC = SummaryViewController(analysisTitle: analysisTitle)
+                                        self.navigationController?.pushViewController(summaryVC, animated: true)
                                     }
+                                }
+                                
                             } catch {
                                 // 에러 처리
                                 await MainActor.run {
-                                    print("음성 분석 실패: \(error)")
+                                    // 로딩 알림 닫기
+                                    loadingAlert.dismiss(animated: true) {
+                                        print("음성 분석 실패: \(error)")
 
-                                    // 에러 메시지 표시
-                                    let errorAlert: UIAlertController = .init(title: "음성 분석 실패",
-                                                                              message: "음성 분석 중 오류가 발생했습니다: \(error.localizedDescription)",
-                                                                              preferredStyle: .alert)
-                                    errorAlert.addAction(UIAlertAction(title: "확인",
-                                                                       style: .default))
-                                    self.present(errorAlert, animated: true)
+                                        // 에러 메시지 표시
+                                        let errorAlert: UIAlertController = .init(title: "음성 분석 실패",
+                                                                                  message: "음성 분석 중 오류가 발생했습니다: \(error.localizedDescription)",
+                                                                                  preferredStyle: .alert)
+                                        errorAlert.addAction(UIAlertAction(title: "확인",
+                                                                           style: .default))
+                                        self.present(errorAlert, animated: true)
+                                    }
                                 }
                             }
                         }
@@ -427,7 +420,7 @@ extension RecordingMainViewController: UISheetPresentationControllerDelegate {
 
 extension RecordingMainViewController: CalendarViewDelegate {
     private func pushToSummaryViewController() {
-        let summaryVC: SummaryViewController = .init()
+        let summaryVC: SummaryViewController = .init(analysisTitle: "")
         navigationController?.pushViewController(summaryVC, animated: true)
     }
     

@@ -11,12 +11,22 @@
 		0F1F90142DACAA4D009730B2 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 0F1F90132DACAA4D009730B2 /* ArgumentParser */; };
 		0F43132B2DADFA0800BD796F /* AWSTranscribe in Frameworks */ = {isa = PBXBuildFile; productRef = 0F43132A2DADFA0800BD796F /* AWSTranscribe */; };
 		0F4313BF2DAE06AF00BD796F /* AWSS3 in Frameworks */ = {isa = PBXBuildFile; productRef = 0F4313BE2DAE06AF00BD796F /* AWSS3 */; };
+		0F63E95E2DB0E41600C30C54 /* Log+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95A2DB0E41600C30C54 /* Log+CoreDataProperties.swift */; };
+		0F63E95F2DB0E41600C30C54 /* Analysis+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E9592DB0E41600C30C54 /* Analysis+CoreDataProperties.swift */; };
+		0F63E9602DB0E41600C30C54 /* Poll+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */; };
+		0F63E9612DB0E41600C30C54 /* Summary+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */; };
+		0F63E9622DB0E41600C30C54 /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */; };
 		0FE4137A2DAFDB9200769656 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0FE413792DAFDB9200769656 /* OpenAI */; };
 		B3A44E0D2DA4CA2200C4872D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0C2DA4CA2200C4872D /* Alamofire */; };
 		B3A44E102DA4CA2F00C4872D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0F2DA4CA2F00C4872D /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0F63E9592DB0E41600C30C54 /* Analysis+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Analysis+CoreDataProperties.swift"; path = "ConDemo/CoreData/Analysis+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0F63E95A2DB0E41600C30C54 /* Log+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Log+CoreDataProperties.swift"; path = "ConDemo/CoreData/Log+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Message+CoreDataProperties.swift"; path = "ConDemo/CoreData/Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Poll+CoreDataProperties.swift"; path = "ConDemo/CoreData/Poll+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Summary+CoreDataProperties.swift"; path = "ConDemo/CoreData/Summary+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B3A44DEE2DA4C37500C4872D /* ConDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ConDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -62,6 +72,11 @@
 		B3A44DE52DA4C37400C4872D = {
 			isa = PBXGroup;
 			children = (
+				0F63E9592DB0E41600C30C54 /* Analysis+CoreDataProperties.swift */,
+				0F63E95A2DB0E41600C30C54 /* Log+CoreDataProperties.swift */,
+				0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */,
+				0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */,
+				0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */,
 				B3A44DF02DA4C37500C4872D /* ConDemo */,
 				B3A44DEF2DA4C37500C4872D /* Products */,
 			);
@@ -184,6 +199,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F63E95E2DB0E41600C30C54 /* Log+CoreDataProperties.swift in Sources */,
+				0F63E95F2DB0E41600C30C54 /* Analysis+CoreDataProperties.swift in Sources */,
+				0F63E9602DB0E41600C30C54 /* Poll+CoreDataProperties.swift in Sources */,
+				0F63E9612DB0E41600C30C54 /* Summary+CoreDataProperties.swift in Sources */,
+				0F63E9622DB0E41600C30C54 /* Message+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

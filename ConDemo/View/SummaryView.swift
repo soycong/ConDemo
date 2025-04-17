@@ -10,15 +10,6 @@ import UIKit
 final class SummaryView: UIView {
     // MARK: - Properties
 
-    private(set) lazy var summaryStackView: UIStackView = {
-        let stackView: UIStackView = .init(arrangedSubviews: [firstSummaryLabel,
-                                                              secondSummaryLabel,
-                                                              thirdSummaryLabel])
-        stackView.axis = .vertical
-        stackView.spacing = 8
-        return stackView
-    }()
-
     private(set) var factCheckButton: AnalysisButton = .init(iconName: ButtonSystemIcon.aiIcon,
                                                              title: "AI와 팩트 체크하기")
     private(set) var logButton: AnalysisButton = .init(iconName: ButtonSystemIcon.logIcon,
@@ -52,24 +43,11 @@ final class SummaryView: UIView {
         return label
     }()
 
-    private var firstSummaryLabel: UILabel = {
+    private var summaryLabel: UILabel = {
         let label: UILabel = .init()
         label.numberOfLines = 0
         label.textAlignment = .left
-        return label
-    }()
-
-    private var secondSummaryLabel: UILabel = {
-        let label: UILabel = .init()
-        label.numberOfLines = 0
-        label.textAlignment = .left
-        return label
-    }()
-
-    private var thirdSummaryLabel: UILabel = {
-        let label: UILabel = .init()
-        label.numberOfLines = 0
-        label.textAlignment = .left
+        label.textColor = .label
         return label
     }()
 
@@ -100,19 +78,18 @@ final class SummaryView: UIView {
         stackView.spacing = 8
         return stackView
     }()
-
-    // MARK: - Lifecycle
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
+    
+    init() {
+        super.init(frame: .zero)
+        
         setupView()
         setupSubviews()
         setupConstraints()
         setupButtonTags()
         setupADimage()
-        setupTestText()
     }
+
+    // MARK: - Lifecycle
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -129,7 +106,7 @@ extension SummaryView {
         [adBanner,
          summaryTitleLabel,
          summaryDateLabel,
-         summaryStackView,
+         summaryLabel,
          buttonStackView,
          analysisLabel,
          emotionLevelIndicator,
@@ -155,13 +132,14 @@ extension SummaryView {
             make.horizontalEdges.equalToSuperview().inset(25)
         }
 
-        summaryStackView.snp.makeConstraints { make in
+        summaryLabel.snp.makeConstraints { make in
             make.top.equalTo(summaryDateLabel.snp.bottom).offset(24)
+            make.height.equalTo(150)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
 
         emotionLevelIndicator.snp.makeConstraints { make in
-            make.top.equalTo(summaryStackView.snp.bottom).offset(20)
+            make.top.equalTo(summaryLabel.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(13)
             // make.height.equalTo(60)
         }
@@ -197,22 +175,25 @@ extension SummaryView {
         adBanner.image = UIImage(named: "landingAD")
     }
 
-    private func setupTestText() {
-        summaryTitleLabel.text = "허락 없는 도움, 오해와 화해 사이"
-        summaryDateLabel.text = "2025.04.07 오후 20:20 | 205min 47sec"
-
-        firstSummaryLabel
-            .text = "1. 허락 없이 파일 수정한 행위 - 허락 없이 프로젝트 자료를 수정하여 충돌이 발생했습니다. 기본적인 매너와 소통의 문제가 제기되었습니다."
-        secondSummaryLabel.text = "2. 프로젝트 마감 시간에 대한 오해 - 프로젝트 마감이 오늘이라는 사실이 뒤늦게 밝혀져 급박한 상황이 되었습니다."
-        thirdSummaryLabel
-            .text =
-            "3. 도움의 의도와 인식 차이 - 한 사람은 도움을 주려 했다고 생각했지만, 다른 사람은 이를 원치 않는 간섭으로 받아들여 감정적 대립이 일어났습니다"
-
-        [firstSummaryLabel,
-         secondSummaryLabel,
-         thirdSummaryLabel].forEach {
-            $0.attributedText = setupParagraphStyle(text: $0.text ?? "")
+    func setupText(analysis: Analysis) {
+        summaryTitleLabel.text = analysis.title ?? "제목 없음"
+        
+        // 날짜 설정
+        if let date = analysis.date {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy.MM.dd a HH:mm"
+            formatter.locale = Locale(identifier: "ko_KR")
+            summaryDateLabel.text = formatter.string(from: date)
+        } else {
+            summaryDateLabel.text = "날짜 정보 없음"
         }
+
+        summaryLabel
+            .text = analysis.summary?.description
+        summaryLabel.attributedText = setupParagraphStyle(text: summaryLabel.text ?? "")
+        
+        // 감정 레벨 설정
+        emotionLevelIndicator.emotionLevel = Int(analysis.level)
     }
 }
 
@@ -229,3 +210,4 @@ extension SummaryView {
         return NSAttributedString(string: text, attributes: attributes)
     }
 }
+

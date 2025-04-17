@@ -8,36 +8,62 @@
 import Foundation
 
 struct AnalysisData {
-    // MARK: - Nested Types
-
-    struct LogData {
-        let date: Date
-        let contents: String
-    }
-
-    struct PollData {
-        let date: Date
-        let title: String
-        let contents: String
-        let hers: String
-        let his: String
-        let options: [String]
-    }
-
-    struct SummaryData {
-        let title: String
-        let contents: String
-        let date: Date
-    }
 
     // MARK: - Properties
 
-    let title: String
+    var title: String
+    var date: Date
+    var contents: String
+    var level: Int
+    var messages: [MessageData]?
+    var log: LogData?
+    var polls: [PollData]?
+    var summary: SummaryData?
+    
+    init() {
+        self.title = ""
+        self.date = Date()
+        self.contents = ""
+        self.level = 0
+        self.messages = nil
+        self.log = nil
+        self.polls = nil
+        self.summary = nil
+    }
+}
+
+
+struct LogData {
     let date: Date
     let contents: String
-    let level: Int
-    let messages: [MessageData]
-    let log: LogData
-    let polls: [PollData]
-    let summary: SummaryData
+}
+
+struct PollData {
+    var date: Date
+    var title: String
+    var contents: String
+    var hers: String
+    var his: String
+    var options: [String]
+    
+    init() {
+        self.date = Date()
+        self.title = ""
+        self.contents = ""
+        self.hers = ""
+        self.his = ""
+        self.options = []
+    }
+}
+
+struct SummaryData {
+    var title: String
+    var contents: String
+    var date: Date
+    
+    init(title: String = "", contents: String = "", date: Date = Date()) {
+        self.title = title
+        self.contents = contents
+        self.date = date
+    }
 }

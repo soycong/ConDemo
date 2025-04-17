@@ -9,11 +9,11 @@
 struct PollContent {
     // MARK: - Properties
 
-    let title: String
-    let body: String
-    let dialogues: [(speaker: String, text: String)]
-    let question: String
-    let options: [String]
+    var title: String
+    var body: String
+    var dialogues: [(speaker: String, text: String)]
+    var question: String
+    var options: [String]
 
     // MARK: - Static Functions
 
