@@ -17,6 +17,8 @@ protocol MessageViewModelDelegate: AnyObject {
 final class MessageViewModel {
     // MARK: - Properties
     
+    var analysisTitle: String = ""
+    
     private(set) var messages: [MessageData] = []
     private(set) var isLoading: Bool = false {
         didSet {
@@ -38,6 +40,36 @@ final class MessageViewModel {
             guard let self = self else { return }
             
             // 로딩 상태 업데이트
+            self.isLoading = false
+            
+            switch result {
+            case .success(let response):
+                self.addMessage(text: response, isFromCurrentUser: false)
+                
+            case .failure(let error):
+                self.delegate?.messageViewModel(self, didReceiveError: error)
+                self.addMessage(text: "죄송합니다. 응답을 가져오는 중 오류가 발생했습니다.", isFromCurrentUser: false)
+            }
+        }
+    }
+    
+    func sendMessageWithTranscript(_ text: String, analysisTitle: String) {
+        addMessage(text: text, isFromCurrentUser: true)
+        
+        isLoading = true
+        
+        // CoreData에서 대화 내용 가져오기
+        let transcriptMessages = CoreDataManager.shared.fetchMessages(from: analysisTitle)
+        
+        // 대화 내용을 텍스트로 변환
+        let transcript = transcriptMessages.map {
+            "\($0.isFromCurrentUser ? "나" : "상대방"): \($0.text)"
+        }.joined(separator: "\n")
+        
+        // 대화 내용을 포함한 요청 보내기
+        ChatGPTManager.shared.getResponseWithTranscript(userMessage: text, transcript: transcript) { [weak self] result in
+            guard let self = self else { return }
+            
             self.isLoading = false
             
             switch result {

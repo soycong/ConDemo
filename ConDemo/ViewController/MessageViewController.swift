@@ -55,6 +55,8 @@ final class MessageViewController: UIViewController {
         // 야매 코드
         sheetViewController.viewModel.messages = CoreDataManager.shared
             .fetchMessages(from: analysisTitle)
+        
+        viewModel.analysisTitle = analysisTitle
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -451,8 +453,14 @@ extension MessageViewController: MessageViewModelDelegate {
     }
 }
 
+//extension MessageViewController: MessageViewDelegate {
+//    func messageViewDidSendMessage(_ view: MessageView, message: String) {
+//        viewModel.sendMessage(message)
+//    }
+//}
+
 extension MessageViewController: MessageViewDelegate {
     func messageViewDidSendMessage(_ view: MessageView, message: String) {
-        viewModel.sendMessage(message)
+        viewModel.sendMessageWithTranscript(message, analysisTitle: analysisTitle)
     }
 }
