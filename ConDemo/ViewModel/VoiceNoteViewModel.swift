@@ -10,23 +10,23 @@ import Foundation
 final class VoiceNoteViewModel {
     // MARK: - Properties
 
-    var onMessagesUpdated: (([Message]) -> Void)?
+    var onMessagesUpdated: (([MessageData]) -> Void)?
     var onError: ((Error) -> Void)?
 
-    private var streamingTranscriber: StreamingTranscriber?
-
-    private var messages: [Message] = [] {
+    var messages: [MessageData] = [] {
         didSet {
             onMessagesUpdated?(messages)
         }
     }
+
+    private var streamingTranscriber: StreamingTranscriber?
 
     // MARK: - Functions
 
     func setupTranscriber() {
         do {
             streamingTranscriber = try StreamingTranscriber.parse(["--format", "flac",
-                                                 "--path", "testAudio.flac"])
+                                                                   "--path", "testAudio.flac"])
             fetchVoiceNote()
         } catch {
             print("트랜스크라이버 초기화 오류: \(error)")
@@ -44,15 +44,16 @@ final class VoiceNoteViewModel {
                 var lastUpdateTime: TimeInterval = 0
 
                 for await (text, speaker) in streamingTranscriber
-                    .transcribeWithMessageStream(encoding: streamingTranscriber.getMediaEncoding()) {
+                    .transcribeWithMessageStream(encoding: streamingTranscriber
+                        .getMediaEncoding()) {
                     let now = Date().timeIntervalSince1970
 
                     if now - lastUpdateTime >= 1.0 { // 1초마다 UI업데이트
                         await MainActor.run {
                             print("실시간 대화 시작")
                             let isCurrentUser = speaker == "0"
-                            let newMessage: Message = .init(text: text,
-                                                            isFromCurrentUser: isCurrentUser)
+                            let newMessage: MessageData = .init(text: text,
+                                                                isFromCurrentUser: isCurrentUser)
 
                             messages.append(newMessage)
                         }

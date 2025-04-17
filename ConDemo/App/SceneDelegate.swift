@@ -24,23 +24,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = LaunchViewController()
         window.makeKeyAndVisible()
         self.window = window
-
-        // AWS 테스트용 코드(추후 삭제)
-        Task {
-            let args: Array = .init(CommandLine.arguments.dropFirst())
-
-            do {
-                let command = try Transcriber.parse(args)
-                print("시작\n")
-                try command.run()
-                print("\n완료")
-            } catch let error as TranscribeError {
-                print("트랜스크립션 오류: \(error.errorDescription ?? "알 수 없는 오류")")
-            } catch {
-                print("일반 오류: \(error)")
-                Transcriber.exit(withError: error)
-            }
-        }
     }
 
     func sceneDidEnterBackground(_: UIScene) {

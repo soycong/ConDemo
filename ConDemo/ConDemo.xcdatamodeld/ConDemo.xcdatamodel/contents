@@ -1,4 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="false" userDefinedModelVersionIdentifier="">
-    <elements/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788" systemVersion="24E248" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Analysis" representedClassName="Analysis" syncable="YES">
+        <attribute name="contents" optional="YES" attributeType="String"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="level" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="log" optional="YES" attributeType="Transformable"/>
+        <attribute name="message" optional="YES" attributeType="Transformable"/>
+        <attribute name="polls" optional="YES" attributeType="Transformable"/>
+        <attribute name="summary" optional="YES" attributeType="Transformable"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="analysislog" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Log"/>
+        <relationship name="analysispoll" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Poll"/>
+        <relationship name="analysissummary" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Summary"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Message" inverseName="analysis" inverseEntity="Message"/>
+    </entity>
+    <entity name="Log" representedClassName="Log" syncable="YES"/>
+    <entity name="Message" representedClassName="Message" syncable="YES">
+        <attribute name="audioData" optional="YES" attributeType="Binary"/>
+        <attribute name="audioURL" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
+        <attribute name="image" optional="YES" attributeType="String"/>
+        <attribute name="isFromCurrentUser" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="text" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="analysis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Analysis" inverseName="messages" inverseEntity="Analysis"/>
+    </entity>
+    <entity name="Poll" representedClassName="Poll" syncable="YES">
+        <attribute name="contents" optional="YES" attributeType="String"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hers" optional="YES" attributeType="String"/>
+        <attribute name="his" optional="YES" attributeType="String"/>
+        <attribute name="option" optional="YES" attributeType="Transformable"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Summary" representedClassName="Summary" syncable="YES">
+        <attribute name="contents" optional="YES" attributeType="String"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
+    </entity>
 </model>
