@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 final class RecordingMainViewController: UIViewController {
     // MARK: - Properties
@@ -46,7 +47,7 @@ extension RecordingMainViewController {
         setupAddTargets()
         setupDelegates()
         
-        // viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
+        viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -228,12 +229,11 @@ extension RecordingMainViewController {
     private func calendarButtonTapped() {
         resetBrightnessTimer()
 
-        let datesToMark = [Date(), // 오늘
-                           Calendar.current.date(byAdding: .day, value: 1, to: Date())!, // 내일
-                           Calendar.current.date(byAdding: .day, value: 3, to: Date())!, // 5일 후
-        ]
-
-        calendarView.markDates(datesToMark)
+        // CoreData에서 분석 데이터가 있는 날짜 가져오기
+        let analysisAvailableDates = viewModel.fetchAnalysisAvailableDates()
+        
+        // 가져온 날짜들만 달력에 마킹
+        calendarView.markDates(analysisAvailableDates)
         calendarView.show(in: recordingMainView)
     }
 
@@ -446,7 +446,20 @@ extension RecordingMainViewController: CalendarViewDelegate {
         navigationController?.pushViewController(summaryVC, animated: true)
     }
     
-    func calendarView(_: CalendarView, didSelectDate _: Date) {
-        pushToSummaryViewController()
+    func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
+        if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
+            // 해당 날짜의 summary로 이동
+            let summaryVC = SummaryViewController(analysisTitle: title)
+            navigationController?.pushViewController(summaryVC, animated: true)
+        } else {
+            // 분석 데이터가 없을 경우 알림
+            let alert = UIAlertController(
+                title: "알림",
+                message: "선택한 날짜에 분석 데이터가 없습니다.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true)
+        }
     }
 }
