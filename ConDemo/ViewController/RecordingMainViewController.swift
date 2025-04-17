@@ -47,7 +47,7 @@ extension RecordingMainViewController {
         setupAddTargets()
         setupDelegates()
         
-        viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
+        // viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -441,11 +441,6 @@ extension RecordingMainViewController: UISheetPresentationControllerDelegate {
 }
 
 extension RecordingMainViewController: CalendarViewDelegate {
-    private func pushToSummaryViewController() {
-        let summaryVC: SummaryViewController = .init(analysisTitle: "")
-        navigationController?.pushViewController(summaryVC, animated: true)
-    }
-    
     func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
         if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
             // 해당 날짜의 summary로 이동
