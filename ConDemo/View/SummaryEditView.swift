@@ -43,7 +43,7 @@ final class SummaryEditView: UIView {
         return textView
     }()
 
-    private let placeholderText = "내용을 입력해주세요."
+    var placeholderText = "내용을 입력해주세요."
     private var isPosted = false
     private var summaryTextViewBottomConstraint: Constraint?
 
@@ -224,5 +224,54 @@ extension SummaryEditView: UITextViewDelegate {
             confirmButton.backgroundColor = .pointBlue
             isPosted = true
         }
+    }
+}
+
+// SummaryEditView.swift에 추가할 확장 메소드들
+
+extension SummaryEditView {
+    // 날짜 업데이트
+    func updateDate(_ date: String) {
+        if !date.isEmpty {
+            dateLabel.text = date
+        }
+    }
+    
+    // 제목 업데이트
+    func updateTitle(_ title: String) {
+        if !title.isEmpty {
+            titleLabel.text = title
+        }
+    }
+    
+    // 내용 업데이트
+    func updateContent(_ content: String) {
+        if !content.isEmpty && content != placeholderText {
+            summaryTextView.text = content
+            summaryTextView.textColor = .label
+            
+            // 내용이 있으면 확인 버튼 활성화
+            confirmButton.backgroundColor = .pointBlue
+            isPosted = true
+        }
+    }
+    
+    // 현재 내용 가져오기
+    func getCurrentContent() -> String {
+        // 플레이스홀더가 아닌 경우에만 내용 반환
+        if summaryTextView.textColor == .lightGray || summaryTextView.text == placeholderText {
+            return ""
+        }
+        return summaryTextView.text
+    }
+    
+    // 텍스트뷰가 비어있는지 확인
+    var isEmpty: Bool {
+        return summaryTextView.text.isEmpty || summaryTextView.text == placeholderText || summaryTextView.textColor == .lightGray
+    }
+    
+    // 플레이스홀더 텍스트 반환
+    var getPlaceholderText: String {
+        return placeholderText
     }
 }

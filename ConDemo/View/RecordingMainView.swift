@@ -133,11 +133,15 @@ final class RecordingMainView: UIView {
         saveButton.snp.makeConstraints { make in
             make.centerY.equalTo(recordButton.snp.centerY)
             make.trailing.equalTo(recordButton.snp.leading).offset(-26)
+            make.height.equalTo(38)
+            make.width.equalTo(50)
         }
 
         completeButton.snp.makeConstraints { make in
             make.centerY.equalTo(recordButton.snp.centerY)
             make.leading.equalTo(recordButton.snp.trailing).offset(26)
+            make.height.equalTo(38)
+            make.width.equalTo(50)
         }
 
         dimLayer.snp.makeConstraints { make in

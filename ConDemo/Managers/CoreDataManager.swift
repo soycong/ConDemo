@@ -95,3 +95,81 @@ final class CoreDataManager {
         }
     }
 }
+
+extension CoreDataManager {
+    func saveAnalysis(data: AnalysisData) -> String {
+        // 1. 아날리시스부터 저장
+        let analysis = Analysis(context: context)
+        analysis.title = data.title.replacingOccurrences(of: "\"", with: "")
+        analysis.date = data.date
+        analysis.contents = data.contents.replacingOccurrences(of: "\"", with: "")
+        analysis.level = Int32(data.level)
+
+        // 2. 메세지 Object 생성, 아날리시스에도 저장
+        if let messages = data.messages {
+            for messageData in messages {
+                let message = Message(context: context)
+                message.id = messageData.id
+                message.text = messageData.text.replacingOccurrences(of: "\"", with: "")
+                message.isFromCurrentUser = messageData.isFromCurrentUser
+                message.timestamp = messageData.timestamp
+                message.image = messageData.image?.description
+                message.audioURL = messageData.audioURL?.description
+                message.audioData = messageData.audioData
+
+                message.analysis = analysis
+            }
+        }
+
+        // 3. poll - 배열로 처리
+        if let polls = data.polls, !polls.isEmpty {
+            // 모든 Poll 객체 생성
+            for pollData in polls {
+                let poll = Poll(context: context)
+                poll.date = pollData.date
+                poll.title = pollData.title.replacingOccurrences(of: "\"", with: "")
+                poll.contents = pollData.contents.replacingOccurrences(of: "\"", with: "")
+                poll.hers = pollData.hers.replacingOccurrences(of: "\"", with: "")
+                poll.his = pollData.his.replacingOccurrences(of: "\"", with: "")
+
+                // [String]을 NSObject로 변환
+                let cleanOptions = pollData.options.map { $0.replacingOccurrences(of: "\"", with: "") }
+                
+                do {
+                    let optionsData = try JSONSerialization.data(withJSONObject: cleanOptions)
+                    poll.option = optionsData as NSObject
+                } catch {
+                    print("옵션 NSObject 변환 오류: \(error)")
+                    print("옵션에 빈 배열 저장")
+                    poll.option = "[]" as NSObject
+                }
+                
+                // 관계 설정
+                poll.analysis = analysis
+            }
+        }
+
+        // 4. Summary
+        if let summaryData = data.summary {
+            let summary = Summary(context: context)
+            summary.title = summaryData.title.replacingOccurrences(of: "\"", with: "")
+            summary.contents = summaryData.contents.replacingOccurrences(of: "\"", with: "")
+            summary.date = summaryData.date
+            
+            // 관계 설정
+            summary.analysis = analysis
+        }
+        
+        // 5. 저장
+        do {
+            try context.save()
+            
+            // 6. 정적 타이틀 업데이트
+            Self.title = analysis.title ?? ""
+        } catch {
+            print("코어 데이터 저장 실패: \(error)")
+        }
+        
+        return analysis.title ?? ""
+    }
+}

@@ -2,22 +2,27 @@
 //  Summary+CoreDataProperties.swift
 //  ConDemo
 //
-//  Created by 이명지 on 4/16/25.
+//  Created by 이명지 on 4/17/25.
 //
 //
 
-import CoreData
 import Foundation
+import CoreData
 
-public extension Summary {
-    @nonobjc
-    class func fetchRequest() -> NSFetchRequest<Summary> {
-        NSFetchRequest<Summary>(entityName: "Summary")
+
+extension Summary {
+
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<Summary> {
+        return NSFetchRequest<Summary>(entityName: "Summary")
     }
 
-    @NSManaged var title: String?
-    @NSManaged var contents: String?
-    @NSManaged var date: Date?
+    @NSManaged public var contents: String?
+    @NSManaged public var date: Date?
+    @NSManaged public var title: String?
+    @NSManaged public var analysis: Analysis?
+
 }
 
-extension Summary: Identifiable { }
+extension Summary : Identifiable {
+
+}

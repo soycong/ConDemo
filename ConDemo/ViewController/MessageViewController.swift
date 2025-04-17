@@ -12,6 +12,8 @@ import UIKit
 final class MessageViewController: UIViewController {
     // MARK: - Properties
 
+    private let analysisTitle: String
+    
     private let messageView: MessageView = .init()
     private var sheetViewController: VoiceNoteViewController = .init()
 
@@ -23,6 +25,15 @@ final class MessageViewController: UIViewController {
     private var currentPlayingCell: MessageBubbleCell?
     private var updateTimer: Timer?
 
+    init(analysisTitle: String) {
+        self.analysisTitle = analysisTitle
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -41,7 +52,7 @@ final class MessageViewController: UIViewController {
 
         // 야매 코드
         sheetViewController.viewModel.messages = CoreDataManager.shared
-            .fetchMessages(from: CoreDataManager.title)
+            .fetchMessages(from: analysisTitle)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -181,7 +192,7 @@ final class MessageViewController: UIViewController {
     @objc
     private func waveButtonTapped() {
         // 트랜스크립트 데이터 로드
-        let messages = CoreDataManager.shared.fetchMessages(from: CoreDataManager.title)
+        let messages = CoreDataManager.shared.fetchMessages(from: analysisTitle)
 
         // VoiceNoteViewController의 viewModel에 메시지 설정
         sheetViewController.viewModel.messages = messages
