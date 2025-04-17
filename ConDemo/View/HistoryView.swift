@@ -16,7 +16,7 @@ final class HistoryView: UIView {
     // MARK: - Properties
 
     weak var delegate: HistoryViewDelegate?
-    private var analyses: [Analysis] = []
+    private var analysis: [Analysis] = []
 
     private(set) var calenderButton: UIButton = {
         let button: UIButton = .init()
@@ -87,7 +87,7 @@ final class HistoryView: UIView {
     // MARK: - Functions
     
     func updateData(with analyses: [Analysis]) {
-        self.analyses = analyses
+        self.analysis = analyses
         historyTableView.reloadData()
     }
 
@@ -140,7 +140,7 @@ extension HistoryView: UITableViewDelegate {
 
 extension HistoryView: UITableViewDataSource {
     func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        analyses.count
+        analysis.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -149,7 +149,7 @@ extension HistoryView: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let analysis = analyses[indexPath.row]
+        let analysis = analysis[indexPath.row]
         
         // ViewController에서 설정 정보 전달
         let imageName = "level\(analysis.level)"
@@ -159,7 +159,7 @@ extension HistoryView: UITableViewDataSource {
         
         guard let date = analysis.date,  let title = analysis.title else { return cell }
         let dateText = dateFormatter.string(from: date)
-        let titleText = "\(title) | 매운맛 \(analysis.level)"
+        let titleText = formatTitle(analysis.title, level: analysis.level)
         
         cell.configure(imageName: imageName, dateText: dateText, titleText: titleText)
         
@@ -185,5 +185,22 @@ extension HistoryView: UITableViewDataSource {
         let configuration: UISwipeActionsConfiguration = .init(actions: [action])
         configuration.performsFirstActionWithFullSwipe = false
         return configuration
+    }
+}
+
+extension HistoryView {
+    func formatTitle(_ title: String?, level: Int32) -> String {
+        guard let title = title, !title.isEmpty else {
+            return "대화 분석 | 매운맛 \(level)"
+        }
+        
+        switch level {
+        case 1 ... 5:
+            return "\(title) | 순한맛 \(level)단계"
+        case 6 ... 10:
+            return "\(title) | 순한맛 \(level)단계"
+        default:
+            return "분석이 어렵습니다."
+        }
     }
 }
