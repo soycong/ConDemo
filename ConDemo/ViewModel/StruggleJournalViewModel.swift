@@ -66,7 +66,9 @@ class StruggleJournalViewModel {
         }
     }
     
-    /// 수정된 내용 저장하기
+    
+    
+    // 수정된 내용 저장하기
     func saveLog(content: String) -> Bool {
         guard let analysis = analysis else {
             print("Analysis 객체가 없습니다.")
@@ -83,30 +85,12 @@ class StruggleJournalViewModel {
             existingLog.contents = content
             existingLog.date = Date()
         } else {
-//            // 새 Log 생성 부분 수정
-//            let newLog = Log(context: context)
-//            newLog.contents = content
-//            newLog.date = Date()
-//
-//            // 관계 설정 (양방향)
-//            newLog.analysis = analysis
-//            analysis.setValue(newLog, forKey: "analysislog")
-            
             // 새 Log 생성 부분 수정
             let newLog = Log(context: context)
             newLog.contents = content
             newLog.date = Date()
 
-            // 관계 설정 (양방향 관계 설정)
-            newLog.analysis = analysis
-
-            // NSSet? 타입에 직접 할당하는 대신 적절한 관계 설정 메서드 사용
-            if let logSet = analysis.analysislog as? NSMutableSet {
-                logSet.add(newLog)
-                analysis.analysislog = logSet
-            } else {
-                analysis.analysislog = NSSet(object: newLog)
-            }
+            analysis.setValue(newLog, forKey: "analysislog")
         }
         
         do {
