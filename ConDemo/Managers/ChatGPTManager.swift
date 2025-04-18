@@ -82,7 +82,7 @@ final class ChatGPTManager {
                 ["role": "system", "content": "당신은 사용자의 질문에 도움을 주는 AI 어시스턴트입니다. 친절하고 자연스럽게 대화하세요. 한국어로 답변해주세요."],
                 ["role": "user", "content": fullPrompt]
             ],
-            "temperature": 0.7
+            "temperature": 0.7  // 무작위성(0이면 누구나 예측 가능한 정도의 답변 2는 창의적)
         ]
         
         let headers: HTTPHeaders = [
