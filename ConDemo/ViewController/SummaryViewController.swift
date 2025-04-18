@@ -17,11 +17,11 @@ final class SummaryViewController: UIViewController {
     
     // MARK: - Lifecycle
     
-    init(analysisTitle: String, isHistoryView: Bool = false) {
+    init(analysisTitle: String, isSummaryView: Bool = true) {
         self.analysisTitle = analysisTitle
         self.viewModel = SummaryViewModel(analysisTitle: analysisTitle)
         super.init(nibName: nil, bundle: nil)
-        setupNavigationBar(isHistoryView: isHistoryView)
+        setupNavigationBar(isSummaryView: isSummaryView)
     }
     
     required init?(coder: NSCoder) {
@@ -46,20 +46,19 @@ extension SummaryViewController {
         view = summaryView
     }
 
-    private func setupNavigationBar(isHistoryView: Bool) {
+    private func setupNavigationBar(isSummaryView: Bool) {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
         
-        if isHistoryView {
+        if isSummaryView {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),
+                                                               style: .plain, target: self,
+                                                               action: #selector(cancelButtonTapped))
+        } else {
             navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.backButtonImage),
                                                                style: .plain, target: self,
                                                                action: #selector(backButtonTapped))
             navigationController?.interactivePopGestureRecognizer?.delegate = nil
-            
-        } else {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),
-                                                               style: .plain, target: self,
-                                                               action: #selector(cancelButtonTapped))
         }
         navigationItem
             .rightBarButtonItems =
@@ -136,7 +135,7 @@ extension SummaryViewController: CalendarViewDelegate {
     func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
         if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
             // 해당 날짜의 summary로 이동
-            let summaryVC = SummaryViewController(analysisTitle: title)
+            let summaryVC: SummaryViewController = .init(analysisTitle: title, isSummaryView: false)
             navigationController?.pushViewController(summaryVC, animated: true)
         } else {
             // 분석 데이터가 없을 경우 알림
