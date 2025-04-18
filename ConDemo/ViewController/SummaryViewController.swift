@@ -79,7 +79,7 @@ extension SummaryViewController {
 extension SummaryViewController {
     @objc
     private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
+        navigationController?.popToRootViewController(animated: true)
     }
 
     @objc
