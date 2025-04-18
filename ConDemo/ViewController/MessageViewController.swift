@@ -398,6 +398,9 @@ extension MessageViewController: UISheetPresentationControllerDelegate {
 
             // 드래그 중에 아래 뷰가 어두워지지 않도록 설정
             sheet.largestUndimmedDetentIdentifier = .large
+            
+            // 아래로 내리는 제스처로 dismiss 가능하도록 설정
+            viewController.isModalInPresentation = false
         }
 
         present(viewController, animated: true)
