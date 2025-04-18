@@ -444,7 +444,7 @@ extension RecordingMainViewController: CalendarViewDelegate {
     func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
         if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
             // 해당 날짜의 summary로 이동
-            let summaryVC = SummaryViewController(analysisTitle: title)
+            let summaryVC: SummaryViewController = .init(analysisTitle: title, isSummaryView: false)
             navigationController?.pushViewController(summaryVC, animated: true)
         } else {
             // 분석 데이터가 없을 경우 알림
