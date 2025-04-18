@@ -33,6 +33,7 @@ final class PollRecommendViewController: UIViewController {
         view = pollRecommendView
         setupNavigationBar()
         updateViewWithData()
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
 
     // MARK: - Functions
@@ -127,3 +128,10 @@ extension PollRecommendViewController: UISheetPresentationControllerDelegate {
         }
     }
 }
+
+//extension PollRecommendViewController: UIGestureRecognizerDelegate {
+//    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+//        // 네비게이션 스택에 뷰 컨트롤러가 2개 이상 있는 경우에만 제스처 허용
+//        return navigationController?.viewControllers.count ?? 0 > 1
+//    }
+//}

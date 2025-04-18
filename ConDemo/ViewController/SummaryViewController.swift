@@ -54,6 +54,7 @@ extension SummaryViewController {
             navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.backButtonImage),
                                                                style: .plain, target: self,
                                                                action: #selector(backButtonTapped))
+            navigationController?.interactivePopGestureRecognizer?.delegate = nil
             
         } else {
             navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),

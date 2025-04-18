@@ -33,6 +33,7 @@ final class SummaryEditViewController: UIViewController {
         setupNavigationBar()
         setupActions()
         updateViewWithData()
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
 
     // MARK: - Functions

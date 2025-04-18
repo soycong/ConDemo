@@ -32,6 +32,7 @@ final class StruggleJournalViewController: UIViewController {
 
         setupNavigationBar()
         setupActions()
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
 
     // MARK: - Functions
