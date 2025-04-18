@@ -17,10 +17,11 @@ final class SummaryViewController: UIViewController {
     
     // MARK: - Lifecycle
     
-    init(analysisTitle: String) {
+    init(analysisTitle: String, isHistoryView: Bool = false) {
         self.analysisTitle = analysisTitle
         self.viewModel = SummaryViewModel(analysisTitle: analysisTitle)
         super.init(nibName: nil, bundle: nil)
+        setupNavigationBar(isHistoryView: isHistoryView)
     }
     
     required init?(coder: NSCoder) {
@@ -31,7 +32,6 @@ final class SummaryViewController: UIViewController {
         super.viewDidLoad()
 
         setupView()
-        setupNavigationBar()
         setupAddTargets()
         setupDelegates()
     }
@@ -46,13 +46,20 @@ extension SummaryViewController {
         view = summaryView
     }
 
-    private func setupNavigationBar() {
+    private func setupNavigationBar(isHistoryView: Bool) {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
-
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),
-                                                           style: .plain, target: self,
-                                                           action: #selector(backButtonTapped))
+        
+        if isHistoryView {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.backButtonImage),
+                                                               style: .plain, target: self,
+                                                               action: #selector(backButtonTapped))
+            
+        } else {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),
+                                                               style: .plain, target: self,
+                                                               action: #selector(cancelButtonTapped))
+        }
         navigationItem
             .rightBarButtonItems =
             [UIBarButtonItem(image: .init(systemName: "person.circle"),
@@ -79,6 +86,11 @@ extension SummaryViewController {
 extension SummaryViewController {
     @objc
     private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc
+    private func cancelButtonTapped() {
         navigationController?.popToRootViewController(animated: true)
     }
 

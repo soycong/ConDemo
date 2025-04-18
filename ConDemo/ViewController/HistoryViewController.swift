@@ -110,12 +110,12 @@ extension HistoryViewController {
 //    private func profileButtonTapped() { }
 
     private func pushToSummaryViewController() {
-        let summaryVC: SummaryViewController = .init(analysisTitle: "")
+        let summaryVC: SummaryViewController = .init(analysisTitle: "", isHistoryView: true)
         navigationController?.pushViewController(summaryVC, animated: true)
     }
     
     private func pushToSummaryViewController(with analysisTitle: String) {
-        let summaryVC: SummaryViewController = .init(analysisTitle: analysisTitle)
+        let summaryVC: SummaryViewController = .init(analysisTitle: analysisTitle, isHistoryView: true)
         // 필요하다면 선택된 Analysis를 SummaryViewController에 전달
         // summaryVC.selectedAnalysis = viewModel.getAnalysis(at: analysisIndex)
         navigationController?.pushViewController(summaryVC, animated: true)
