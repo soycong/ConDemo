@@ -64,26 +64,25 @@ final class ChatGPTManager {
     }
     
     // 대화 내용을 포함한 응답 요청
-    func getResponseWithTranscript(userMessage: String, transcript: String, completion: @escaping (Result<String, Error>) -> Void) {
+    func getResponseWithTranscript(isInitial: Bool = false, userMessage: String, transcript: String, completion: @escaping (Result<String, Error>) -> Void) {
+        
         // 대화 내용을 포함한 메시지
         let fullPrompt = """
-        다음은 두 사람 간의 대화 내용입니다:
-        
-        \(transcript)
-        
-        위 대화 내용을 바탕으로 다음 질문에 답변해주세요:
-        
-        \(userMessage)
-        """
+                    다음은 두 사람 간의 대화 내용입니다:
+                    
+                    \(transcript)
+                    
+                    위 대화 내용을 바탕으로 다음 질문에 답변해주세요:
+                    """
         
         let parameters: [String: Any] = [
             "model": "gpt-4-1106-preview",
             "messages": [
-                ["role": "system", "content": "당신은 사용자의 질문에 도움을 주는 AI 어시스턴트입니다. 친절하고 자연스럽게 대화하세요. 한국어로 답변해주세요."],
-                ["role": "user", "content": fullPrompt]
+                ["role": "system", "content": "당신은 사용자의 질문에 도움을 주는 AI 어시스턴트입니다. \(fullPrompt) 친절하고 자연스럽게 대화하세요. 한국어로 답변해주세요. 답변은 300자 이하로 해주세요."],
+                ["role": "user", "content": userMessage]
             ],
-            "temperature": 0.7  // 무작위성(0이면 누구나 예측 가능한 정도의 답변 2는 창의적)
-        ]
+            "temperature": 0.7
+        ] // 무작위성(0이면 누구나 예측 가능한 정도의 답변 2는 창의적)
         
         let headers: HTTPHeaders = [
             "Content-Type": "application/json",
