@@ -395,6 +395,8 @@ extension RecordingMainViewController: StopwatchDelegate {
 
 extension RecordingMainViewController {
     func presentAsBottomSheet(_ viewController: UIViewController) {
+        viewController.view.backgroundColor = UIColor.systemGroupedBackground
+        
         // 시트 프레젠테이션 컨트롤러 구성
         let customIdentifier = UISheetPresentationController.Detent.Identifier("custom20")
         let customDetent = UISheetPresentationController.Detent
@@ -417,6 +419,9 @@ extension RecordingMainViewController {
 
             // 드래그 중에 아래 뷰가 어두워지지 않도록 설정
             sheet.largestUndimmedDetentIdentifier = .large
+            
+            // 아래로 내리는 제스처로 dismiss 불가능하도록 막음.
+            viewController.isModalInPresentation = true
         }
 
         present(viewController, animated: true)
