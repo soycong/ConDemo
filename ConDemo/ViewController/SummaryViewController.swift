@@ -50,7 +50,7 @@ extension SummaryViewController {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: "chevron.left"),
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),
                                                            style: .plain, target: self,
                                                            action: #selector(backButtonTapped))
         navigationItem
