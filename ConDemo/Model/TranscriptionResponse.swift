@@ -161,11 +161,15 @@ extension TranscriptionResponse {
                 return ""
             }.joined(separator: " ")
 
+            // 화자 0 -> 나, 화자 1 -> 상대방...으로 강제 지정인데....
             let isFromCurrentUser = segment.speakerLabel.dropFirst(4) == "0" ? true : false
             messages.append(MessageData(text: transcript, isFromCurrentUser: isFromCurrentUser))
 
+            // 여기서 화자를 물어보면 화자를 선택할 때까지 트랜스크립트가 스탑
+            
+            
             print("화자 \(segment.speakerLabel.dropFirst(4))")
-            print("- \(transcript)\n")
+            print("\"\(transcript)\n\"")
         }
 
         return messages

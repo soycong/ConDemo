@@ -71,13 +71,6 @@ extension RecordingMainViewController {
         }
     }
 
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        if viewModel.isRecording {
-//            setupBrightnessTimer()
-//        }
-//    }
-
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         resetBrightnessTimer()
@@ -96,8 +89,6 @@ extension RecordingMainViewController {
             recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue
                 .resolvedColor(with: traitCollection).cgColor
         }
-        // dimLayer가 있을 때 -> 버튼 무조건 파란색
-        // dimLayer가 없을 때 -> .label
     }
 }
 
@@ -327,6 +318,9 @@ extension RecordingMainViewController {
                     
                     let messagesData = try await TranscribeManager.shared
                         .transcribeAudioFile(at: resultPath)
+                    
+                    // 여기서 화자 선택 요청
+                    
 
                     // 2. chatGPT 분석 요청 (상태 업데이트)
                     await MainActor.run {
@@ -334,10 +328,13 @@ extension RecordingMainViewController {
                         loadingIndicator.updateProgress(0.6)
                     }
                     
-                    let analysisData = try await ChatGPTManager.shared
-                        .analyzeTranscript(messages: messagesData)
+//                    let analysisData = try await ChatGPTManager.shared
+//                        .analyzeTranscript(messages: messagesData)
                     
-                    print()
+                    let analysisData = try await ChatGPTManager.shared
+                        .analyzeTranscript(messages: MessageData.dummyMessages)
+                    
+                    print("========Analysis Data========")
                     print(analysisData)
                     print()
                     

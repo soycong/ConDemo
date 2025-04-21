@@ -103,6 +103,7 @@ final class ChatGPTManager {
     }
     
     func analyzeTranscript(messages: [MessageData]) async throws -> AnalysisData {
+        // 나,  상대방 지정
         let transcript = messages.map {
             "\($0.isFromCurrentUser ? "나" : "상대방"): \($0.text)"
         }.joined(separator: "\n")
@@ -117,6 +118,10 @@ final class ChatGPTManager {
     }
     
     private func requestAnalysis(transcript: String) async throws -> ChatGPTResponse {
+        print("=========request Analysis=========")
+        print(transcript)
+        print()
+        
         let text = """
         다음 두 사람 간의 대화 내용을 아래 보내는 조건에 맞게 분석 부탁.
                 \(transcript)
