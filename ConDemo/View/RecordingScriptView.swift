@@ -28,7 +28,7 @@ final class RecordingScriptView: UIView {
         
         textView.layer.cornerRadius = 10
 
-        textView.backgroundColor = .baseBackground
+        textView.backgroundColor = .systemGroupedBackground
 
         textView.isScrollEnabled = true
         textView.alwaysBounceVertical = true
@@ -108,7 +108,7 @@ final class RecordingScriptView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .backgroundGray
+        backgroundColor = .systemGroupedBackground
 
         // setupTextView()
         setupKeyboardNotifications()

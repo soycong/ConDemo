@@ -18,6 +18,8 @@ final class RecordingScriptViewController: UIViewController, TranscriptionDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         view = recordingScriptView
+        
+        view.backgroundColor = UIColor.systemGroupedBackground
     }
 
     // TranscriptionDelegate 메서드 구현

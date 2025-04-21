@@ -12,110 +12,102 @@ import UIKit
 
 final class ChatGPTManager {
     // MARK: - Static Properties
-
+    
     static let shared: ChatGPTManager = .init()
-
+    
     // MARK: - Properties
-
+    
     private let endpoint = "https://api.openai.com/v1/chat/completions"
-
+    private let defaultModel = "gpt-4-turbo"
+    private let defaultSystemContent = "당신은 사용자의 질문에 도움을 주는 AI 어시스턴트. 친절하고 자연스럽게 대화 부탁. 한국어로 답변 부탁."
+    private let defaultHeaders: HTTPHeaders = [
+        "Content-Type": "application/json",
+        "Authorization": "Bearer \(APIKey.chatGPT)"
+    ]
+    
     // MARK: - Lifecycle
-
+    
     private init() { }
-
+    
     // MARK: - Functions
+    
+    private func createParameters(
+        model: String = "gpt-4-turbo",
+        systemContent: String? = nil,
+        userContent: String,
+        temperature: Double = 0.6
+    ) -> [String: Any] {
+        return [
+            "model": model,
+            "messages": [
+                ["role": "system", "content": systemContent == nil ? defaultSystemContent : systemContent],
+                ["role": "user", "content": userContent],
+            ],
+            "temperature": temperature
+        ]
+    }
+    
+    private func executeRequest(
+        parameters: [String: Any],
+        completion: @escaping (Result<String, Error>) -> Void
+    ) -> Void {
+        AF.request(
+            endpoint,
+            method: .post,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: defaultHeaders
+        )
+        .validate()
+        .responseDecodable(of: ChatGPTResponse.self) { response in
+            switch response.result {
+            case .success(let gptResponse):
+                if let content = gptResponse.choices.first?.message.content {
+                    completion(.success(content))
+                } else {
+                    completion(.failure(NSError(domain: String(describing: ChatGPTManager.self), code: 1, userInfo: [NSLocalizedDescriptionKey: "응답 내용이 없습니다"])))
+                }
+            case .failure(let error):
+                print("ChatGPT API 에러: \(error)")
+                
+                if let data = response.data {
+                    let str = String(data: data, encoding: .utf8) ?? "데이터를 문자열로 변환할 수 없습니다"
+                    print("응답 데이터: \(str)")
+                }
+                completion(.failure(error))
+            }
+        }
+    }
     
     // 단순 채팅 기능 - 사용자 메시지에 대한 응답 얻기
     func getResponse(to userMessage: String, completion: @escaping (Result<String, Error>) -> Void) {
-        let parameters: [String: Any] = [
-            "model": "gpt-4-1106-preview",
-            "messages": [
-                ["role": "system", "content": "당신은 사용자의 질문에 도움을 주는 AI 어시스턴트입니다. 친절하고 자연스럽게 대화하세요. 한국어로 답변해주세요."],
-                ["role": "user", "content": userMessage]
-            ],
-            "temperature": 0.7
-        ]
-        
-        let headers: HTTPHeaders = [
-            "Content-Type": "application/json",
-            "Authorization": "Bearer \(APIKey.chatGPT)"
-        ]
-        
-        AF.request(endpoint, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
-            .validate()
-            .responseDecodable(of: ChatGPTResponse.self) { response in
-                switch response.result {
-                case .success(let chatGPTResponse):
-                    if let content = chatGPTResponse.choices.first?.message.content {
-                        completion(.success(content))
-                    } else {
-                        completion(.failure(NSError(domain: "ChatGPTManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "응답 내용이 없습니다"])))
-                    }
-                case .failure(let error):
-                    print("ChatGPT API 에러: \(error)")
-                    // 응답 데이터가 있다면 출력
-                    if let data = response.data {
-                        let str = String(data: data, encoding: .utf8) ?? "데이터를 문자열로 변환할 수 없습니다"
-                        print("응답 데이터: \(str)")
-                    }
-                    completion(.failure(error))
-                }
-            }
+        let parameters = createParameters(userContent: userMessage)
+        executeRequest(parameters: parameters, completion: completion)
     }
     
     // 대화 내용을 포함한 응답 요청
-    func getResponseWithTranscript(userMessage: String, transcript: String, completion: @escaping (Result<String, Error>) -> Void) {
+    func getResponseWithTranscript(isInitial: Bool = false, userMessage: String, transcript: String, completion: @escaping (Result<String, Error>) -> Void) {
+        
         // 대화 내용을 포함한 메시지
         let fullPrompt = """
-        다음은 두 사람 간의 대화 내용입니다:
-        
-        \(transcript)
-        
-        위 대화 내용을 바탕으로 다음 질문에 답변해주세요:
-        
-        \(userMessage)
-        """
-        
-        let parameters: [String: Any] = [
-            "model": "gpt-4-1106-preview",
-            "messages": [
-                ["role": "system", "content": "당신은 사용자의 질문에 도움을 주는 AI 어시스턴트입니다. 친절하고 자연스럽게 대화하세요. 한국어로 답변해주세요."],
-                ["role": "user", "content": fullPrompt]
-            ],
-            "temperature": 0.7  // 무작위성(0이면 누구나 예측 가능한 정도의 답변 2는 창의적)
-        ]
-        
-        let headers: HTTPHeaders = [
-            "Content-Type": "application/json",
-            "Authorization": "Bearer \(APIKey.chatGPT)"
-        ]
-        
-        AF.request(endpoint, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
-            .validate()
-            .responseDecodable(of: ChatGPTResponse.self) { response in
-                switch response.result {
-                case .success(let chatGPTResponse):
-                    if let content = chatGPTResponse.choices.first?.message.content {
-                        completion(.success(content))
-                    } else {
-                        completion(.failure(NSError(domain: "ChatGPTManager", code: 1, userInfo: [NSLocalizedDescriptionKey: "응답 내용이 없습니다"])))
-                    }
-                case .failure(let error):
-                    print("ChatGPT API 에러: \(error)")
-                    if let data = response.data {
-                        let str = String(data: data, encoding: .utf8) ?? "데이터를 문자열로 변환할 수 없습니다"
-                        print("응답 데이터: \(str)")
-                    }
-                    completion(.failure(error))
-                }
-            }
-    }
+                    다음은 두 사람 간의 대화 내용입니다:
+                    
+                    \(transcript)
+                    
+                    위 대화 내용을 바탕으로 다음 질문에 답변해주세요:
+                    """
+        let userContent = "당신은 사용자의 질문에 도움을 주는 AI 어시스턴트입니다. \(fullPrompt) 친절하고 자연스럽게 대화하세요. 한국어로 답변해주세요. 답변은 300자 이하로 해주세요."
+        let parameters = createParameters(userContent: userContent)
 
+        executeRequest(parameters: parameters, completion: completion)
+    }
+    
     func analyzeTranscript(messages: [MessageData]) async throws -> AnalysisData {
+        // 나,  상대방 지정
         let transcript = messages.map {
             "\($0.isFromCurrentUser ? "나" : "상대방"): \($0.text)"
         }.joined(separator: "\n")
-
+        
         let response = try await requestAnalysis(transcript: transcript)
         var analysisData = try convertToAnalysisData(response)
         
@@ -124,75 +116,62 @@ final class ChatGPTManager {
         
         return analysisData
     }
-
+    
     private func requestAnalysis(transcript: String) async throws -> ChatGPTResponse {
-        let text = """
-                다음은 두 사람 간의 대화 내용임.
-
-                \(transcript)
-
-                이 대화를 다음 조건에 맞게 분석 부탁.
-
-                1. 대화를 요약하는 제목(한글 10자 이하)과 주요 쟁점 3가지를 재밌고 매력적이게 추출.
+        print("=========request Analysis=========")
+        print(transcript)
+        print()
         
+        let text = """
+        다음 두 사람 간의 대화 내용을 아래 보내는 조건에 맞게 분석 부탁.
+                \(transcript)
+                1. 대화를 요약하는 제목(한글 10자 이하)과 주요 쟁점 3가지를 재밌고 매력적이게 추출.
                 2. 싸움의 격한 정도를 1~10단계로 표현. 대화가 감지되지 않은 경우는 1단계로 표시.
-
-                3. 3개 쟁점 각각에 대한 poll을 생성. 커뮤니티에 올라갈 투표. 제목을 재밌고 매력적이고 자극적이게 뽑아주고, 옵션도 재밌고 자극적이게 뽑아줘.각 poll은 다음 형식을 따라야함:
-                   - 쟁점 제목: [제목]
-                   - 내용: [내용 설명]
-                   - 나의 의견: [첫 번째 화자의 의견]
-                   - 상대방 의견: [두 번째 화자의 의견]
-                   - 옵션: [투표 옵션들, 쉼표로 구분, 총 4개]
-
-                4. 커뮤니티에 게시글로 올라갈 요약본 작성 부탁. 제목은 자극적이고 재밌게 생성. 두 화자의 의견이 극명하게 갈리도록 내용 생성. 나의 입장에서 글 내용 생성. 나의 입장과 상대방의 입장을 요약, 스크립트도 일부 출력해줘도 됨. 내가 무슨 말을 했고 상대방이 무슨 말을 했는지. 공감이 가고 흥미로운 스타일로 구성. 최대한 재밌고 매력있고 끌릴만하게 표현. 다음 형식을 따라야함:
-                   - 제목: [대화 주제를 반영한 간결하고 매력적인 제목]
-                   - 내용: [500자 이내의 요약]
-
+                3. 3개 쟁점 각각에 대한 poll을 생성. 커뮤니티에 올라갈 투표. 제목을 재밌고 매력적이고 자극적이게 뽑아주고, 옵션도 재밌고 자극적이게 다른 사람들이 공감할 수 있는 내용의 구어체로 작성. 각 poll은 다음 형식을 따라야함:
+                  - 쟁점 제목: [제목]
+                  - 내용: [내용 설명]
+                  - 나의 의견: [첫 번째 화자의 의견]
+                  - 상대방 의견: [두 번째 화자의 의견]
+                  - 옵션: [투표 옵션들, 쉼표로 구분, 총 4개]
+                4. 커뮤니티에 게시글로 올라갈 요약본 작성 부탁. 제목은 자극적이고 재밌게 생성. 내용은 두 화자의 의견이 극명하게 갈리도록 생성, 두 화자의 말을 요약해서 나열하는 게 아니라 한 사람의 입장에서 내용 생성. 공감이 가고 흥미로운 스타일로 구성. 최대한 재밌고 매력있고 끌릴만하게 표현. 사람들이 실제로 커뮤니티에 올리는 글처럼 생성. 다음 형식을 따라야함:
+                  - 제목: [대화 주제를 반영한 간결하고 매력적인 제목]
+                  - 내용: [500자 이내의 요약]
                 각 섹션을 명확히 구분해서 응답해주고, 이모지를 포함해 재밌는 요소를 넣어주세요.
         """
-
-        let parameters: [String: Any] = ["model": "gpt-4-1106-preview",
-                                         "messages": [
-                                             ["role": "system",
-                                              "content": "당신은 대화 내용을 분석하고 요약하고, 요약 내용에 대한 poll 3개를 생성하는 도우미입니다. 한국어로 답변해주세요."],
-                                             ["role": "user", "content": text],
-                                         ],
-                                         "temperature": 0.7]
-
-        let headers: HTTPHeaders = ["Content-Type": "application/json",
-                                    "Authorization": "Bearer \(APIKey.chatGPT)"]
-
+        
+        let parameters = createParameters(userContent: text)
+        
         return try await withCheckedThrowingContinuation { continuation in
             // requestModifier를 사용하여 timeoutInterval 설정
             AF.request(endpoint,
                        method: .post,
                        parameters: parameters,
                        encoding: JSONEncoding.default,
-                       headers: headers,
+                       headers: defaultHeaders,
                        requestModifier: { $0.timeoutInterval = 300 }) // 타임아웃을 120초(2분)으로 늘림
-                .validate()
-                .responseDecodable(of: ChatGPTResponse.self) { response in
-                    switch response.result {
-                    case .success(let gptResponse):
-                        print(gptResponse)
-                        continuation.resume(returning: gptResponse)
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                    }
+            .validate()
+            .responseDecodable(of: ChatGPTResponse.self) { response in
+                switch response.result {
+                case .success(let gptResponse):
+                    print(gptResponse)
+                    continuation.resume(returning: gptResponse)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
                 }
+            }
         }
     }
     
     private func convertToAnalysisData(_ response: ChatGPTResponse) throws -> AnalysisData {
         guard let content = response.choices.first?.message.content else {
             throw NSError(domain: String(describing: ChatGPTManager.self), code: 1, userInfo:
-            [NSLocalizedDescriptionKey: "ChatGPT 응답 내용이 없습니다"])
+                            [NSLocalizedDescriptionKey: "ChatGPT 응답 내용이 없습니다"])
         }
         
         // ChatGPT가 에러 메시지를 반환한 경우 처리
         if content.contains("대화 내용이 제공되지 않아") || content.contains("분석을 진행할 수 없습니다") {
             throw NSError(domain: String(describing: ChatGPTManager.self), code: 3, userInfo:
-            [NSLocalizedDescriptionKey: "ChatGPT가 대화 내용을 분석할 수 없습니다: \(content)"])
+                            [NSLocalizedDescriptionKey: "ChatGPT가 대화 내용을 분석할 수 없습니다: \(content)"])
         }
         
         // 기본값으로 초기화된 객체 생성
@@ -223,8 +202,8 @@ final class ChatGPTManager {
                 
                 // 쟁점 섹션 시작 감지 (여러 가능한 형식)
                 if trimmedLine.contains("주요 쟁점:") ||
-                   trimmedLine.contains("쟁점 추출") ||
-                   trimmedLine.contains("대화 요약 제목 및 쟁점") {
+                    trimmedLine.contains("쟁점 추출") ||
+                    trimmedLine.contains("대화 요약 제목 및 쟁점") {
                     capturingIssues = true
                     inMainSection = true
                     continue

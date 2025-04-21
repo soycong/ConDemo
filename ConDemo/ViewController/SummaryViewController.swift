@@ -17,10 +17,11 @@ final class SummaryViewController: UIViewController {
     
     // MARK: - Lifecycle
     
-    init(analysisTitle: String) {
+    init(analysisTitle: String, isSummaryView: Bool = true) {
         self.analysisTitle = analysisTitle
         self.viewModel = SummaryViewModel(analysisTitle: analysisTitle)
         super.init(nibName: nil, bundle: nil)
+        setupNavigationBar(isSummaryView: isSummaryView)
     }
     
     required init?(coder: NSCoder) {
@@ -31,7 +32,6 @@ final class SummaryViewController: UIViewController {
         super.viewDidLoad()
 
         setupView()
-        setupNavigationBar()
         setupAddTargets()
         setupDelegates()
     }
@@ -46,13 +46,20 @@ extension SummaryViewController {
         view = summaryView
     }
 
-    private func setupNavigationBar() {
+    private func setupNavigationBar(isSummaryView: Bool) {
         navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
-
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: "chevron.left"),
-                                                           style: .plain, target: self,
-                                                           action: #selector(backButtonTapped))
+        
+        if isSummaryView {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.cancelButtonImage),
+                                                               style: .plain, target: self,
+                                                               action: #selector(cancelButtonTapped))
+        } else {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(image: .init(systemName: ButtonSystemIcon.backButtonImage),
+                                                               style: .plain, target: self,
+                                                               action: #selector(backButtonTapped))
+            navigationController?.interactivePopGestureRecognizer?.delegate = nil
+        }
         navigationItem
             .rightBarButtonItems =
             [UIBarButtonItem(image: .init(systemName: "person.circle"),
@@ -80,6 +87,11 @@ extension SummaryViewController {
     @objc
     private func backButtonTapped() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc
+    private func cancelButtonTapped() {
+        navigationController?.popToRootViewController(animated: true)
     }
 
     @objc
@@ -123,7 +135,7 @@ extension SummaryViewController: CalendarViewDelegate {
     func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
         if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
             // 해당 날짜의 summary로 이동
-            let summaryVC = SummaryViewController(analysisTitle: title)
+            let summaryVC: SummaryViewController = .init(analysisTitle: title, isSummaryView: false)
             navigationController?.pushViewController(summaryVC, animated: true)
         } else {
             // 분석 데이터가 없을 경우 알림

@@ -121,12 +121,14 @@ final class EmotionLevelIndicatorView: UIView {
 
     private func updateUI() {
         switch emotionLevel {
-        case 1 ... 5:
+        case 0 ... 1:
+            emotionLabel.text = "순한맛 \(1)단계 \(emotionIcons[0])"
+        case 2 ... 5:
             emotionLabel.text = "순한맛 \(emotionLevel)단계 \(emotionIcons[emotionLevel - 1])"
         case 6 ... 10:
             emotionLabel.text = "매운맛 \(emotionLevel)단계 \(emotionIcons[emotionLevel - 1])"
         default:
-            emotionLabel.text = "분석이 어렵습니다."
+            emotionLabel.text = "분석이 어렵습니다. Level: \(emotionLevel)"
         }
 
         updateMarkerPosition()

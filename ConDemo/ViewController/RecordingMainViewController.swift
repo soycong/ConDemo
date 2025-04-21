@@ -71,13 +71,6 @@ extension RecordingMainViewController {
         }
     }
 
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        if viewModel.isRecording {
-//            setupBrightnessTimer()
-//        }
-//    }
-
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         resetBrightnessTimer()
@@ -96,8 +89,6 @@ extension RecordingMainViewController {
             recordingMainView.recordButton.layer.borderColor = UIColor.systemBlue
                 .resolvedColor(with: traitCollection).cgColor
         }
-        // dimLayer가 있을 때 -> 버튼 무조건 파란색
-        // dimLayer가 없을 때 -> .label
     }
 }
 
@@ -327,6 +318,9 @@ extension RecordingMainViewController {
                     
                     let messagesData = try await TranscribeManager.shared
                         .transcribeAudioFile(at: resultPath)
+                    
+                    // 여기서 화자 선택 요청
+                    
 
                     // 2. chatGPT 분석 요청 (상태 업데이트)
                     await MainActor.run {
@@ -334,10 +328,13 @@ extension RecordingMainViewController {
                         loadingIndicator.updateProgress(0.6)
                     }
                     
-                    let analysisData = try await ChatGPTManager.shared
-                        .analyzeTranscript(messages: messagesData)
+//                    let analysisData = try await ChatGPTManager.shared
+//                        .analyzeTranscript(messages: messagesData)
                     
-                    print()
+                    let analysisData = try await ChatGPTManager.shared
+                        .analyzeTranscript(messages: MessageData.dummyMessages)
+                    
+                    print("========Analysis Data========")
                     print(analysisData)
                     print()
                     
@@ -395,6 +392,8 @@ extension RecordingMainViewController: StopwatchDelegate {
 
 extension RecordingMainViewController {
     func presentAsBottomSheet(_ viewController: UIViewController) {
+        viewController.view.backgroundColor = UIColor.systemGroupedBackground
+        
         // 시트 프레젠테이션 컨트롤러 구성
         let customIdentifier = UISheetPresentationController.Detent.Identifier("custom20")
         let customDetent = UISheetPresentationController.Detent
@@ -417,6 +416,9 @@ extension RecordingMainViewController {
 
             // 드래그 중에 아래 뷰가 어두워지지 않도록 설정
             sheet.largestUndimmedDetentIdentifier = .large
+            
+            // 아래로 내리는 제스처로 dismiss 불가능하도록 막음.
+            viewController.isModalInPresentation = true
         }
 
         present(viewController, animated: true)
@@ -444,7 +446,7 @@ extension RecordingMainViewController: CalendarViewDelegate {
     func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
         if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
             // 해당 날짜의 summary로 이동
-            let summaryVC = SummaryViewController(analysisTitle: title)
+            let summaryVC: SummaryViewController = .init(analysisTitle: title, isSummaryView: false)
             navigationController?.pushViewController(summaryVC, animated: true)
         } else {
             // 분석 데이터가 없을 경우 알림

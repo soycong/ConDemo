@@ -108,14 +108,9 @@ extension HistoryViewController {
 
 //    @objc
 //    private func profileButtonTapped() { }
-
-    private func pushToSummaryViewController() {
-        let summaryVC: SummaryViewController = .init(analysisTitle: "")
-        navigationController?.pushViewController(summaryVC, animated: true)
-    }
     
     private func pushToSummaryViewController(with analysisTitle: String) {
-        let summaryVC: SummaryViewController = .init(analysisTitle: analysisTitle)
+        let summaryVC: SummaryViewController = .init(analysisTitle: analysisTitle, isSummaryView: false)
         // 필요하다면 선택된 Analysis를 SummaryViewController에 전달
         // summaryVC.selectedAnalysis = viewModel.getAnalysis(at: analysisIndex)
         navigationController?.pushViewController(summaryVC, animated: true)
@@ -127,8 +122,6 @@ extension HistoryViewController: HistoryViewDelegate {
         if let analysis = viewModel.getAnalysis(at: index),
            let title = analysis.title {
             pushToSummaryViewController(with: title)
-        } else {
-            pushToSummaryViewController()
         }
     }
     
@@ -283,8 +276,7 @@ extension HistoryViewController: CalendarViewDelegate {
     func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
         if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
             // 해당 날짜의 summary로 이동
-            let summaryVC = SummaryViewController(analysisTitle: title)
-            navigationController?.pushViewController(summaryVC, animated: true)
+            pushToSummaryViewController(with: title)
         } else {
             // 분석 데이터가 없을 경우 알림
             let alert = UIAlertController(

@@ -150,9 +150,12 @@ extension HistoryView: UITableViewDataSource {
         }
         
         let analysis = analysis[indexPath.row]
+        var imageName = "level\(analysis.level)"
         
         // ViewController에서 설정 정보 전달
-        let imageName = "level\(analysis.level)"
+        if analysis.level == 0 {
+            imageName = "level1"
+        }
         
         let dateFormatter: DateFormatter = .init()
         dateFormatter.dateFormat = "yyyy.MM.dd"
@@ -194,13 +197,23 @@ extension HistoryView {
             return "대화 분석 | 매운맛 \(level)"
         }
         
+        
+        
         switch level {
-        case 1 ... 5:
+//        case 0 ... 4:
+//            return "\(title) | 순한맛 \(level)단계"
+//        case 5 ... 9:
+//            return "\(title) | 순한맛 \(level)단계"
+//        default:
+//            return "분석이 어렵습니다."
+        case 0 ... 1:
+            return "\(title) | 순한맛 \(1)단계"
+        case 2 ... 5:
             return "\(title) | 순한맛 \(level)단계"
         case 6 ... 10:
-            return "\(title) | 순한맛 \(level)단계"
+            return "\(title) | 매운맛 \(level)단계"
         default:
-            return "분석이 어렵습니다."
+            return "\(title) | 분석이 어렵습니다. Level: \(level)"
         }
     }
 }

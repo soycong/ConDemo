@@ -57,6 +57,7 @@ final class MessageViewController: UIViewController {
             .fetchMessages(from: analysisTitle)
         
         viewModel.analysisTitle = analysisTitle
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
 
     override func viewDidDisappear(_ animated: Bool) {
