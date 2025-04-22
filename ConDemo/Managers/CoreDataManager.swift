@@ -216,7 +216,7 @@ extension CoreDataManager {
 }
 
 extension CoreDataManager {
-    func saveAnalysis(data: AnalysisData) -> String {
+    func saveAnalysis(data: AnalysisData) {
         // 1. 아날리시스부터 저장
         let analysis = Analysis(context: context)
         analysis.title = data.title.replacingOccurrences(of: "\"", with: "")
@@ -248,8 +248,8 @@ extension CoreDataManager {
                 poll.date = pollData.date
                 poll.title = pollData.title.replacingOccurrences(of: "\"", with: "")
                 poll.contents = pollData.contents.replacingOccurrences(of: "\"", with: "")
-                poll.hers = pollData.hers.replacingOccurrences(of: "\"", with: "")
-                poll.his = pollData.his.replacingOccurrences(of: "\"", with: "")
+                poll.hers = pollData.yourOpinion.replacingOccurrences(of: "\"", with: "")
+                poll.his = pollData.myOpinion.replacingOccurrences(of: "\"", with: "")
 
                 // [String]을 NSObject로 변환
                 let cleanOptions = pollData.options.map { $0.replacingOccurrences(of: "\"", with: "") }
@@ -269,7 +269,7 @@ extension CoreDataManager {
         }
 
         // 4. Summary
-        if let summaryData = data.summary {
+        if let summaryData = data.summaries?[0] {
             let summary = Summary(context: context)
             summary.title = summaryData.title.replacingOccurrences(of: "\"", with: "")
             summary.contents = summaryData.contents.replacingOccurrences(of: "\"", with: "")
@@ -288,7 +288,5 @@ extension CoreDataManager {
         } catch {
             print("코어 데이터 저장 실패: \(error)")
         }
-        
-        return analysis.title ?? ""
     }
 }
