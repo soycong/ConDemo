@@ -85,24 +85,46 @@ extension RecordingMainViewModel {
         }
     }
     
-    func fetchAnalysisForDate(_ date: Date) -> Analysis? {
+    //    func fetchAnalysisForDate(_ date: Date) -> Analysis? {
+    //        let calendar = Calendar.current
+    //
+    //        // 선택된 날짜의 시작과 끝 시간 계산
+    //        let startOfDay = calendar.startOfDay(for: date)
+    //        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+    //
+    //        // 해당 날짜 범위에 있는 Analysis 찾기
+    //        let fetchRequest: NSFetchRequest<Analysis> = Analysis.fetchRequest()
+    //        fetchRequest.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
+    //        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+    //
+    //        do {
+    //            let analyses = try CoreDataManager.shared.context.fetch(fetchRequest)
+    //            return analyses.first
+    //        } catch {
+    //            print("분석 데이터 조회 실패: \(error)")
+    //            return nil
+    //        }
+    //    }
+    
+    // 특정 날짜의 모든 분석 데이터 가져오기
+    func fetchAllAnalysesForDate(_ date: Date) -> [Analysis] {
         let calendar = Calendar.current
         
         // 선택된 날짜의 시작과 끝 시간 계산
         let startOfDay = calendar.startOfDay(for: date)
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
         
-        // 해당 날짜 범위에 있는 Analysis 찾기
+        // 해당 날짜 범위에 있는 모든 Analysis 찾기
         let fetchRequest: NSFetchRequest<Analysis> = Analysis.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         
         do {
             let analyses = try CoreDataManager.shared.context.fetch(fetchRequest)
-            return analyses.first
+            return analyses
         } catch {
             print("분석 데이터 조회 실패: \(error)")
-            return nil
+            return []
         }
     }
 }
