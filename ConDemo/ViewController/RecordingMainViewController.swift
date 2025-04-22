@@ -444,11 +444,10 @@ extension RecordingMainViewController: UISheetPresentationControllerDelegate {
 
 extension RecordingMainViewController: CalendarViewDelegate {
     func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
-        if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
-            // 해당 날짜의 summary로 이동
-            let summaryVC: SummaryViewController = .init(analysisTitle: title, isSummaryView: false)
-            navigationController?.pushViewController(summaryVC, animated: true)
-        } else {
+        // 해당 날짜의 모든 분석 데이터 가져오기
+        let analysesForDate = viewModel.fetchAllAnalysesForDate(selectedDate)
+        
+        if analysesForDate.isEmpty {
             // 분석 데이터가 없을 경우 알림
             let alert = UIAlertController(
                 title: "알림",
@@ -457,6 +456,16 @@ extension RecordingMainViewController: CalendarViewDelegate {
             )
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true)
+        } else {
+            // 첫 번째 분석 데이터의 타이틀로 SummaryViewController 생성
+            if let firstAnalysis = analysesForDate.first, let title = firstAnalysis.title {
+                let summaryVC = SummaryViewController(analysisTitle: title, isSummaryView: false)
+                
+                // 모든 분석 데이터를 전달
+                summaryVC.setAnalyses(analysesForDate)
+                
+                navigationController?.pushViewController(summaryVC, animated: true)
+            }
         }
     }
 }
