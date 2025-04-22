@@ -72,7 +72,7 @@ extension RecordingMainViewModel {
         stopSegmentTimer()
         
         // 마지막 세그먼트 처리
-        processCurrentSegment()
+//        processCurrentSegment()
         
         return resultPath
     }
@@ -95,7 +95,7 @@ extension RecordingMainViewModel {
         
         // 10초마다 실행되는 타이머 설정
         segmentTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] _ in
-            self?.processCurrentSegment()
+//            self?.processCurrentSegment()
         }
     }
     
