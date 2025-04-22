@@ -6,16 +6,19 @@
 //
 
 import UIKit
+import CoreData
 
 final class SummaryViewController: UIViewController {
     // MARK: - Properties
-
+    
     private var analysisTitle: String
     private let summaryView: SummaryView = .init()
     private var viewModel: SummaryViewModel
     private let calendarView: CalendarView = .init()
     
-    // MARK: - Lifecycle
+    // MARK: - 페이징 관련 추가 속성
+    private var allAnalyses: [Analysis] = []
+    private var currentAnalysisIndex: Int = 0
     
     init(analysisTitle: String, isSummaryView: Bool = true) {
         self.analysisTitle = analysisTitle
@@ -30,24 +33,28 @@ final class SummaryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupView()
         setupAddTargets()
         setupDelegates()
+        setupGestureRecognizers()
+        updateViewWithCurrentAnalysis()
     }
 }
 
 extension SummaryViewController {
     private func setupView() {
-        // viewModel.analysis가 있으면 해당 데이터로 뷰 설정
         if let analysis = viewModel.analysis {
             summaryView.setupText(analysis: analysis)
         }
         view = summaryView
     }
-
+    
     private func setupNavigationBar(isSummaryView: Bool) {
-        navigationController?.navigationBar.tintColor = .label
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        navigationController?.navigationBar.standardAppearance = appearance
+        // navigationController?.navigationBar.tintColor = .label
         navigationItem.title = .none
         
         if isSummaryView {
@@ -60,15 +67,14 @@ extension SummaryViewController {
                                                                action: #selector(backButtonTapped))
             navigationController?.interactivePopGestureRecognizer?.delegate = nil
         }
-        navigationItem
-            .rightBarButtonItems =
-            [UIBarButtonItem(image: .init(systemName: "person.circle"),
-                             style: .plain, target: self,
-                             action: #selector(profileButtonTapped)),
-             UIBarButtonItem(image: .init(systemName: "calendar"), style: .plain, target: self,
-                             action: #selector(calendarButtonTapped))]
+        
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(image: .init(systemName: "person.circle"),
+                                                              style: .plain, target: self,
+                                                              action: #selector(profileButtonTapped)),
+                                              UIBarButtonItem(image: .init(systemName: "calendar"), style: .plain, target: self,
+                                                              action: #selector(calendarButtonTapped))]
     }
-
+    
     private func setupAddTargets() {
         [summaryView.factCheckButton,
          summaryView.logButton,
@@ -78,8 +84,98 @@ extension SummaryViewController {
         }
     }
     
+    func setAnalyses(_ analyses: [Analysis], initialIndex: Int = 0) {
+        allAnalyses = analyses
+        currentAnalysisIndex = min(initialIndex, analyses.count - 1)
+        
+        if isViewLoaded {
+            updateViewWithCurrentAnalysis()
+        }
+    }
+    
     private func setupDelegates() {
         calendarView.delegate = self
+    }
+    
+    private func setupGestureRecognizers() {
+        // 스와이프 제스처 설정
+        summaryView.leftSwipeGestureRecognizer.addTarget(self, action: #selector(handleLeftSwipe))
+        summaryView.rightSwipeGestureRecognizer.addTarget(self, action: #selector(handleRightSwipe))
+        
+        // 페이지 컨트롤 액션 설정
+        summaryView.pageControl.addTarget(self, action: #selector(pageControlValueChanged), for: .valueChanged)
+    }
+    
+    // 현재 선택된 Analysis로 뷰 업데이트
+    private func updateViewWithCurrentAnalysis() {
+        // 데이터가 없으면 종료
+        guard !allAnalyses.isEmpty, currentAnalysisIndex < allAnalyses.count else { return }
+        
+        // 선택된 Analysis 가져오기
+        let currentAnalysis = allAnalyses[currentAnalysisIndex]
+        
+        if let title = currentAnalysis.title {
+            viewModel = SummaryViewModel(analysisTitle: title)
+        }
+        
+        // 뷰 업데이트
+        summaryView.setupText(analysis: currentAnalysis)
+        
+        // 페이지 컨트롤 업데이트
+        summaryView.setupPageControl(totalPages: allAnalyses.count, currentPage: currentAnalysisIndex)
+        
+        // 여러 페이지가 있는 경우
+        if allAnalyses.count > 1 {
+            navigationItem.title = "\(currentAnalysisIndex + 1)/\(allAnalyses.count)"
+        }
+    }
+    
+    @objc private func handleLeftSwipe() {
+        // 이미 마지막 페이지면 무시
+        guard currentAnalysisIndex < allAnalyses.count - 1 else { return }
+        
+        // 다음 페이지로 이동
+        currentAnalysisIndex += 1
+        summaryView.pageControl.currentPage = currentAnalysisIndex
+        
+        // 페이지 전환 애니메이션과 함께 뷰 업데이트
+        let combinedOptions: UIView.AnimationOptions = [.transitionCrossDissolve, .curveEaseInOut]
+        summaryView.animatePageTransition(direction: combinedOptions) {
+            self.updateViewWithCurrentAnalysis()
+        }
+    }
+    
+    @objc private func handleRightSwipe() {
+        // 이미 첫 페이지면 무시
+        guard currentAnalysisIndex > 0 else { return }
+        
+        // 이전 페이지로 이동
+        currentAnalysisIndex -= 1
+        summaryView.pageControl.currentPage = currentAnalysisIndex
+        
+        // 페이지 전환 애니메이션과 함께 뷰 업데이트
+        let combinedOptions: UIView.AnimationOptions = [.transitionCrossDissolve, .curveEaseInOut]
+        summaryView.animatePageTransition(direction: combinedOptions) {
+            self.updateViewWithCurrentAnalysis()
+        }
+    }
+    
+    @objc private func pageControlValueChanged() {
+        // 현재 페이지와 같으면 무시
+        let newPage = summaryView.pageControl.currentPage
+        guard newPage != currentAnalysisIndex else { return }
+        
+        let direction: UIView.AnimationOptions = newPage > currentAnalysisIndex
+        ? .curveEaseInOut
+        : .curveEaseInOut
+        
+        // 페이지 인덱스 업데이트
+        currentAnalysisIndex = newPage
+        
+        // 페이지 전환 애니메이션과 함께 뷰 업데이트
+        summaryView.animatePageTransition(direction: direction) {
+            self.updateViewWithCurrentAnalysis()
+        }
     }
 }
 
@@ -93,7 +189,7 @@ extension SummaryViewController {
     private func cancelButtonTapped() {
         navigationController?.popToRootViewController(animated: true)
     }
-
+    
     @objc
     private func calendarButtonTapped() {
         // CoreData에서 분석 데이터가 있는 날짜 가져오기
@@ -104,7 +200,7 @@ extension SummaryViewController {
         calendarView.markDates(analysisAvailableDates)
         calendarView.show(in: summaryView)
     }
-
+    
     @objc
     private func profileButtonTapped() { }
 }
