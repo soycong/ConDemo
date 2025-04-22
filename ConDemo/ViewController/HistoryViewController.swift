@@ -131,30 +131,6 @@ extension HistoryViewController: HistoryViewDelegate {
     }
 }
 
-//extension HistoryViewController: CalendarViewDelegate {
-//    func calendarView(_: CalendarView, didSelectDate date: Date) {
-//        // 선택된 날짜로 Analysis 필터링
-//        viewModel.fetchAnalyses(for: date)
-//        updateView()
-//        
-//        // 필터링된 결과가 있으면 첫 번째 항목으로 이동
-//        if viewModel.hasAnalyses(),
-//           let analysis = viewModel.getAnalysis(at: 0),
-//           let title = analysis.title {
-//            pushToSummaryViewController(with: title)
-//        } else {
-//            // 필터링된 결과가 없으면 사용자에게 알림
-//            let alert = UIAlertController(
-//                title: "알림",
-//                message: "선택한 날짜에 대화 기록이 없습니다.",
-//                preferredStyle: .alert
-//            )
-//            alert.addAction(UIAlertAction(title: "확인", style: .default))
-//            present(alert, animated: true)
-//        }
-//    }
-//}
-
 // 테스트 코드
 extension HistoryViewController {
     @objc private func profileButtonTapped() {
@@ -274,10 +250,10 @@ extension HistoryViewController {
 
 extension HistoryViewController: CalendarViewDelegate {
     func calendarView(_: CalendarView, didSelectDate selectedDate: Date) {
-        if let analysis = viewModel.fetchAnalysisForDate(selectedDate), let title = analysis.title {
-            // 해당 날짜의 summary로 이동
-            pushToSummaryViewController(with: title)
-        } else {
+        // 해당 날짜의 모든 분석 데이터 가져오기
+        let analysesForDate = viewModel.fetchAllAnalysesForDate(selectedDate)
+        
+        if analysesForDate.isEmpty {
             // 분석 데이터가 없을 경우 알림
             let alert = UIAlertController(
                 title: "알림",
@@ -286,6 +262,16 @@ extension HistoryViewController: CalendarViewDelegate {
             )
             alert.addAction(UIAlertAction(title: "확인", style: .default))
             present(alert, animated: true)
+        } else {
+            // 첫 번째 분석 데이터의 타이틀로 SummaryViewController 생성
+            if let firstAnalysis = analysesForDate.first, let title = firstAnalysis.title {
+                let summaryVC = SummaryViewController(analysisTitle: title, isSummaryView: false)
+                
+                // 모든 분석 데이터를 전달
+                summaryVC.setAnalyses(analysesForDate)
+                
+                navigationController?.pushViewController(summaryVC, animated: true)
+            }
         }
     }
 }
