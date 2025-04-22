@@ -118,10 +118,6 @@ final class ChatGPTManager {
     }
     
     private func requestAnalysis(transcript: String) async throws -> ChatGPTResponse {
-        print("=========request Analysis=========")
-        print(transcript)
-        print()
-        
         let text = """
         다음 두 사람 간의 대화 내용을 아래 보내는 조건에 맞게 분석 부탁.
                 \(transcript)
@@ -133,7 +129,7 @@ final class ChatGPTManager {
                   - 나의 의견: [첫 번째 화자의 의견]
                   - 상대방 의견: [두 번째 화자의 의견]
                   - 옵션: [투표 옵션들, 쉼표로 구분, 총 4개]
-                4. 커뮤니티에 게시글로 올라갈 요약본 작성 부탁. 제목은 자극적이고 재밌게 생성. 내용은 두 화자의 의견이 극명하게 갈리도록 생성, 두 화자의 말을 요약해서 나열하는 게 아니라 한 사람의 입장에서 내용 생성. 공감이 가고 흥미로운 스타일로 구성. 최대한 재밌고 매력있고 끌릴만하게 표현. 사람들이 실제로 커뮤니티에 올리는 글처럼 생성. 다음 형식을 따라야함:
+                4. 커뮤니티에 게시글로 올라갈 요약본 작성 부탁. 제목은 자극적이고 재밌게 생성. 내용은 두 화자의 의견이 극명하게 갈리도록 생성, 두 화자의 말을 요약해서 나열하는 게 아니라, 각 화자의 입장에서 게시글 1개씩 총 2개 생성. 내 입장인 게시글을 먼저 반환해주고, 상대방 입장의 게시글을 뒤에 반환. 공감이 가고 흥미로운 스타일로 구성. 최대한 재밌고 매력있고 끌릴만하게 표현. 사람들이 실제로 커뮤니티에 올리는 글처럼 생성. 다음 형식을 따라야함:
                   - 제목: [대화 주제를 반영한 간결하고 매력적인 제목]
                   - 내용: [500자 이내의 요약]
                 각 섹션을 명확히 구분해서 응답해주고, 이모지를 포함해 재밌는 요소를 넣어주세요.
@@ -153,6 +149,7 @@ final class ChatGPTManager {
             .responseDecodable(of: ChatGPTResponse.self) { response in
                 switch response.result {
                 case .success(let gptResponse):
+                    print("=========GPT Response=========")
                     print(gptResponse)
                     continuation.resume(returning: gptResponse)
                 case .failure(let error):
@@ -181,6 +178,7 @@ final class ChatGPTManager {
         analysisData.contents = ""       // 기본 내용 설정
         analysisData.level = 0           // 기본 레벨 설정
         analysisData.polls = []          // 빈 배열로 초기화
+        analysisData.summaries = []      // 빈 배열로 초기화
         
         // 1. title 추출 시도
         if let titleMatch = content.range(of: "제목: ([^\n]+)", options: .regularExpression) {
@@ -339,9 +337,9 @@ final class ChatGPTManager {
                         .replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
                     pollData.contents = nsString.substring(with: match.range(at: 2))
                         .replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
-                    pollData.his = nsString.substring(with: match.range(at: 3))
+                    pollData.myOpinion = nsString.substring(with: match.range(at: 3))
                         .replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
-                    pollData.hers = nsString.substring(with: match.range(at: 4))
+                    pollData.yourOpinion = nsString.substring(with: match.range(at: 4))
                         .replacingOccurrences(of: "\"", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
                     pollData.date = Date()
                     
@@ -385,39 +383,177 @@ final class ChatGPTManager {
             }
         }
         
-        // 5. Summary 추출 시도
-        var summaryData = SummaryData()
-        summaryData.date = Date()
-        summaryData.title = "대화 요약"  // 기본 제목
-        summaryData.contents = "대화 내용에 대한 요약입니다."  // 기본 내용
-        
-        // 커뮤니티 요약 제목 추출 시도
-        if let summaryStartRange = content.range(of: "커뮤니티", options: .caseInsensitive),
-           let summaryTitleMatch = content.range(of: "제목: ([^\n]+)", options: .regularExpression, range: summaryStartRange.upperBound ..< content.endIndex) {
-            let summaryTitleRange = summaryTitleMatch.lowerBound ..< summaryTitleMatch.upperBound
-            let summaryTitleString = String(content[summaryTitleRange])
-            summaryData.title = summaryTitleString.replacingOccurrences(of: "제목: ", with: "")
-                .replacingOccurrences(of: "\"", with: "")
-        }
-        
-        // 커뮤니티 요약 내용 추출 시도
-        if let summaryStartRange = content.range(of: "커뮤니티", options: .caseInsensitive),
-           let summaryContentMatch = content.range(of: "내용: ([\\s\\S]+)", options: .regularExpression, range: summaryStartRange.upperBound ..< content.endIndex) {
-            let summaryContentRange = summaryContentMatch.lowerBound ..< summaryContentMatch.upperBound
-            let summaryContentString = String(content[summaryContentRange])
-            summaryData.contents = summaryContentString.replacingOccurrences(of: "내용: ", with: "")
-                .replacingOccurrences(of: "\"", with: "")
-        }
-        
-        // 제목/내용 없이 분석이 필요한 경우 대화 내용으로 대체
-        if summaryData.title == "대화 요약" && content.count > 30 {
-            // API가 분석을 거부한 경우가 아니라면 응답의 일부를 요약으로 사용
-            if !content.contains("대화 내용이 제공되지 않아") {
-                summaryData.contents = String(content.prefix(300)).replacingOccurrences(of: "\"", with: "")
+        // 5. Summaries 추출 (다양한 형식 대응)
+        analysisData.summaries = []
+
+        // 요약 섹션을 찾기 위한 여러 패턴 시도
+        let summaryPatterns = [
+            "커뮤니티에 게시글로 올라갈 요약본",
+            "게시글 작성",
+            "커뮤니티 게시글",
+            "4. 커뮤니티에 게시글로 올라갈 요약본",
+            "4. 게시글 작성",
+            "4. 커뮤니티 게시글"
+        ]
+
+        // 패턴 매칭 시도 및 요약 추출
+        var foundSummarySection = false
+
+        for pattern in summaryPatterns {
+            do {
+                // 단순한 문자열 검색으로 패턴 찾기
+                if let patternRange = content.range(of: pattern) {
+                    // 해당 패턴부터 끝까지의 텍스트 추출
+                    let summarySection = String(content[patternRange.upperBound...])
+                    
+                    // 제목 줄 찾기
+                    let titleLines = summarySection.components(separatedBy: "\n").filter { line in
+                        return line.contains("제목:") && !line.contains("쟁점 제목:")
+                    }
+                    
+                    // 최대 2개의 요약만 추출
+                    let processedTitles = titleLines.prefix(2)
+                    
+                    for (index, titleLine) in processedTitles.enumerated() {
+                        if let titleStartIndex = titleLine.range(of: "제목:")?.upperBound {
+                            // 제목 추출
+                            let title = String(titleLine[titleStartIndex...])
+                                .replacingOccurrences(of: "\"", with: "")
+                                .replacingOccurrences(of: "-", with: "")
+                                .trimmingCharacters(in: .whitespacesAndNewlines)
+                            
+                            // 제목 라인 이후의 내용 라인 찾기
+                            let lineIndex = summarySection.components(separatedBy: "\n").firstIndex(of: titleLine) ?? 0
+                            let contentLines = summarySection.components(separatedBy: "\n").dropFirst(lineIndex + 1)
+                            
+                            // 내용 라인 찾기
+                            if let contentLine = contentLines.first(where: { $0.contains("내용:") }) {
+                                if let contentStartIndex = contentLine.range(of: "내용:")?.upperBound {
+                                    // 내용 추출 시작
+                                    var content = String(contentLine[contentStartIndex...])
+                                        .replacingOccurrences(of: "\"", with: "")
+                                        .replacingOccurrences(of: "-", with: "")
+                                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                                    
+                                    // 다음 제목 라인까지 추가 내용 추출
+                                    let contentLineIndex = contentLines.firstIndex(of: contentLine) ?? 0
+                                    let remainingLines = Array(contentLines.dropFirst(contentLineIndex + 1))
+                                    
+                                    var additionalContent = ""
+                                    for line in remainingLines {
+                                        if line.contains("제목:") && !line.contains("쟁점 제목:") {
+                                            break
+                                        }
+                                        let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                                        if !trimmedLine.isEmpty {
+                                            additionalContent += " " + trimmedLine
+                                        }
+                                    }
+                                    
+                                    // 최종 내용에 추가 내용 합치기
+                                    if !additionalContent.isEmpty {
+                                        content += additionalContent
+                                    }
+                                    
+                                    // SummaryData 생성
+                                    let isCurrentUser = (index == 0) // 첫 번째 요약은 현재 사용자 것으로 가정
+                                    let summary = SummaryData(title: title, contents: content, date: Date(), isCurrentUser: isCurrentUser)
+                                    analysisData.summaries!.append(summary)
+                                    
+                                    print("요약 추출 성공! 제목: \(title)")
+                                }
+                            }
+                        }
+                    }
+                    
+                    if !analysisData.summaries!.isEmpty {
+                        foundSummarySection = true
+                        break
+                    }
+                }
+            } catch {
+                print("요약 검색 오류: \(error)")
+                continue
             }
         }
-        
-        analysisData.summary = summaryData
+
+        // 백업 전략: 단순 텍스트 구분으로 추출
+        if !foundSummarySection {
+            print("첫 번째 방법으로 요약을 찾지 못했습니다. 백업 방법 시도 중...")
+            
+            // 전체 텍스트에서 "제목:" 줄 찾기
+            let lines = content.components(separatedBy: .newlines)
+            var currentTitle: String? = nil
+            var collectingContent = false
+            var currentContent = ""
+            var summaries: [(title: String, content: String)] = []
+            
+            for (i, line) in lines.enumerated() {
+                let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                if trimmedLine.contains("제목:") && !trimmedLine.contains("쟁점 제목:") {
+                    // 이전 제목-내용 저장
+                    if let title = currentTitle, !currentContent.isEmpty {
+                        summaries.append((title: title, content: currentContent))
+                        currentContent = ""
+                    }
+                    
+                    // 새 제목 추출
+                    if let titleStart = trimmedLine.range(of: "제목:")?.upperBound {
+                        currentTitle = String(trimmedLine[titleStart...])
+                            .replacingOccurrences(of: "\"", with: "")
+                            .replacingOccurrences(of: "-", with: "")
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+                        collectingContent = false
+                    }
+                }
+                else if trimmedLine.contains("내용:") && currentTitle != nil {
+                    // 내용 시작
+                    if let contentStart = trimmedLine.range(of: "내용:")?.upperBound {
+                        currentContent = String(trimmedLine[contentStart...])
+                            .replacingOccurrences(of: "\"", with: "")
+                            .replacingOccurrences(of: "-", with: "")
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
+                        collectingContent = true
+                    }
+                }
+                else if collectingContent && currentTitle != nil {
+                    // 다음 제목이나 쟁점을 만날 때까지 내용 수집
+                    if trimmedLine.contains("제목:") || trimmedLine.contains("쟁점 제목:") {
+                        collectingContent = false
+                        continue
+                    }
+                    
+                    if !trimmedLine.isEmpty {
+                        currentContent += " " + trimmedLine
+                    }
+                }
+            }
+            
+            // 마지막 항목 처리
+            if let title = currentTitle, !currentContent.isEmpty {
+                summaries.append((title: title, content: currentContent))
+            }
+            
+            // 최대 2개의 요약 저장
+            for (index, summary) in summaries.prefix(2).enumerated() {
+                let isCurrentUser = (index == 0)
+                let summaryData = SummaryData(title: summary.title, contents: summary.content, date: Date(), isCurrentUser: isCurrentUser)
+                analysisData.summaries!.append(summaryData)
+                print("백업 방법으로 요약 추출 성공! 제목: \(summary.title)")
+            }
+            
+            foundSummarySection = !analysisData.summaries!.isEmpty
+        }
+
+        // 요약 데이터가 없는 경우 기본 요약 추가
+        if analysisData.summaries!.isEmpty {
+            print("모든 방법으로 요약 추출 실패. 기본 요약 추가")
+            let defaultSummary1 = SummaryData(title: "요약 추출 실패", contents: "요약글 추출에 실패했습니다 😢", date: Date(), isCurrentUser: true)
+            let defaultSummary2 = SummaryData(title: "요약 추출 실패", contents: "요약글 추출에 실패했습니다 😢", date: Date(), isCurrentUser: false)
+            analysisData.summaries!.append(defaultSummary1)
+            analysisData.summaries!.append(defaultSummary2)
+        }
         
         return analysisData
     }
@@ -456,13 +592,13 @@ extension ChatGPTManager {
                         .trimmingCharacters(in: .whitespacesAndNewlines)
                     
                 } else if trimmedLine.contains("나의 의견:") {
-                    poll.his = trimmedLine.replacingOccurrences(of: "나의 의견:", with: "")
+                    poll.myOpinion = trimmedLine.replacingOccurrences(of: "나의 의견:", with: "")
                         .replacingOccurrences(of: "-", with: "")
                         .replacingOccurrences(of: "\"", with: "")
                         .trimmingCharacters(in: .whitespacesAndNewlines)
                     
                 } else if trimmedLine.contains("상대방 의견:") {
-                    poll.hers = trimmedLine.replacingOccurrences(of: "상대방 의견:", with: "")
+                    poll.yourOpinion = trimmedLine.replacingOccurrences(of: "상대방 의견:", with: "")
                         .replacingOccurrences(of: "-", with: "")
                         .replacingOccurrences(of: "\"", with: "")
                         .trimmingCharacters(in: .whitespacesAndNewlines)

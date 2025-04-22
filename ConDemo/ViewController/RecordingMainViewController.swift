@@ -47,7 +47,7 @@ extension RecordingMainViewController {
         setupAddTargets()
         setupDelegates()
         
-        viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
+//        viewModel.transcriptionDelegate = sheetViewController // 실시간 스크립트 출력
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -313,48 +313,34 @@ extension RecordingMainViewController {
                     // 1. 트랜스크립션 요청 (상태 업데이트)
                     await MainActor.run {
                         loadingIndicator.updateMessage("음성을 텍스트로 변환 중...")
-                        loadingIndicator.updateProgress(0.3)
+                        loadingIndicator.updateProgress(0.5)
                     }
                     
                     let messagesData = try await TranscribeManager.shared
                         .transcribeAudioFile(at: resultPath)
-                    
-                    // 여기서 화자 선택 요청
-                    
 
                     // 2. chatGPT 분석 요청 (상태 업데이트)
                     await MainActor.run {
                         loadingIndicator.updateMessage("대화 내용을 분석 중...")
-                        loadingIndicator.updateProgress(0.6)
-                    }
-                    
-//                    let analysisData = try await ChatGPTManager.shared
-//                        .analyzeTranscript(messages: messagesData)
-                    
-                    let analysisData = try await ChatGPTManager.shared
-                        .analyzeTranscript(messages: MessageData.dummyMessages)
-                    
-                    print("========Analysis Data========")
-                    print(analysisData)
-                    print()
-                    
-                    // 3. CoreData에 분석 결과 저장 (상태 업데이트)
-                    await MainActor.run {
-                        loadingIndicator.updateMessage("분석 결과를 저장 중...")
                         loadingIndicator.updateProgress(0.9)
                     }
                     
-                    let analysisTitle = CoreDataManager.shared.saveAnalysis(data: analysisData)
+                    let analysisData = try await ChatGPTManager.shared
+                        .analyzeTranscript(messages: messagesData)
                     
-                    // 4. 처리 완료 후 UI 업데이트
+                    // 테스트용 더미 데이터
+//                    let analysisData = try await ChatGPTManager.shared
+//                        .analyzeTranscript(messages: MessageData.dummyMessages)
+
+                    // 3. 처리 완료 후 UI 업데이트
                     await MainActor.run {
                         loadingIndicator.updateProgress(1.0)
                         
                         // 로딩 인디케이터 닫기
                         loadingIndicator.dismiss {
                             // 분석 완료 후 SummaryViewController로 이동
-                            let summaryVC = SummaryViewController(analysisTitle: analysisTitle)
-                            self.navigationController?.pushViewController(summaryVC, animated: true)
+                            let choiceVC = ChoiceViewController(analysisData: analysisData)
+                            self.navigationController?.pushViewController(choiceVC, animated: true)
                         }
                     }
                     
