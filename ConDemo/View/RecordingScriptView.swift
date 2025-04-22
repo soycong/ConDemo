@@ -132,7 +132,7 @@ final class RecordingScriptView: UIView {
     // MARK: - Functions    
     func updateTextView(_ scriptText: String?) {
         if let scriptText = scriptText {
-            scriptTextView.text = scriptTextView.text + "\n" + scriptText
+            scriptTextView.text = scriptText
             setupTextViewStyle(scriptTextView)
         } else {
             scriptTextView.text = "출력이 불가능 합니다."
