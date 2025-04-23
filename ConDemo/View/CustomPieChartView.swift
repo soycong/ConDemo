@@ -9,8 +9,11 @@ import DGCharts
 import UIKit
 
 final class CustomPieChartView: UIView {
+    private var viewModel: PieChartViewModel?
+    
     private let chartTitleLabel: UILabel = {
         let label = UILabel()
+        label.text = "말한 시간"
         label.font = UIFont(name: "Pretendard-Regular", size: 14)
         label.textAlignment = .center
         return label
@@ -87,5 +90,40 @@ extension CustomPieChartView {
             make.centerY.equalToSuperview()
             make.size.equalTo(160)
         }
+    }
+}
+
+extension CustomPieChartView {
+    func configure(with viewModel: PieChartViewModel) {
+        self.viewModel = viewModel
+        updateUI()
+    }
+    
+    private func updateUI() {
+        guard let viewModel = viewModel else { return }
+        
+        chartSubtitleLabel.text = viewModel.chartSubtitle
+        
+        let dataSet = PieChartDataSet(entries: viewModel.chartEntries, label: "")
+        dataSet.colors = viewModel.chartColors
+        
+        dataSet.sliceSpace = 2
+        dataSet.selectionShift = 5
+        dataSet.drawIconsEnabled = true
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.maximumFractionDigits = 1
+        formatter.multiplier = 1.0
+        formatter.percentSymbol = " %"
+        
+        let data = PieChartData(dataSet: dataSet)
+        data.setValueFormatter(DefaultValueFormatter(formatter: formatter))
+        data.setValueFont(UIFont(name: "Pretendard-Regular", size: 10)!)
+        data.setValueTextColor(.black)
+        
+        pieChartView.data = data
+        
+        pieChartView.animate(xAxisDuration: 1.0, easingOption: .easeOutBack)
     }
 }
