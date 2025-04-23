@@ -31,6 +31,7 @@ final class CustomPieChartView: UIView {
         
         chartView.chartDescription.enabled = false
         chartView.drawHoleEnabled = false
+        chartView.drawEntryLabelsEnabled = false
         chartView.transparentCircleRadiusPercent = 0.6
         
         let legend = chartView.legend
@@ -43,6 +44,12 @@ final class CustomPieChartView: UIView {
         
         chartView.entryLabelColor = .white
         chartView.entryLabelFont = UIFont(name: "Pretendard-Regular", size: 10)
+        
+        chartView.renderer = CustomPieChartRenderer(
+            chart: chartView,
+            animator: chartView.chartAnimator,
+            viewPortHandler: chartView.viewPortHandler
+        )
         
         return chartView
     }()
@@ -104,12 +111,17 @@ extension CustomPieChartView {
         
         chartSubtitleLabel.text = viewModel.chartSubtitle
         
+        let entries = [
+            PieChartDataEntry(value: viewModel.chartEntries[0].y, label: "Me"),
+            PieChartDataEntry(value: viewModel.chartEntries[1].y, label: "You")
+        ]
+        
         let dataSet = PieChartDataSet(entries: viewModel.chartEntries, label: "")
         dataSet.colors = viewModel.chartColors
         
         dataSet.sliceSpace = 2
         dataSet.selectionShift = 5
-        dataSet.drawIconsEnabled = true
+        dataSet.drawIconsEnabled = false
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .percent
