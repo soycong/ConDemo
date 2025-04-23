@@ -316,22 +316,26 @@ extension RecordingMainViewController {
                         loadingIndicator.updateProgress(0.5)
                     }
                     
-                    let messagesData = try await TranscribeManager.shared
+                    let content = try await TranscribeManager.shared
                         .transcribeAudioFile(at: resultPath)
-
+                    
                     // 2. chatGPT 분석 요청 (상태 업데이트)
                     await MainActor.run {
                         loadingIndicator.updateMessage("대화 내용을 분석 중...")
                         loadingIndicator.updateProgress(0.9)
                     }
                     
-                    let analysisData = try await ChatGPTManager.shared
-                        .analyzeTranscript(messages: messagesData)
-                    
+                    //                    let analysisData = try await ChatGPTManager.shared
+                    //                        .analyzeTranscript(messages: messagesData)
                     // 테스트용 더미 데이터
-//                    let analysisData = try await ChatGPTManager.shared
-//                        .analyzeTranscript(messages: MessageData.dummyMessages)
-
+                    //                    let analysisData = try await ChatGPTManager.shared
+                    //                        .analyzeTranscript(messages: MessageData.dummyMessages)
+                    
+                    let analysisData = try await ChatGPTManager.shared.createAnalysisDataFromTranscript(
+                        transcriptJson: content,
+                        title: "음성 트랜스크립션 분석"
+                    )
+                    
                     // 3. 처리 완료 후 UI 업데이트
                     await MainActor.run {
                         loadingIndicator.updateProgress(1.0)
@@ -343,7 +347,6 @@ extension RecordingMainViewController {
                             self.navigationController?.pushViewController(choiceVC, animated: true)
                         }
                     }
-                    
                 } catch {
                     // 에러 처리
                     await MainActor.run {
