@@ -49,7 +49,7 @@ class TranscribeManager {
     // MARK: - Functions
 
     /// 앱에서 사용하기 위한 메서드
-    func transcribeAudioFile(at fileURL: URL) async throws -> [MessageData] {
+    func transcribeAudioFile(at fileURL: URL) async throws -> String {
         // 파일 확장자로부터 포맷 결정
         let fileExtension = fileURL.pathExtension.lowercased()
         guard let format = AudioFormat(rawValue: fileExtension) else {
@@ -100,7 +100,7 @@ class TranscribeManager {
     /// 트랜스크립션 작업 시작
     private func startTranscriptionJob(jobName: String,
                                        s3Url: String,
-                                       format: AudioFormat) async throws -> [MessageData] {
+                                       format: AudioFormat) async throws -> String {
         // AWS Transcribe 클라이언트 설정
         let config = try await TranscribeClient.TranscribeClientConfiguration(region: region)
         let transcribeClient: TranscribeClient = .init(config: config)
@@ -140,7 +140,7 @@ class TranscribeManager {
 
     /// 트랜스크립션 작업 모니터링
     private func monitorTranscriptionJob(transcribeClient: TranscribeClient,
-                                         jobName: String) async throws -> [MessageData] {
+                                         jobName: String) async throws -> String {
         let getJobRequest: GetTranscriptionJobInput = .init(transcriptionJobName: jobName)
 
         let checkInterval: TimeInterval = 5.0 // 5초마다 상태 체크
@@ -181,22 +181,22 @@ class TranscribeManager {
     }
 
     /// S3 결과 가져오기
-    private func getResults(uri: String) async throws -> [MessageData] {
+    private func getResults(uri: String) async throws -> String {
         // AWS 키 설정
         setenv("AWS_ACCESS_KEY_ID", APIKey.accessKey, 1)
         setenv("AWS_SECRET_ACCESS_KEY", APIKey.secretKey, 1)
-
+        
         // URI 분석
         let bucket: String
         let key: String
-
+        
         if uri.hasPrefix("s3://") {
             let uriWithoutPrefix = uri.dropFirst(5) // "s3://" 제거
             guard let firstSlashIndex = uriWithoutPrefix.firstIndex(of: "/") else {
                 throw NSError(domain: "S3URIError", code: 2,
                               userInfo: [NSLocalizedDescriptionKey: "URI 형식이 올바르지 않음"])
             }
-
+            
             bucket = String(uriWithoutPrefix[..<firstSlashIndex])
             key = String(uriWithoutPrefix[firstSlashIndex...].dropFirst())
         } else if uri.hasPrefix("https://") && uri.contains("amazonaws.com") {
@@ -205,43 +205,59 @@ class TranscribeManager {
                 throw NSError(domain: "S3URIError", code: 4,
                               userInfo: [NSLocalizedDescriptionKey: "잘못된 HTTPS URL 형식"])
             }
-
+            
             let pathComponents = url.pathComponents.filter { $0 != "/" }
             guard pathComponents.count >= 2 else {
                 throw NSError(domain: "S3URIError", code: 5,
                               userInfo: [NSLocalizedDescriptionKey: "HTTPS URL 경로가 올바르지 않음"])
             }
-
+            
             bucket = pathComponents[0]
             key = pathComponents.dropFirst().joined(separator: "/")
         } else {
             throw NSError(domain: "S3URIError", code: 1,
                           userInfo: [NSLocalizedDescriptionKey: "지원되지 않는 URI 형식입니다. s3:// 또는 https://s3.*.amazonaws.com 형식이어야 합니다."])
         }
-
+        
         // AWS 클라이언트 설정
         let s3Config = try await AWSS3.S3Client.S3ClientConfiguration(region: region)
         let s3Client = AWSS3.S3Client(config: s3Config)
-
+        
         // GetObject 요청 생성
         let getObjectRequest = AWSS3.GetObjectInput(bucket: bucket, key: key)
-
+        
         // 요청 실행
         let response = try await s3Client.getObject(input: getObjectRequest)
-
+        
         // 응답 데이터 처리
         if let data = try await response.body?.readData(),
            let content = String(data: Data(data), encoding: .utf8) {
             // 트랜스크립션 결과 파싱 및 처리
             do {
-                let transcriptionResult = try parseTranscriptionContent(content)
-                return transcriptionResult.getTranscript()
-                // 화자 분리된 스크립트 리턴
-            } catch {
-                print("트랜스크립션 결과 파싱 중 오류 발생: \(error)")
-                throw error
-            }
-        } else {
+//                try await ChatGPTManager.shared.createAnalysisDataFromTranscript(
+//                    transcriptJson: content,
+//                    title: "음성 트랜스크립션 분석")
+//
+//                let transcriptionResult = try parseTranscriptionContent(content)
+//                return transcriptionResult.getTranscript()
+//                // 화자 분리된 스크립트 리턴
+                
+                // ChatGPTManager를 통해 전체 분석 수행
+//                let analysisData = try await ChatGPTManager.shared.createAnalysisDataFromTranscript(
+//                    transcriptJson: content,
+//                    title: "음성 트랜스크립션 분석"
+//                )
+                
+                // 기존 코드에서는 MessageData 배열만 반환
+                // 필요하다면 여기서 분석 데이터를 저장하거나 활용
+                
+                // 호환성을 위해 메시지 데이터 반환
+                return content
+            }catch {
+            print("트랜스크립션 결과 파싱 중 오류 발생: \(error)")
+            throw error
+        }
+    } else {
             throw NSError(domain: "S3URIError", code: 3,
                           userInfo: [NSLocalizedDescriptionKey: "데이터를 문자열로 변환할 수 없습니다."])
         }
