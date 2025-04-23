@@ -269,3 +269,53 @@ extension SentimentAnalysisData {
         )
     ]
 }
+
+extension ConsistencyData {
+    static let dummies = [
+        ConsistencyData(
+            speakerA: SpeakerEvaluationData(score: 2, reasoning: "주장이 자주 바뀌고 일관성이 부족함"),
+            speakerB: SpeakerEvaluationData(score: 5, reasoning: "처음부터 끝까지 논리적으로 일관된 주장을 펼침")
+        ),
+        ConsistencyData(
+            speakerA: SpeakerEvaluationData(score: 4, reasoning: "대체로 일관된 주장을 펼쳤으나 일부 모순된 부분이 있음"),
+            speakerB: SpeakerEvaluationData(score: 3, reasoning: "주요 논점에서 자주 입장을 바꿈")
+        ),
+        ConsistencyData(
+            speakerA: SpeakerEvaluationData(score: 5, reasoning: "명확하고 일관된 주장으로 논리적 흐름을 유지함"),
+            speakerB: SpeakerEvaluationData(score: 1, reasoning: "대화 내내 주장이 계속 변하고 모순됨")
+        ),
+        ConsistencyData(
+            speakerA: SpeakerEvaluationData(score: 1, reasoning: "자신의 이전 발언과 계속 충돌하는 주장을 함"),
+            speakerB: SpeakerEvaluationData(score: 4, reasoning: "주로 일관된 논리를 보여주나 가끔 입장을 바꿈")
+        ),
+        ConsistencyData(
+            speakerA: SpeakerEvaluationData(score: 3, reasoning: "일부 주제에서는 일관되지만 다른 부분에서 모순됨"),
+            speakerB: SpeakerEvaluationData(score: 2, reasoning: "핵심 주장에서 자주 모순되는 발언을 함")
+        )
+    ]
+}
+
+extension FactualAccuracyData {
+    static let dummies = [
+        FactualAccuracyData(
+            speakerA: SpeakerEvaluationData(score: 2, reasoning: "몇 가지 부정확한 정보를 제시함"),
+            speakerB: SpeakerEvaluationData(score: 1, reasoning: "대부분의 주장이 사실과 다름")
+        ),
+        FactualAccuracyData(
+            speakerA: SpeakerEvaluationData(score: 4, reasoning: "대부분 정확한 정보를 제공하나 일부 오류가 있음"),
+            speakerB: SpeakerEvaluationData(score: 3, reasoning: "일부 사실은 정확하나 중요한 부분에서 오류가 있음")
+        ),
+        FactualAccuracyData(
+            speakerA: SpeakerEvaluationData(score: 1, reasoning: "정확한 정보가 거의 없고 대부분 사실 왜곡이 심함"),
+            speakerB: SpeakerEvaluationData(score: 5, reasoning: "모든 주장이 검증 가능한 사실에 기반함")
+        ),
+        FactualAccuracyData(
+            speakerA: SpeakerEvaluationData(score: 5, reasoning: "매우 정확한 데이터와 통계를 사용함"),
+            speakerB: SpeakerEvaluationData(score: 2, reasoning: "여러 사실을 오해하거나 잘못 인용함")
+        ),
+        FactualAccuracyData(
+            speakerA: SpeakerEvaluationData(score: 3, reasoning: "주요 사실은 맞지만 세부 정보에서 부정확함"),
+            speakerB: SpeakerEvaluationData(score: 4, reasoning: "전반적으로 신뢰할 수 있는 정보를 제공함")
+        )
+    ]
+}
