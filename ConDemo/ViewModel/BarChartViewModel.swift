@@ -28,7 +28,9 @@ final class BarChartViewModel {
         self.title = title
         self.isPositive = isPositive
     }
-    
+}
+
+extension BarChartViewModel {
     func updateData(_ barData: SentimentAnalysisData) {
         self.barData = barData
     }
