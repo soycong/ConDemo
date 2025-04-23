@@ -89,6 +89,10 @@ final class SummaryView: UIScrollView {
     
     private(set) var negativeWordsBarChartView = CustomBarChartView()
     
+    private(set) var consistencyChartView = DotRatingView()
+    
+    private(set) var factualAccuracyChartView = DotRatingView()
+    
     // 페이지 컨트롤
     private(set) var pageControl: UIPageControl = {
         let control = UIPageControl()
@@ -167,6 +171,8 @@ extension SummaryView {
             analysisExpandButton,
             emotionLevelIndicator,
             speakingPieChartView,
+            consistencyChartView,
+            factualAccuracyChartView,
             positiveWordsBarChartView,
             negativeWordsBarChartView,
             buttonStackView,
@@ -177,6 +183,8 @@ extension SummaryView {
         
         [
             speakingPieChartView,
+            consistencyChartView,
+            factualAccuracyChartView,
             positiveWordsBarChartView,
             negativeWordsBarChartView
         ].forEach {
@@ -228,8 +236,20 @@ extension SummaryView {
             make.height.equalTo(180)
         }
         
-        positiveWordsBarChartView.snp.makeConstraints { make in
+        consistencyChartView.snp.makeConstraints { make in
             make.top.equalTo(speakingPieChartView.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview().inset(25)
+            make.height.equalTo(120)
+        }
+        
+        factualAccuracyChartView.snp.makeConstraints { make in
+            make.top.equalTo(consistencyChartView.snp.bottom).offset(40)
+            make.horizontalEdges.equalToSuperview().inset(25)
+            make.height.equalTo(120)
+        }
+        
+        positiveWordsBarChartView.snp.makeConstraints { make in
+            make.top.equalTo(factualAccuracyChartView.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(25)
             make.height.equalTo(140)
         }
@@ -363,5 +383,21 @@ extension SummaryView {
         
         let negativeViewModel = BarChartViewModel(barData: dummy, title: "부정적인 단어를 쓴 비율", isPositive: false)
         negativeWordsBarChartView.configure(with: negativeViewModel)
+        
+        let consistencyDummy = ConsistencyData.dummies.randomElement()!
+        let consistencyViewModel = DotRatingViewModel(
+            title: "주장의 일관성",
+            consistencyData: consistencyDummy,
+            ratingLabels: ["궤변", "무슨 말이야?", "계속 해봐", "맞는 말이네", "입만 살았네"]
+        )
+        consistencyChartView.configure(with: consistencyViewModel)
+        
+        let factualAccuracyDummy = FactualAccuracyData.dummies.randomElement()!
+        let factualAccuracyViewModel = DotRatingViewModel(
+            title: "사실 관계의 정확성",
+            factualAccuracyData: factualAccuracyDummy,
+            ratingLabels: ["벌구", "뇌피셜", "반맞반틀", "믿고갑니다", "아멘"]
+        )
+        factualAccuracyChartView.configure(with: factualAccuracyViewModel)
     }
 }

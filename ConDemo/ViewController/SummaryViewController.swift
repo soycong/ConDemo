@@ -192,6 +192,8 @@ extension SummaryViewController {
             
             [
                 self.summaryView.speakingPieChartView,
+                self.summaryView.consistencyChartView,
+                self.summaryView.factualAccuracyChartView,
                 self.summaryView.positiveWordsBarChartView,
                 self.summaryView.negativeWordsBarChartView
             ].forEach {
