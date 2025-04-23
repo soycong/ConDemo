@@ -7,7 +7,7 @@
 
 struct DotRatingData {
     let title: String
-    let speakerARating: Int // 1-5 사이 값
-    let speakerBRating: Int // 1-5 사이 값
+    let myRating: Int // 1-5 사이 값
+    let yourRating: Int // 1-5 사이 값
     let labels: [String] // 각 점수별 레이블
 }
