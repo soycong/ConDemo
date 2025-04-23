@@ -33,14 +33,7 @@ final class CustomPieChartView: UIView {
         chartView.drawHoleEnabled = false
         chartView.drawEntryLabelsEnabled = false
         chartView.transparentCircleRadiusPercent = 0.6
-        
-        let legend = chartView.legend
-        legend.horizontalAlignment = .center
-        legend.verticalAlignment = .bottom
-        legend.orientation = .horizontal
-        legend.drawInside = false
-        legend.xEntrySpace = 7
-        legend.yEntrySpace = 0
+        chartView.legend.enabled = false
         
         chartView.entryLabelColor = .white
         chartView.entryLabelFont = UIFont(name: "Pretendard-Regular", size: 10)
@@ -83,19 +76,19 @@ extension CustomPieChartView {
     
     private func setupConstratins() {
         chartTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
+            make.leading.equalToSuperview().offset(8)
             make.centerY.equalToSuperview().offset(-8)
         }
         
         chartSubtitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.centerY.equalToSuperview().offset(8)
+            make.leading.equalToSuperview().offset(8)
+            make.top.equalTo(chartTitleLabel.snp.bottom).offset(8)
         }
         
         pieChartView.snp.makeConstraints { make in
             make.leading.equalTo(chartTitleLabel.snp.trailing).offset(60)
             make.centerY.equalToSuperview()
-            make.size.equalTo(160)
+            make.size.equalTo(180)
         }
     }
 }
