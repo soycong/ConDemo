@@ -275,6 +275,7 @@ extension MessageBubbleCell {
         } else if isDimmed {
             // 흐리게 표시
             // 원래 배경색 유지
+            bubbleBackgroundView.backgroundColor = .systemGray4
             bubbleBackgroundView.alpha = 0.5
             messageLabel.alpha = 0.5
             messageImageView.alpha = 0.5
