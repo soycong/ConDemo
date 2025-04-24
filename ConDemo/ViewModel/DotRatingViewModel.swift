@@ -17,17 +17,17 @@ final class DotRatingViewModel {
     
     var myRating: Int {
         if title == "주장의 일관성" {
-            return consistency?.speakerA.score
+            return Int(consistency!.speakerA!.score)
         } else {
-            return factualAccuracy?.speakerA.score
+            return Int(factualAccuracy!.speakerA!.score)
         }
     }
     
     var yourRating: Int {
         if title == "주장의 일관성" {
-            return consistency?.speakerB.score
+            return Int(consistency!.speakerB!.score)
         } else {
-            return factualAccuracy?.speakerB.score
+            return Int(factualAccuracy!.speakerB!.score)
         }
     }
     
