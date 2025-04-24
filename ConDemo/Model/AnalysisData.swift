@@ -387,8 +387,9 @@ extension AnalysisData: Codable {
         try container.encodeIfPresent(summaries, forKey: .summaries)
         try container.encodeIfPresent(detailedTranscriptAnalysisData, forKey: .detailedTranscriptAnalysisData)
     }
-
-  extension SpeakingTimeData {
+}
+    
+extension SpeakingTimeData {
     static let dummies = [
         SpeakingTimeData(speakerA: 120.5, speakerB: 85.3),
         SpeakingTimeData(speakerA: 45.8, speakerB: 130.2),
@@ -402,6 +403,7 @@ extension AnalysisData: Codable {
         SpeakingTimeData(speakerA: 92.1, speakerB: 88.9)
     ]
 }
+
 
 extension SentimentAnalysisData {
     static let dummies = [
