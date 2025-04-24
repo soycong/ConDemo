@@ -91,38 +91,27 @@ struct Templates {
                - A가 말한 총 시간
                - B가 말한 총 시간
             
-            2. 두 화자의 말이 겹친 횟수와 총 겹친 시간(초 단위)
-            
-            3. 두 화자의 말이 겹친 구간에서 논의된 주제 목록 (최대 5개)
-            
-            4. 각 화자 주장의 일관성 평가:
+            2. 각 화자 주장의 일관성 평가:
                - 1-5 척도로 평가 (1: 매우 비일관적, 5: 매우 일관적)
                - A의 일관성 점수와 근거
                - B의 일관성 점수와 근거
             
-            5. 각 화자의 사실 관계 정확성:
+            3. 각 화자의 사실 관계 정확성:
                - 1-5 척도로 평가 (1: 매우 부정확, 5: 매우 정확)
                - A의 정확성 점수와 근거
                - B의 정확성 점수와 근거
             
-            6. 감정 분석:
+            4. 감정 분석:
                - 각 화자가 사용한 긍정적 단어 비율과 부정적 단어 비율
                - 예시 단어 포함
-            
-            7. 각 화자별 잘못 사용한 단어 또는 표현 횟수와 예시
-            
+                        
             결과는 반드시 다음과 같은 JSON 형식으로 제공해주세요:
             
             {
-              "speakingTime": {
+            "speakingTime": {
                 "speakerA": 숫자(분),
                 "speakerB": 숫자(분)
               },
-              "overlaps": {
-                "count": 숫자,
-                "totalDuration": 숫자(초)
-              },
-              "overlapTopics": ["주제1 설명", "주제2 설명", ...],
               "consistency": {
                 "speakerA": {
                   "score": 숫자(1-5),
@@ -155,16 +144,6 @@ struct Templates {
                   "negativeRatio": 1 - speakerA의 negativeRatio,
                   "positiveExamples": ["단어1", "단어2", ...],
                   "negativeExamples": ["단어1", "단어2", ...]
-                }
-              },
-              "incorrectUsage": {
-                "speakerA": {
-                  "count": 숫자,
-                  "examples": ["예시1", "예시2", ...]
-                },
-                "speakerB": {
-                  "count": 숫자,
-                  "examples": ["예시1", "예시2", ...]
                 }
               }
             }

@@ -316,21 +316,7 @@ class ChatGPTManager {
         if result.speakingTime.speakerB < 0 || result.speakingTime.speakerB > 1000 {
             result.speakingTime.speakerB = 5.0
         }
-        
-        // 2. 겹친 시간 검증
-        if result.overlaps.count < 0 {
-            result.overlaps.count = 0
-        }
-        
-        if result.overlaps.totalDuration < 0 {
-            result.overlaps.totalDuration = 0
-        }
-        
-        // 3. 겹친 주제가 비어있으면 기본값 설정
-        if result.overlapTopics.isEmpty {
-            result.overlapTopics = ["주제 논의 없음"]
-        }
-        
+
         // 4. 일관성 점수 범위 확인 (1-5)
         result.consistency.speakerA.score = max(1, min(5, result.consistency.speakerA.score))
         result.consistency.speakerB.score = max(1, min(5, result.consistency.speakerB.score))
@@ -567,12 +553,7 @@ extension ChatGPTManager {
         
         data.speakingTime.speakerA = 5.0
         data.speakingTime.speakerB = 5.0
-        
-        data.overlaps.count = 3
-        data.overlaps.totalDuration = 15.0
-        
-        data.overlapTopics = ["주제 1", "주제 2", "주제 3"]
-        
+
         data.consistency.speakerA.score = 3
         data.consistency.speakerA.reasoning = "화자A의 주장은 중간 정도의 일관성을 보였습니다."
         data.consistency.speakerB.score = 3
@@ -592,13 +573,7 @@ extension ChatGPTManager {
         data.sentimentAnalysis.speakerB.negativeRatio = 0.5
         data.sentimentAnalysis.speakerB.positiveExamples = ["좋은", "훌륭한", "유용한"]
         data.sentimentAnalysis.speakerB.negativeExamples = ["문제", "어려운", "복잡한"]
-        
-        data.incorrectUsage.speakerA.count = 0
-        data.incorrectUsage.speakerA.examples = ["(예시 없음)"]
-        
-        data.incorrectUsage.speakerB.count = 0
-        data.incorrectUsage.speakerB.examples = ["(예시 없음)"]
-        
+
         data.date = Date()
         
         return data
