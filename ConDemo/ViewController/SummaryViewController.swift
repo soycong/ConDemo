@@ -39,6 +39,7 @@ final class SummaryViewController: UIViewController {
         setupDelegates()
         setupGestureRecognizers()
         updateViewWithCurrentAnalysis()
+        setupViewModels()
     }
 }
 
@@ -306,5 +307,37 @@ extension SummaryViewController: CalendarViewDelegate {
                 navigationController?.pushViewController(summaryVC, animated: true)
             }
         }
+    }
+}
+
+extension SummaryViewController {
+    private func setupViewModels() {
+        let analysis = viewModel.analysis
+        
+        let speakingViewModel = PieChartViewModel(pieData: analysis?.analysisdetailtranscript?.speakingTime as! SpeakingTime)
+        summaryView.speakingPieChartView.configure(with: speakingViewModel)
+        
+        let barData = analysis?.analysisdetailtranscript?.sentimentAnalysis as! SentimentAnalysis
+        let positiveViewModel = BarChartViewModel(barData: barData, title: "긍정적인 단어를 쓴 비율", isPositive: true)
+        summaryView.positiveWordsBarChartView.configure(with: positiveViewModel)
+        
+        let negativeViewModel = BarChartViewModel(barData: barData, title: "부정적인 단어를 쓴 비율", isPositive: false)
+        summaryView.negativeWordsBarChartView.configure(with: negativeViewModel)
+        
+        let consistency = analysis?.analysisdetailtranscript?.consistency as! Consistency
+        let consistencyViewModel = DotRatingViewModel(
+            title: "주장의 일관성",
+            consistency: consistency,
+            ratingLabels: ["궤변", "무슨 말이야?", "계속 해봐", "맞는 말이네", "입만 살았네"]
+        )
+        summaryView.consistencyChartView.configure(with: consistencyViewModel)
+        
+        let factualAccuracy = analysis?.analysisdetailtranscript?.factualAccuracy as! FactualAccuracy
+        let factualAccuracyViewModel = DotRatingViewModel(
+            title: "사실 관계의 정확성",
+            factualAccuracy: factualAccuracy,
+            ratingLabels: ["벌구", "뇌피셜", "반맞반틀", "믿고갑니다", "아멘"]
+        )
+        summaryView.factualAccuracyChartView.configure(with: factualAccuracyViewModel)
     }
 }
