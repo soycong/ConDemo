@@ -9,7 +9,7 @@ import DGCharts
 import UIKit
 
 final class PieChartViewModel {
-    private var pieData: SpeakingTimeData
+    private var pieData: SpeakingTime
     
     var chartSubtitle: String { "총 " + String(Int(pieData.speakerA + pieData.speakerB)) + "분"}
     
@@ -27,13 +27,7 @@ final class PieChartViewModel {
         ]
     }
     
-    init(pieData: SpeakingTimeData) {
-        self.pieData = pieData
-    }
-}
-
-extension PieChartViewModel {
-    func updateData(_ pieData: SpeakingTimeData) {
+    init(pieData: SpeakingTime) {
         self.pieData = pieData
     }
 }
