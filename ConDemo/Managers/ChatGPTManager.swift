@@ -262,47 +262,47 @@ class ChatGPTManager {
     }
     
     // AWS Transcribe JSON을 받아 전체 분석 수행 (TranscribeManager에서 호출됨)
-    func createAnalysisDataFromTranscript(transcriptJson: String, title: String = "") async throws -> AnalysisData {
-        do {
-            // print("수신한 JSON: \(transcriptJson)")
-
-            // 기본 분석 데이터 생성
-            var analysisData = AnalysisData()
-            
-            // 메시지 데이터 추출
-            let decoder = JSONDecoder()
-            // let transcription = try decoder.decode(TranscriptionResponse.self, from: transcriptJson.data(using: .utf8)!)
-            let transcription = try TranscribeManager.shared.parseTranscriptionContent(transcriptJson)
-            let messages = transcription.getTranscript()
-            analysisData.messages = messages
-            //print("대화 내용 \(analysisData.messages)")
-            
-            let transcript = messages.map {
-                "\($0.isFromCurrentUser ? "나" : "상대방"): \($0.text)"
-            }.joined(separator: "\n")
-            
-            // 1. 커뮤니티 콘텐츠 분석 수행
-            let communityData = try await analyzeConversation(transcriptJson: transcript)
-            
-            // 2. 상세 트랜스크립트 분석 수행
-            let detailedAnalysis = try await analyzeTranscriptJSON(transcriptJson: transcriptJson)
-            
-            // 3. 데이터 통합
-            analysisData.title = communityData.title.isEmpty ? "음성 대화 분석" : title
-            analysisData.date = Date()
-            analysisData.contents = communityData.contents
-            analysisData.level = communityData.level
-            analysisData.polls = communityData.polls
-            analysisData.summaries = communityData.summaries
-            analysisData.detailedTranscriptAnalysisData = detailedAnalysis
-            analysisData.log = LogData(date: Date(), contents: "AWS Transcribe 음성 분석 완료")
-            
-            return analysisData
-        } catch {
-            print("트랜스크립트에서 AnalysisData 생성 중 오류: \(error)")
-            throw error
-        }
-    }
+//    func createAnalysisDataFromTranscript(transcriptJson: String, title: String = "") async throws -> AnalysisData {
+//        do {
+//            // print("수신한 JSON: \(transcriptJson)")
+//
+//            // 기본 분석 데이터 생성
+//            var analysisData = AnalysisData()
+//            
+//            // 메시지 데이터 추출
+//            let decoder = JSONDecoder()
+//            // let transcription = try decoder.decode(TranscriptionResponse.self, from: transcriptJson.data(using: .utf8)!)
+//            let transcription = try TranscribeManager.shared.parseTranscriptionContent(transcriptJson)
+//            let messages = transcription.getTranscript()
+//            analysisData.messages = messages
+//            //print("대화 내용 \(analysisData.messages)")
+//            
+//            let transcript = messages.map {
+//                "\($0.isFromCurrentUser ? "나" : "상대방"): \($0.text)"
+//            }.joined(separator: "\n")
+//            
+//            // 1. 커뮤니티 콘텐츠 분석 수행
+//            let communityData = try await analyzeConversation(transcriptJson: transcript)
+//            
+//            // 2. 상세 트랜스크립트 분석 수행
+//            let detailedAnalysis = try await analyzeTranscriptJSON(transcriptJson: transcriptJson)
+//            
+//            // 3. 데이터 통합
+//            analysisData.title = communityData.title.isEmpty ? "음성 대화 분석" : title
+//            analysisData.date = Date()
+//            analysisData.contents = communityData.contents
+//            analysisData.level = communityData.level
+//            analysisData.polls = communityData.polls
+//            analysisData.summaries = communityData.summaries
+//            analysisData.detailedTranscriptAnalysisData = detailedAnalysis
+//            analysisData.log = LogData(date: Date(), contents: "AWS Transcribe 음성 분석 완료")
+//            
+//            return analysisData
+//        } catch {
+//            print("트랜스크립트에서 AnalysisData 생성 중 오류: \(error)")
+//            throw error
+//        }
+//    }
     
     // 결과 유효성 검사 및 보정 함수 (DetailedTranscriptAnalysisData용)
     private func validateAndFixTranscriptAnalysisData(_ data: DetailedTranscriptAnalysisData) -> DetailedTranscriptAnalysisData {
@@ -371,7 +371,7 @@ extension ChatGPTManager {
             print("프롬프트 템플릿 설정 중...")
             
             // 프롬프트 템플릿 설정 - 통합 템플릿 사용
-            let template = Templates.englishTemplate
+            let template = Templates.newholeTemplate
             
             let prompt = PromptTemplate(
                 input_variables: ["transcript"],
@@ -513,36 +513,36 @@ extension ChatGPTManager {
     }
     
     // MARK: - 통합 함수 사용 예시 - 수정된 createAnalysisDataFromTranscript
-//    func createAnalysisDataFromTranscript(transcriptJson: String, title: String = "") async throws -> AnalysisData {
-//        do {
-//            print("수신한 JSON: \(transcriptJson)")
-//            
-//            // 기본 분석 데이터 생성
-//            var analysisData = AnalysisData()
-//            
-//            // 메시지 데이터 추출
-//            let transcription = try TranscribeManager.shared.parseTranscriptionContent(transcriptJson)
-//            analysisData.messages = transcription.getTranscript()
-//            
-//            // 통합된 분석 함수 호출 - 한 번의 API 호출로 모든 데이터 가져오기
-//            let completeData = try await analyzeTranscriptComplete(transcriptJson: transcriptJson)
-//            
-//            // 결과 데이터 복사
-//            analysisData.date = Date()
-//            analysisData.title = completeData.title
-//            analysisData.contents = completeData.contents
-//            analysisData.level = completeData.level
-//            analysisData.polls = completeData.polls
-//            analysisData.summaries = completeData.summaries
-//            analysisData.detailedTranscriptAnalysisData = completeData.detailedTranscriptAnalysisData
-//            analysisData.log = LogData(date: Date(), contents: "AWS Transcribe 음성 분석 완료")
-//            
-//            return analysisData
-//        } catch {
-//            print("트랜스크립트에서 AnalysisData 생성 중 오류: \(error)")
-//            throw error
-//        }
-//    }
+    func createAnalysisDataFromTranscript(transcriptJson: String, title: String = "") async throws -> AnalysisData {
+        do {
+            print("수신한 JSON: \(transcriptJson)")
+            
+            // 기본 분석 데이터 생성
+            var analysisData = AnalysisData()
+            
+            // 메시지 데이터 추출
+            let transcription = try TranscribeManager.shared.parseTranscriptionContent(transcriptJson)
+            analysisData.messages = transcription.getTranscript()
+            
+            // 통합된 분석 함수 호출 - 한 번의 API 호출로 모든 데이터 가져오기
+            let completeData = try await analyzeTranscriptComplete(transcriptJson: transcriptJson)
+            
+            // 결과 데이터 복사
+            analysisData.date = Date()
+            analysisData.title = completeData.title
+            analysisData.contents = completeData.contents
+            analysisData.level = completeData.level
+            analysisData.polls = completeData.polls
+            analysisData.summaries = completeData.summaries
+            analysisData.detailedTranscriptAnalysisData = completeData.detailedTranscriptAnalysisData
+            analysisData.log = LogData(date: Date(), contents: "AWS Transcribe 음성 분석 완료")
+            
+            return analysisData
+        } catch {
+            print("트랜스크립트에서 AnalysisData 생성 중 오류: \(error)")
+            throw error
+        }
+    }
 }
 
 // 오류 및 보정 함수
