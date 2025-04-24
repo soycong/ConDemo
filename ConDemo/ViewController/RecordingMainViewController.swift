@@ -343,7 +343,7 @@ extension RecordingMainViewController {
                         // 로딩 인디케이터 닫기
                         loadingIndicator.dismiss {
                             // 분석 완료 후 SummaryViewController로 이동
-                            let choiceVC = ChoiceViewController(analysisData: analysisData)
+                            let choiceVC = SpeakerSelectionViewController(analysisData: analysisData)
                             self.navigationController?.pushViewController(choiceVC, animated: true)
                         }
                     }
