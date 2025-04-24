@@ -81,27 +81,21 @@ struct SummaryData {
 // MARK: - 대화 상세 분석 모델
 struct DetailedTranscriptAnalysisData: Codable {
     var speakingTime: SpeakingTimeData
-    var overlaps: OverlapsData
-    var overlapTopics: [String]
     var consistency: ConsistencyData
     var factualAccuracy: FactualAccuracyData
     var sentimentAnalysis: SentimentAnalysisData
-    var incorrectUsage: IncorrectUsageData
     var date: Date?
     
     init() {
         self.speakingTime = SpeakingTimeData()
-        self.overlaps = OverlapsData()
-        self.overlapTopics = []
         self.consistency = ConsistencyData()
         self.factualAccuracy = FactualAccuracyData()
         self.sentimentAnalysis = SentimentAnalysisData()
-        self.incorrectUsage = IncorrectUsageData()
         self.date = Date()
     }
     
     enum CodingKeys: String, CodingKey {
-        case speakingTime, overlaps, overlapTopics, consistency, factualAccuracy, sentimentAnalysis, incorrectUsage, date
+        case speakingTime, consistency, factualAccuracy, sentimentAnalysis, date
     }
 }
 
@@ -111,15 +105,6 @@ struct SpeakingTimeData: Codable {
     
     enum CodingKeys: String, CodingKey {
         case speakerA, speakerB
-    }
-}
-
-struct OverlapsData: Codable {
-    var count: Int = 0
-    var totalDuration: Double = 0.0
-    
-    enum CodingKeys: String, CodingKey {
-        case count, totalDuration
     }
 }
 
@@ -160,20 +145,6 @@ struct SentimentExamplesData: Codable {
 struct SentimentAnalysisData: Codable {
     var speakerA: SentimentExamplesData = SentimentExamplesData()
     var speakerB: SentimentExamplesData = SentimentExamplesData()
-    
-    enum CodingKeys: String, CodingKey {
-        case speakerA, speakerB
-    }
-}
-
-struct IncorrectUsageExamplesData: Codable {
-    var count: Int = 0
-    var examples: [String] = []
-}
-
-struct IncorrectUsageData: Codable {
-    var speakerA: IncorrectUsageExamplesData = IncorrectUsageExamplesData()
-    var speakerB: IncorrectUsageExamplesData = IncorrectUsageExamplesData()
     
     enum CodingKeys: String, CodingKey {
         case speakerA, speakerB

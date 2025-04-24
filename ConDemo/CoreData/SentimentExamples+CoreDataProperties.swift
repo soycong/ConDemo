@@ -2,7 +2,7 @@
 //  SentimentExamples+CoreDataProperties.swift
 //  ConDemo
 //
-//  Created by seohuibaek on 4/23/25.
+//  Created by seohuibaek on 4/24/25.
 //
 //
 
@@ -16,11 +16,12 @@ extension SentimentExamples {
         return NSFetchRequest<SentimentExamples>(entityName: "SentimentExamples")
     }
 
-    @NSManaged public var positiveRatio: Double
     @NSManaged public var negativeExamples: NSObject?
     @NSManaged public var negativeRatio: Double
     @NSManaged public var positiveExamples: NSObject?
-    @NSManaged public var sentientanalysis: SentimentAnalysis?
+    @NSManaged public var positiveRatio: Double
+    @NSManaged public var sentimentAnalysisA: SentimentAnalysis?
+    @NSManaged public var sentimentAnalysisB: SentimentAnalysis?
 
 }
 
