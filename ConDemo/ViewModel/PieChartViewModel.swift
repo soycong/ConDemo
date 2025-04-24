@@ -11,7 +11,7 @@ import UIKit
 final class PieChartViewModel {
     private var pieData: SpeakingTime
     
-    var chartSubtitle: String { "총 " + String(Int(pieData.speakerA + pieData.speakerB)) + "분"}
+    var chartSubtitle: String { "총 " + String(Int(pieData.speakerA + pieData.speakerB)) + "초"}
     
     var chartEntries: [PieChartDataEntry] {
         return [
