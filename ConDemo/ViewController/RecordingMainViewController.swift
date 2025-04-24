@@ -335,7 +335,7 @@ extension RecordingMainViewController {
                         transcriptJson: content,
                         title: "음성 트랜스크립션 분석"
                     )
-                    
+
                     // 3. 처리 완료 후 UI 업데이트
                     await MainActor.run {
                         loadingIndicator.updateProgress(1.0)
