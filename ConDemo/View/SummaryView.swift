@@ -148,11 +148,9 @@ extension SummaryView {
         
         self.addSubview(contentView)
         
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        
         contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalTo(self)
+            make.edges.equalTo(self.contentLayoutGuide)
+            make.width.equalTo(self.frameLayoutGuide)
         }
     }
     
@@ -209,18 +207,18 @@ extension SummaryView {
         }
         
         summaryLabel.snp.makeConstraints { make in
-            make.top.equalTo(summaryDateLabel.snp.bottom).offset(30)
+            make.top.equalTo(summaryDateLabel.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
         emotionLevelIndicator.snp.makeConstraints { make in
-            make.top.equalTo(summaryLabel.snp.bottom).offset(30)
+            make.top.equalTo(summaryLabel.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
         // Analysis 섹션 - 펼치기가 디폴트
         analysisLabel.snp.makeConstraints { make in
-            make.top.equalTo(emotionLevelIndicator.snp.bottom).offset(30)
+            make.top.equalTo(emotionLevelIndicator.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
@@ -271,6 +269,11 @@ extension SummaryView {
         }
         
         buttonStackView.snp.makeConstraints { make in
+            if isAnalysisExpanded {
+                make.top.equalTo(negativeWordsBarChartView.snp.bottom).offset(50)
+            } else {
+                make.top.equalTo(analysisLabel.snp.bottom).offset(50)
+            }
             make.horizontalEdges.equalToSuperview().inset(25)
             make.bottom.equalToSuperview().offset(-20)
         }

@@ -188,47 +188,34 @@ extension SummaryViewController {
         let imageName = summaryView.isAnalysisExpanded ? "chevron.up" : "chevron.down"
         summaryView.analysisExpandButton.setImage(UIImage(systemName: imageName), for: .normal)
         
+        // 차트 뷰들의 가시성 상태 변경
+        let isHidden = !summaryView.isAnalysisExpanded
+        
+        [
+            summaryView.speakingPieChartView,
+            summaryView.consistencyChartView,
+            summaryView.factualAccuracyChartView,
+            summaryView.positiveWordsBarChartView,
+            summaryView.negativeWordsBarChartView
+        ].forEach {
+            $0.isHidden = isHidden
+        }
+        
         UIView.animate(withDuration: 0.3) { [weak self] in
-            guard let self else { return }
+            guard let self = self else { return }
             
-            [
-                self.summaryView.speakingPieChartView,
-                self.summaryView.consistencyChartView,
-                self.summaryView.factualAccuracyChartView,
-                self.summaryView.positiveWordsBarChartView,
-                self.summaryView.negativeWordsBarChartView
-            ].forEach {
-                $0.isHidden = !self.summaryView.isAnalysisExpanded
+            // 버튼 스택뷰의 위치 재조정
+            self.summaryView.buttonStackView.snp.remakeConstraints { make in
+                if self.summaryView.isAnalysisExpanded {
+                    make.top.equalTo(self.summaryView.negativeWordsBarChartView.snp.bottom).offset(50)
+                } else {
+                    make.top.equalTo(self.summaryView.analysisLabel.snp.bottom).offset(50)
+                }
+                make.horizontalEdges.equalToSuperview().inset(25)
+                make.bottom.equalToSuperview().offset(-20)
             }
             
-            if self.summaryView.isAnalysisExpanded {
-                // 펼쳐진 상태일 때 페이지 컨트롤, 버튼 스택뷰 위치
-                self.summaryView.pageControl.snp.remakeConstraints { make in
-                    make.bottom.equalTo(self.summaryView.buttonStackView.snp.top).offset(-15)
-                    make.centerX.equalToSuperview()
-                    make.height.equalTo(30)
-                }
-                
-                self.summaryView.buttonStackView.snp.remakeConstraints { make in
-                    make.top.equalTo(self.summaryView.negativeWordsBarChartView.snp.bottom).offset(30)
-                    make.horizontalEdges.equalToSuperview().inset(25)
-                    make.bottom.equalToSuperview().offset(-20)
-                }
-            } else {
-                // 접힌 상태일 때 페이지 컨트롤, 버튼 스택뷰 위치
-                self.summaryView.pageControl.snp.remakeConstraints { make in
-                    make.bottom.equalTo(self.summaryView.buttonStackView.snp.top).offset(-15)
-                    make.centerX.equalToSuperview()
-                    make.height.equalTo(30)
-                }
-                
-                self.summaryView.buttonStackView.snp.remakeConstraints { make in
-                    make.top.equalTo(self.summaryView.analysisLabel.snp.bottom).offset(37)
-                    make.horizontalEdges.equalToSuperview().inset(25)
-                    make.bottom.equalToSuperview().offset(-20)
-                }
-            }
-            
+            // 레이아웃 업데이트 강제
             self.summaryView.layoutIfNeeded()
         }
     }
