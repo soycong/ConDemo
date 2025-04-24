@@ -2,7 +2,7 @@
 //  Analysis+CoreDataProperties.swift
 //  ConDemo
 //
-//  Created by 이명지 on 4/17/25.
+//  Created by seohuibaek on 4/23/25.
 //
 //
 
@@ -25,9 +25,10 @@ extension Analysis {
     @NSManaged public var summary: NSObject?
     @NSManaged public var title: String?
     @NSManaged public var analysislog: NSSet?
+    @NSManaged public var analysismessages: NSSet?
     @NSManaged public var analysispolls: NSSet?
     @NSManaged public var analysissummary: NSSet?
-    @NSManaged public var analysismessages: NSSet?
+    @NSManaged public var analysisdetailtranscript: DetailedTranscriptAnalysis?
 
 }
 
@@ -45,6 +46,23 @@ extension Analysis {
 
     @objc(removeAnalysislog:)
     @NSManaged public func removeFromAnalysislog(_ values: NSSet)
+
+}
+
+// MARK: Generated accessors for analysismessages
+extension Analysis {
+
+    @objc(addAnalysismessagesObject:)
+    @NSManaged public func addToAnalysismessages(_ value: Message)
+
+    @objc(removeAnalysismessagesObject:)
+    @NSManaged public func removeFromAnalysismessages(_ value: Message)
+
+    @objc(addAnalysismessages:)
+    @NSManaged public func addToAnalysismessages(_ values: NSSet)
+
+    @objc(removeAnalysismessages:)
+    @NSManaged public func removeFromAnalysismessages(_ values: NSSet)
 
 }
 
@@ -79,23 +97,6 @@ extension Analysis {
 
     @objc(removeAnalysissummary:)
     @NSManaged public func removeFromAnalysissummary(_ values: NSSet)
-
-}
-
-// MARK: Generated accessors for analysismessages
-extension Analysis {
-
-    @objc(addAnalysismessagesObject:)
-    @NSManaged public func addToAnalysismessages(_ value: Message)
-
-    @objc(removeAnalysismessagesObject:)
-    @NSManaged public func removeFromAnalysismessages(_ value: Message)
-
-    @objc(addAnalysismessages:)
-    @NSManaged public func addToAnalysismessages(_ values: NSSet)
-
-    @objc(removeAnalysismessages:)
-    @NSManaged public func removeFromAnalysismessages(_ values: NSSet)
 
 }
 
