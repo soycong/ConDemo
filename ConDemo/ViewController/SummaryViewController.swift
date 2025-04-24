@@ -82,6 +82,8 @@ extension SummaryViewController {
          summaryView.summaryButton].forEach {
             $0.addTarget(self, action: #selector(navigateToVC), for: .touchUpInside)
         }
+        
+        summaryView.analysisExpandButton.addTarget(self, action: #selector(toggleAnalysisSection), for: .touchUpInside)
     }
     
     func setAnalyses(_ analyses: [Analysis], initialIndex: Int = 0) {
@@ -175,6 +177,58 @@ extension SummaryViewController {
         // 페이지 전환 애니메이션과 함께 뷰 업데이트
         summaryView.animatePageTransition(direction: direction) {
             self.updateViewWithCurrentAnalysis()
+        }
+    }
+    
+    @objc
+    private func toggleAnalysisSection() {
+        summaryView.isAnalysisExpanded.toggle()
+        
+        let imageName = summaryView.isAnalysisExpanded ? "chevron.up" : "chevron.down"
+        summaryView.analysisExpandButton.setImage(UIImage(systemName: imageName), for: .normal)
+        
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self else { return }
+            
+            [
+                self.summaryView.speakingPieChartView,
+                self.summaryView.consistencyChartView,
+                self.summaryView.factualAccuracyChartView,
+                self.summaryView.positiveWordsBarChartView,
+                self.summaryView.negativeWordsBarChartView
+            ].forEach {
+                $0.isHidden = !self.summaryView.isAnalysisExpanded
+            }
+            
+            if self.summaryView.isAnalysisExpanded {
+                // 펼쳐진 상태일 때 페이지 컨트롤, 버튼 스택뷰 위치
+                self.summaryView.pageControl.snp.remakeConstraints { make in
+                    make.bottom.equalTo(self.summaryView.buttonStackView.snp.top).offset(-15)
+                    make.centerX.equalToSuperview()
+                    make.height.equalTo(30)
+                }
+                
+                self.summaryView.buttonStackView.snp.remakeConstraints { make in
+                    make.top.equalTo(self.summaryView.negativeWordsBarChartView.snp.bottom).offset(30)
+                    make.horizontalEdges.equalToSuperview().inset(25)
+                    make.bottom.equalToSuperview().offset(-20)
+                }
+            } else {
+                // 접힌 상태일 때 페이지 컨트롤, 버튼 스택뷰 위치
+                self.summaryView.pageControl.snp.remakeConstraints { make in
+                    make.bottom.equalTo(self.summaryView.buttonStackView.snp.top).offset(-15)
+                    make.centerX.equalToSuperview()
+                    make.height.equalTo(30)
+                }
+                
+                self.summaryView.buttonStackView.snp.remakeConstraints { make in
+                    make.top.equalTo(self.summaryView.analysisLabel.snp.bottom).offset(37)
+                    make.horizontalEdges.equalToSuperview().inset(25)
+                    make.bottom.equalToSuperview().offset(-20)
+                }
+            }
+            
+            self.summaryView.layoutIfNeeded()
         }
     }
 }

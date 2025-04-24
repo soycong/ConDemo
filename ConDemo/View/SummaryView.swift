@@ -9,7 +9,7 @@ import UIKit
 
 final class SummaryView: UIScrollView {
     // MARK: - Properties
-
+    
     private(set) var factCheckButton: AnalysisButton = .init(iconName: ButtonSystemIcon.aiIcon,
                                                              title: "AI와 팩트 체크하기")
     private(set) var logButton: AnalysisButton = .init(iconName: ButtonSystemIcon.logIcon,
@@ -18,7 +18,7 @@ final class SummaryView: UIScrollView {
                                                         title: "자동 Poll 생성하기")
     private(set) var summaryButton: AnalysisButton = .init(iconName: ButtonSystemIcon.summaryIcon,
                                                            title: "요약 버전 생성하기")
-
+    
     private let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = .baseBackground
@@ -32,7 +32,7 @@ final class SummaryView: UIScrollView {
         view.backgroundColor = .beigeGray
         return view
     }()
-
+    
     private var summaryTitleLabel: UILabel = {
         let label: UILabel = .init()
         label.font = UIFont(name: "Pretendard-ExtraBold", size: 26)
@@ -40,7 +40,7 @@ final class SummaryView: UIScrollView {
         label.textAlignment = .left
         return label
     }()
-
+    
     private var summaryDateLabel: UILabel = {
         let label: UILabel = .init()
         label.font = UIFont(name: "Pretendard-Medium", size: 12)
@@ -48,7 +48,7 @@ final class SummaryView: UIScrollView {
         label.textAlignment = .left
         return label
     }()
-
+    
     private var summaryLabel: UILabel = {
         let label: UILabel = .init()
         label.numberOfLines = 0
@@ -56,8 +56,8 @@ final class SummaryView: UIScrollView {
         label.textColor = .label
         return label
     }()
-
-    private let analysisLabel: UILabel = {
+    
+    private(set) var analysisLabel: UILabel = {
         let label: UILabel = .init()
         label.font = UIFont(name: "BricolageGrotesque-Bold", size: 26)
         label.text = "Analysis"
@@ -65,13 +65,33 @@ final class SummaryView: UIScrollView {
         label.textAlignment = .left
         return label
     }()
-
+    
     private let emotionLevelIndicator: EmotionLevelIndicatorView = {
         let view: EmotionLevelIndicatorView = .init()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.emotionLevel = 9
         return view
     }()
+    
+    // Analysis 대시보드
+    var isAnalysisExpanded = true
+    
+    private(set) var analysisExpandButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "chevron.up"), for: .normal)
+        button.tintColor = .label
+        return button
+    }()
+    
+    private(set) var speakingPieChartView = CustomPieChartView()
+    
+    private(set) var positiveWordsBarChartView = CustomBarChartView()
+    
+    private(set) var negativeWordsBarChartView = CustomBarChartView()
+    
+    private(set) var consistencyChartView = DotRatingView()
+    
+    private(set) var factualAccuracyChartView = DotRatingView()
     
     // 페이지 컨트롤
     private(set) var pageControl: UIPageControl = {
@@ -84,8 +104,8 @@ final class SummaryView: UIScrollView {
         
         return control
     }()
-
-    private lazy var buttonStackView: UIStackView = {
+    
+    private(set) lazy var buttonStackView: UIStackView = {
         let stackView: UIStackView = .init(arrangedSubviews: [factCheckButton,
                                                               logButton,
                                                               pollButton,
@@ -109,10 +129,11 @@ final class SummaryView: UIScrollView {
         setupButtonTags()
         setupADimage()
         setupSwipeGestures()
+        setupViewModels()
     }
-
+    
     // MARK: - Lifecycle
-
+    
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -141,15 +162,33 @@ extension SummaryView {
     }
     
     private func setupSubviews() {
-        [adBanner,
-         summaryTitleLabel,
-         summaryDateLabel,
-         summaryLabel,
-         analysisLabel,
-         emotionLevelIndicator,
-         buttonStackView,
-         pageControl].forEach {
+        [
+            adBanner,
+            summaryTitleLabel,
+            summaryDateLabel,
+            summaryLabel,
+            analysisLabel,
+            analysisExpandButton,
+            emotionLevelIndicator,
+            speakingPieChartView,
+            consistencyChartView,
+            factualAccuracyChartView,
+            positiveWordsBarChartView,
+            negativeWordsBarChartView,
+            buttonStackView,
+            pageControl
+        ].forEach {
             contentView.addSubview($0)
+        }
+        
+        [
+            speakingPieChartView,
+            consistencyChartView,
+            factualAccuracyChartView,
+            positiveWordsBarChartView,
+            negativeWordsBarChartView
+        ].forEach {
+            $0.isHidden = false
         }
     }
     
@@ -180,17 +219,49 @@ extension SummaryView {
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
+        // Analysis 섹션 - 펼치기가 디폴트
         analysisLabel.snp.makeConstraints { make in
             make.top.equalTo(emotionLevelIndicator.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
-        pageControl.snp.makeConstraints { make in
-            make.top.equalTo(analysisLabel.snp.bottom).offset(8)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(30)
+        analysisExpandButton.snp.makeConstraints { make in
+            make.centerY.equalTo(analysisLabel)
+            make.trailing.equalToSuperview().offset(-25)
+            make.size.equalTo(CGSize(width: 28, height: 16))
         }
         
+        speakingPieChartView.snp.makeConstraints { make in
+            make.top.equalTo(analysisLabel.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview().inset(25)
+            make.height.equalTo(180)
+        }
+        
+        consistencyChartView.snp.makeConstraints { make in
+            make.top.equalTo(speakingPieChartView.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview().inset(25)
+            make.height.equalTo(120)
+        }
+        
+        factualAccuracyChartView.snp.makeConstraints { make in
+            make.top.equalTo(consistencyChartView.snp.bottom).offset(40)
+            make.horizontalEdges.equalToSuperview().inset(25)
+            make.height.equalTo(120)
+        }
+        
+        positiveWordsBarChartView.snp.makeConstraints { make in
+            make.top.equalTo(factualAccuracyChartView.snp.bottom).offset(40)
+            make.horizontalEdges.equalToSuperview().inset(25)
+            make.height.equalTo(140)
+        }
+
+        negativeWordsBarChartView.snp.makeConstraints { make in
+            make.top.equalTo(positiveWordsBarChartView.snp.bottom).offset(20)
+            make.horizontalEdges.equalToSuperview().inset(25)
+            make.height.equalTo(140)
+        }
+        
+        // 버튼 섹션
         [factCheckButton,
          logButton,
          pollButton,
@@ -201,9 +272,15 @@ extension SummaryView {
         }
         
         buttonStackView.snp.makeConstraints { make in
-            make.top.equalTo(analysisLabel.snp.bottom).offset(37)
+            make.top.equalTo(negativeWordsBarChartView.snp.bottom).offset(37)
             make.horizontalEdges.equalToSuperview().inset(25)
             make.bottom.equalToSuperview().offset(-20)
+        }
+        
+        pageControl.snp.makeConstraints { make in
+            make.bottom.equalTo(buttonStackView.snp.top).offset(-10)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(30)
         }
     }
     
@@ -294,5 +371,35 @@ extension SummaryView {
         }, completion: { _ in
             completion()
         })
+    }
+}
+
+extension SummaryView {
+    private func setupViewModels() {
+        let speakingViewModel = PieChartViewModel(pieData: SpeakingTimeData.dummies.randomElement()!)
+        speakingPieChartView.configure(with: speakingViewModel)
+        
+        let dummy = SentimentAnalysisData.dummies.randomElement()!
+        let positiveViewModel = BarChartViewModel(barData: dummy, title: "긍정적인 단어를 쓴 비율", isPositive: true)
+        positiveWordsBarChartView.configure(with: positiveViewModel)
+        
+        let negativeViewModel = BarChartViewModel(barData: dummy, title: "부정적인 단어를 쓴 비율", isPositive: false)
+        negativeWordsBarChartView.configure(with: negativeViewModel)
+        
+        let consistencyDummy = ConsistencyData.dummies.randomElement()!
+        let consistencyViewModel = DotRatingViewModel(
+            title: "주장의 일관성",
+            consistencyData: consistencyDummy,
+            ratingLabels: ["궤변", "무슨 말이야?", "계속 해봐", "맞는 말이네", "입만 살았네"]
+        )
+        consistencyChartView.configure(with: consistencyViewModel)
+        
+        let factualAccuracyDummy = FactualAccuracyData.dummies.randomElement()!
+        let factualAccuracyViewModel = DotRatingViewModel(
+            title: "사실 관계의 정확성",
+            factualAccuracyData: factualAccuracyDummy,
+            ratingLabels: ["벌구", "뇌피셜", "반맞반틀", "믿고갑니다", "아멘"]
+        )
+        factualAccuracyChartView.configure(with: factualAccuracyViewModel)
     }
 }

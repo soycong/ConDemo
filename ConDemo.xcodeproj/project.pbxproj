@@ -16,6 +16,7 @@
 		0F63E9602DB0E41600C30C54 /* Poll+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */; };
 		0F63E9612DB0E41600C30C54 /* Summary+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */; };
 		0F63E9622DB0E41600C30C54 /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */; };
+		0F6AF8752DB87BEE003B6735 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 0F6AF8742DB87BEE003B6735 /* DGCharts */; };
 		0FE4137A2DAFDB9200769656 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0FE413792DAFDB9200769656 /* OpenAI */; };
 		B33A68E22DB8734B008A7CE9 /* LangChain in Frameworks */ = {isa = PBXBuildFile; productRef = B33A68E12DB8734B008A7CE9 /* LangChain */; };
 		B33A68FD2DB8C371008A7CE9 /* FactualAccuracy+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68ED2DB8C371008A7CE9 /* FactualAccuracy+CoreDataClass.swift */; };
@@ -97,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F6AF8752DB87BEE003B6735 /* DGCharts in Frameworks */,
 				0F4313BF2DAE06AF00BD796F /* AWSS3 in Frameworks */,
 				B3A44E0D2DA4CA2200C4872D /* Alamofire in Frameworks */,
 				0F1F8F822DACA066009730B2 /* AWSTranscribeStreaming in Frameworks */,
@@ -181,6 +183,7 @@
 				0F4313BE2DAE06AF00BD796F /* AWSS3 */,
 				0FE413792DAFDB9200769656 /* OpenAI */,
 				B33A68E12DB8734B008A7CE9 /* LangChain */,
+				0F6AF8742DB87BEE003B6735 /* DGCharts */,
 			);
 			productName = ConDemo;
 			productReference = B3A44DEE2DA4C37500C4872D /* ConDemo.app */;
@@ -217,6 +220,7 @@
 				0F1F90122DACAA4D009730B2 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 				0FE413782DAFDB9200769656 /* XCRemoteSwiftPackageReference "OpenAI" */,
 				B33A68E02DB8734B008A7CE9 /* XCRemoteSwiftPackageReference "langchain-swift" */,
+				0F6AF8732DB87BEE003B6735 /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B3A44DEF2DA4C37500C4872D /* Products */;
@@ -527,6 +531,14 @@
 				minimumVersion = 1.5.0;
 			};
 		};
+		0F6AF8732DB87BEE003B6735 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/danielgindi/Charts.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
 		0FE413782DAFDB9200769656 /* XCRemoteSwiftPackageReference "OpenAI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MacPaw/OpenAI";
@@ -581,6 +593,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0F1F8F802DACA066009730B2 /* XCRemoteSwiftPackageReference "aws-sdk-swift" */;
 			productName = AWSS3;
+		};
+		0F6AF8742DB87BEE003B6735 /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0F6AF8732DB87BEE003B6735 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
 		};
 		0FE413792DAFDB9200769656 /* OpenAI */ = {
 			isa = XCSwiftPackageProductDependency;

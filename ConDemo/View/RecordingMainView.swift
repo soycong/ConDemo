@@ -11,7 +11,6 @@ import UIKit
 final class RecordingMainView: UIView {
     // MARK: - Properties
 
-    // TODO: - 완료 버튼 너무 좁음
     private(set) var recordButton: UIButton = {
         let button: UIButton = .init()
         button.setImage(UIImage(systemName: "pause.fill"), for: .normal)
