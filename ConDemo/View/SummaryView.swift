@@ -74,11 +74,11 @@ final class SummaryView: UIScrollView {
     }()
     
     // Analysis 대시보드
-    var isAnalysisExpanded = false
+    var isAnalysisExpanded = true
     
     private(set) var analysisExpandButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        button.setImage(UIImage(systemName: "chevron.up"), for: .normal)
         button.tintColor = .label
         return button
     }()
@@ -188,7 +188,7 @@ extension SummaryView {
             positiveWordsBarChartView,
             negativeWordsBarChartView
         ].forEach {
-            $0.isHidden = true
+            $0.isHidden = false
         }
     }
     
@@ -219,6 +219,7 @@ extension SummaryView {
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
+        // Analysis 섹션 - 펼치기가 디폴트
         analysisLabel.snp.makeConstraints { make in
             make.top.equalTo(emotionLevelIndicator.snp.bottom).offset(20)
             make.horizontalEdges.equalToSuperview().inset(25)
@@ -260,6 +261,7 @@ extension SummaryView {
             make.height.equalTo(140)
         }
         
+        // 버튼 섹션
         [factCheckButton,
          logButton,
          pollButton,
@@ -270,7 +272,7 @@ extension SummaryView {
         }
         
         buttonStackView.snp.makeConstraints { make in
-            make.top.equalTo(analysisLabel.snp.bottom).offset(37)
+            make.top.equalTo(negativeWordsBarChartView.snp.bottom).offset(37)
             make.horizontalEdges.equalToSuperview().inset(25)
             make.bottom.equalToSuperview().offset(-20)
         }
