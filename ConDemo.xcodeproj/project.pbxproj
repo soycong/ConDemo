@@ -12,64 +12,42 @@
 		0F43132B2DADFA0800BD796F /* AWSTranscribe in Frameworks */ = {isa = PBXBuildFile; productRef = 0F43132A2DADFA0800BD796F /* AWSTranscribe */; };
 		0F4313BF2DAE06AF00BD796F /* AWSS3 in Frameworks */ = {isa = PBXBuildFile; productRef = 0F4313BE2DAE06AF00BD796F /* AWSS3 */; };
 		0F63E95E2DB0E41600C30C54 /* Log+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95A2DB0E41600C30C54 /* Log+CoreDataProperties.swift */; };
-		0F63E95F2DB0E41600C30C54 /* Analysis+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E9592DB0E41600C30C54 /* Analysis+CoreDataProperties.swift */; };
 		0F63E9602DB0E41600C30C54 /* Poll+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */; };
 		0F63E9612DB0E41600C30C54 /* Summary+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */; };
 		0F63E9622DB0E41600C30C54 /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */; };
 		0F6AF8752DB87BEE003B6735 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 0F6AF8742DB87BEE003B6735 /* DGCharts */; };
 		0FE4137A2DAFDB9200769656 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0FE413792DAFDB9200769656 /* OpenAI */; };
 		B33A68E22DB8734B008A7CE9 /* LangChain in Frameworks */ = {isa = PBXBuildFile; productRef = B33A68E12DB8734B008A7CE9 /* LangChain */; };
-		B33A68FD2DB8C371008A7CE9 /* FactualAccuracy+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68ED2DB8C371008A7CE9 /* FactualAccuracy+CoreDataClass.swift */; };
-		B33A68FE2DB8C371008A7CE9 /* Overlaps+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F32DB8C371008A7CE9 /* Overlaps+CoreDataClass.swift */; };
-		B33A68FF2DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68FA2DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataProperties.swift */; };
-		B33A69002DB8C371008A7CE9 /* IncorrectUsage+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68EF2DB8C371008A7CE9 /* IncorrectUsage+CoreDataClass.swift */; };
-		B33A69012DB8C371008A7CE9 /* SpeakingTime+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68FB2DB8C371008A7CE9 /* SpeakingTime+CoreDataClass.swift */; };
-		B33A69022DB8C371008A7CE9 /* Consistency+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68EA2DB8C371008A7CE9 /* Consistency+CoreDataProperties.swift */; };
-		B33A69032DB8C371008A7CE9 /* Overlaps+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F42DB8C371008A7CE9 /* Overlaps+CoreDataProperties.swift */; };
-		B33A69042DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F12DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataClass.swift */; };
-		B33A69052DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68EC2DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataProperties.swift */; };
-		B33A69062DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F22DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataProperties.swift */; };
-		B33A69072DB8C371008A7CE9 /* SentimentAnalysis+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F52DB8C371008A7CE9 /* SentimentAnalysis+CoreDataClass.swift */; };
-		B33A69082DB8C371008A7CE9 /* SentimentExamples+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F72DB8C371008A7CE9 /* SentimentExamples+CoreDataClass.swift */; };
-		B33A69092DB8C371008A7CE9 /* IncorrectUsage+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F02DB8C371008A7CE9 /* IncorrectUsage+CoreDataProperties.swift */; };
-		B33A690A2DB8C371008A7CE9 /* SpeakingTime+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68FC2DB8C371008A7CE9 /* SpeakingTime+CoreDataProperties.swift */; };
-		B33A690B2DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68EB2DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataClass.swift */; };
-		B33A690C2DB8C371008A7CE9 /* FactualAccuracy+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68EE2DB8C371008A7CE9 /* FactualAccuracy+CoreDataProperties.swift */; };
-		B33A690D2DB8C371008A7CE9 /* SentimentAnalysis+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F62DB8C371008A7CE9 /* SentimentAnalysis+CoreDataProperties.swift */; };
-		B33A690E2DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F92DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataClass.swift */; };
-		B33A690F2DB8C371008A7CE9 /* SentimentExamples+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68F82DB8C371008A7CE9 /* SentimentExamples+CoreDataProperties.swift */; };
-		B33A69102DB8C371008A7CE9 /* Consistency+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B33A68E92DB8C371008A7CE9 /* Consistency+CoreDataClass.swift */; };
 		B3A44E0D2DA4CA2200C4872D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0C2DA4CA2200C4872D /* Alamofire */; };
 		B3A44E102DA4CA2F00C4872D /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0F2DA4CA2F00C4872D /* SnapKit */; };
+		B3FBF4282DBA2F85000D9E95 /* SpeakingTime+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4262DBA2F85000D9E95 /* SpeakingTime+CoreDataProperties.swift */; };
+		B3FBF4292DBA2F85000D9E95 /* SpeakerEvaluation+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4252DBA2F85000D9E95 /* SpeakerEvaluation+CoreDataProperties.swift */; };
+		B3FBF42A2DBA2F85000D9E95 /* Consistency+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4202DBA2F85000D9E95 /* Consistency+CoreDataProperties.swift */; };
+		B3FBF42B2DBA2F85000D9E95 /* DetailedTranscriptAnalysis+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4212DBA2F85000D9E95 /* DetailedTranscriptAnalysis+CoreDataProperties.swift */; };
+		B3FBF42C2DBA2F85000D9E95 /* Analysis+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF41F2DBA2F85000D9E95 /* Analysis+CoreDataProperties.swift */; };
+		B3FBF42E2DBA2F85000D9E95 /* FactualAccuracy+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4222DBA2F85000D9E95 /* FactualAccuracy+CoreDataProperties.swift */; };
+		B3FBF4432DBA32F0000D9E95 /* SentimentExamples+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4412DBA32F0000D9E95 /* SentimentExamples+CoreDataClass.swift */; };
+		B3FBF4442DBA32F0000D9E95 /* SentimentExamples+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4422DBA32F0000D9E95 /* SentimentExamples+CoreDataProperties.swift */; };
+		B3FBF4452DBA32F0000D9E95 /* SentimentAnalysis+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF43F2DBA32F0000D9E95 /* SentimentAnalysis+CoreDataClass.swift */; };
+		B3FBF4462DBA32F0000D9E95 /* SentimentAnalysis+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4402DBA32F0000D9E95 /* SentimentAnalysis+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0F63E9592DB0E41600C30C54 /* Analysis+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Analysis+CoreDataProperties.swift"; path = "ConDemo/CoreData/Analysis+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0F63E95A2DB0E41600C30C54 /* Log+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Log+CoreDataProperties.swift"; path = "ConDemo/CoreData/Log+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Message+CoreDataProperties.swift"; path = "ConDemo/CoreData/Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Poll+CoreDataProperties.swift"; path = "ConDemo/CoreData/Poll+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Summary+CoreDataProperties.swift"; path = "ConDemo/CoreData/Summary+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68E92DB8C371008A7CE9 /* Consistency+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Consistency+CoreDataClass.swift"; path = "ConDemo/CoreData/Consistency+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68EA2DB8C371008A7CE9 /* Consistency+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Consistency+CoreDataProperties.swift"; path = "ConDemo/CoreData/Consistency+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68EB2DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "DetailedTranscriptAnalysis+CoreDataClass.swift"; path = "ConDemo/CoreData/DetailedTranscriptAnalysis+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68EC2DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "DetailedTranscriptAnalysis+CoreDataProperties.swift"; path = "ConDemo/CoreData/DetailedTranscriptAnalysis+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68ED2DB8C371008A7CE9 /* FactualAccuracy+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "FactualAccuracy+CoreDataClass.swift"; path = "ConDemo/CoreData/FactualAccuracy+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68EE2DB8C371008A7CE9 /* FactualAccuracy+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "FactualAccuracy+CoreDataProperties.swift"; path = "ConDemo/CoreData/FactualAccuracy+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68EF2DB8C371008A7CE9 /* IncorrectUsage+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "IncorrectUsage+CoreDataClass.swift"; path = "ConDemo/CoreData/IncorrectUsage+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68F02DB8C371008A7CE9 /* IncorrectUsage+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "IncorrectUsage+CoreDataProperties.swift"; path = "ConDemo/CoreData/IncorrectUsage+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68F12DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "IncorrectUsageExamples+CoreDataClass.swift"; path = "ConDemo/CoreData/IncorrectUsageExamples+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68F22DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "IncorrectUsageExamples+CoreDataProperties.swift"; path = "ConDemo/CoreData/IncorrectUsageExamples+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68F32DB8C371008A7CE9 /* Overlaps+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Overlaps+CoreDataClass.swift"; path = "ConDemo/CoreData/Overlaps+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68F42DB8C371008A7CE9 /* Overlaps+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Overlaps+CoreDataProperties.swift"; path = "ConDemo/CoreData/Overlaps+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68F52DB8C371008A7CE9 /* SentimentAnalysis+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SentimentAnalysis+CoreDataClass.swift"; path = "ConDemo/CoreData/SentimentAnalysis+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68F62DB8C371008A7CE9 /* SentimentAnalysis+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SentimentAnalysis+CoreDataProperties.swift"; path = "ConDemo/CoreData/SentimentAnalysis+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68F72DB8C371008A7CE9 /* SentimentExamples+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SentimentExamples+CoreDataClass.swift"; path = "ConDemo/CoreData/SentimentExamples+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68F82DB8C371008A7CE9 /* SentimentExamples+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SentimentExamples+CoreDataProperties.swift"; path = "ConDemo/CoreData/SentimentExamples+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68F92DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SpeakerEvaluation+CoreDataClass.swift"; path = "ConDemo/CoreData/SpeakerEvaluation+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68FA2DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SpeakerEvaluation+CoreDataProperties.swift"; path = "ConDemo/CoreData/SpeakerEvaluation+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		B33A68FB2DB8C371008A7CE9 /* SpeakingTime+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SpeakingTime+CoreDataClass.swift"; path = "ConDemo/CoreData/SpeakingTime+CoreDataClass.swift"; sourceTree = "<group>"; };
-		B33A68FC2DB8C371008A7CE9 /* SpeakingTime+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SpeakingTime+CoreDataProperties.swift"; path = "ConDemo/CoreData/SpeakingTime+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B3A44DEE2DA4C37500C4872D /* ConDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ConDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3FBF41F2DBA2F85000D9E95 /* Analysis+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Analysis+CoreDataProperties.swift"; path = "ConDemo/CoreData/Analysis+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B3FBF4202DBA2F85000D9E95 /* Consistency+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Consistency+CoreDataProperties.swift"; path = "ConDemo/CoreData/Consistency+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B3FBF4212DBA2F85000D9E95 /* DetailedTranscriptAnalysis+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "DetailedTranscriptAnalysis+CoreDataProperties.swift"; path = "ConDemo/CoreData/DetailedTranscriptAnalysis+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B3FBF4222DBA2F85000D9E95 /* FactualAccuracy+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "FactualAccuracy+CoreDataProperties.swift"; path = "ConDemo/CoreData/FactualAccuracy+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B3FBF4252DBA2F85000D9E95 /* SpeakerEvaluation+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SpeakerEvaluation+CoreDataProperties.swift"; path = "ConDemo/CoreData/SpeakerEvaluation+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B3FBF4262DBA2F85000D9E95 /* SpeakingTime+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SpeakingTime+CoreDataProperties.swift"; path = "ConDemo/CoreData/SpeakingTime+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B3FBF43F2DBA32F0000D9E95 /* SentimentAnalysis+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SentimentAnalysis+CoreDataClass.swift"; path = "ConDemo/CoreData/SentimentAnalysis+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B3FBF4402DBA32F0000D9E95 /* SentimentAnalysis+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SentimentAnalysis+CoreDataProperties.swift"; path = "ConDemo/CoreData/SentimentAnalysis+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B3FBF4412DBA32F0000D9E95 /* SentimentExamples+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SentimentExamples+CoreDataClass.swift"; path = "ConDemo/CoreData/SentimentExamples+CoreDataClass.swift"; sourceTree = "<group>"; };
+		B3FBF4422DBA32F0000D9E95 /* SentimentExamples+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SentimentExamples+CoreDataProperties.swift"; path = "ConDemo/CoreData/SentimentExamples+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -116,27 +94,16 @@
 		B3A44DE52DA4C37400C4872D = {
 			isa = PBXGroup;
 			children = (
-				B33A68E92DB8C371008A7CE9 /* Consistency+CoreDataClass.swift */,
-				B33A68EA2DB8C371008A7CE9 /* Consistency+CoreDataProperties.swift */,
-				B33A68EB2DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataClass.swift */,
-				B33A68EC2DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataProperties.swift */,
-				B33A68ED2DB8C371008A7CE9 /* FactualAccuracy+CoreDataClass.swift */,
-				B33A68EE2DB8C371008A7CE9 /* FactualAccuracy+CoreDataProperties.swift */,
-				B33A68EF2DB8C371008A7CE9 /* IncorrectUsage+CoreDataClass.swift */,
-				B33A68F02DB8C371008A7CE9 /* IncorrectUsage+CoreDataProperties.swift */,
-				B33A68F12DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataClass.swift */,
-				B33A68F22DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataProperties.swift */,
-				B33A68F32DB8C371008A7CE9 /* Overlaps+CoreDataClass.swift */,
-				B33A68F42DB8C371008A7CE9 /* Overlaps+CoreDataProperties.swift */,
-				B33A68F52DB8C371008A7CE9 /* SentimentAnalysis+CoreDataClass.swift */,
-				B33A68F62DB8C371008A7CE9 /* SentimentAnalysis+CoreDataProperties.swift */,
-				B33A68F72DB8C371008A7CE9 /* SentimentExamples+CoreDataClass.swift */,
-				B33A68F82DB8C371008A7CE9 /* SentimentExamples+CoreDataProperties.swift */,
-				B33A68F92DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataClass.swift */,
-				B33A68FA2DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataProperties.swift */,
-				B33A68FB2DB8C371008A7CE9 /* SpeakingTime+CoreDataClass.swift */,
-				B33A68FC2DB8C371008A7CE9 /* SpeakingTime+CoreDataProperties.swift */,
-				0F63E9592DB0E41600C30C54 /* Analysis+CoreDataProperties.swift */,
+				B3FBF43F2DBA32F0000D9E95 /* SentimentAnalysis+CoreDataClass.swift */,
+				B3FBF4402DBA32F0000D9E95 /* SentimentAnalysis+CoreDataProperties.swift */,
+				B3FBF4412DBA32F0000D9E95 /* SentimentExamples+CoreDataClass.swift */,
+				B3FBF4422DBA32F0000D9E95 /* SentimentExamples+CoreDataProperties.swift */,
+				B3FBF41F2DBA2F85000D9E95 /* Analysis+CoreDataProperties.swift */,
+				B3FBF4202DBA2F85000D9E95 /* Consistency+CoreDataProperties.swift */,
+				B3FBF4212DBA2F85000D9E95 /* DetailedTranscriptAnalysis+CoreDataProperties.swift */,
+				B3FBF4222DBA2F85000D9E95 /* FactualAccuracy+CoreDataProperties.swift */,
+				B3FBF4252DBA2F85000D9E95 /* SpeakerEvaluation+CoreDataProperties.swift */,
+				B3FBF4262DBA2F85000D9E95 /* SpeakingTime+CoreDataProperties.swift */,
 				0F63E95A2DB0E41600C30C54 /* Log+CoreDataProperties.swift */,
 				0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */,
 				0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */,
@@ -268,27 +235,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F63E95E2DB0E41600C30C54 /* Log+CoreDataProperties.swift in Sources */,
-				B33A68FD2DB8C371008A7CE9 /* FactualAccuracy+CoreDataClass.swift in Sources */,
-				B33A68FE2DB8C371008A7CE9 /* Overlaps+CoreDataClass.swift in Sources */,
-				B33A68FF2DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataProperties.swift in Sources */,
-				B33A69002DB8C371008A7CE9 /* IncorrectUsage+CoreDataClass.swift in Sources */,
-				B33A69012DB8C371008A7CE9 /* SpeakingTime+CoreDataClass.swift in Sources */,
-				B33A69022DB8C371008A7CE9 /* Consistency+CoreDataProperties.swift in Sources */,
-				B33A69032DB8C371008A7CE9 /* Overlaps+CoreDataProperties.swift in Sources */,
-				B33A69042DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataClass.swift in Sources */,
-				B33A69052DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataProperties.swift in Sources */,
-				B33A69062DB8C371008A7CE9 /* IncorrectUsageExamples+CoreDataProperties.swift in Sources */,
-				B33A69072DB8C371008A7CE9 /* SentimentAnalysis+CoreDataClass.swift in Sources */,
-				B33A69082DB8C371008A7CE9 /* SentimentExamples+CoreDataClass.swift in Sources */,
-				B33A69092DB8C371008A7CE9 /* IncorrectUsage+CoreDataProperties.swift in Sources */,
-				B33A690A2DB8C371008A7CE9 /* SpeakingTime+CoreDataProperties.swift in Sources */,
-				B33A690B2DB8C371008A7CE9 /* DetailedTranscriptAnalysis+CoreDataClass.swift in Sources */,
-				B33A690C2DB8C371008A7CE9 /* FactualAccuracy+CoreDataProperties.swift in Sources */,
-				B33A690D2DB8C371008A7CE9 /* SentimentAnalysis+CoreDataProperties.swift in Sources */,
-				B33A690E2DB8C371008A7CE9 /* SpeakerEvaluation+CoreDataClass.swift in Sources */,
-				B33A690F2DB8C371008A7CE9 /* SentimentExamples+CoreDataProperties.swift in Sources */,
-				B33A69102DB8C371008A7CE9 /* Consistency+CoreDataClass.swift in Sources */,
-				0F63E95F2DB0E41600C30C54 /* Analysis+CoreDataProperties.swift in Sources */,
+				B3FBF4432DBA32F0000D9E95 /* SentimentExamples+CoreDataClass.swift in Sources */,
+				B3FBF4442DBA32F0000D9E95 /* SentimentExamples+CoreDataProperties.swift in Sources */,
+				B3FBF4452DBA32F0000D9E95 /* SentimentAnalysis+CoreDataClass.swift in Sources */,
+				B3FBF4462DBA32F0000D9E95 /* SentimentAnalysis+CoreDataProperties.swift in Sources */,
+				B3FBF4282DBA2F85000D9E95 /* SpeakingTime+CoreDataProperties.swift in Sources */,
+				B3FBF4292DBA2F85000D9E95 /* SpeakerEvaluation+CoreDataProperties.swift in Sources */,
+				B3FBF42A2DBA2F85000D9E95 /* Consistency+CoreDataProperties.swift in Sources */,
+				B3FBF42B2DBA2F85000D9E95 /* DetailedTranscriptAnalysis+CoreDataProperties.swift in Sources */,
+				B3FBF42C2DBA2F85000D9E95 /* Analysis+CoreDataProperties.swift in Sources */,
+				B3FBF42E2DBA2F85000D9E95 /* FactualAccuracy+CoreDataProperties.swift in Sources */,
 				0F63E9602DB0E41600C30C54 /* Poll+CoreDataProperties.swift in Sources */,
 				0F63E9612DB0E41600C30C54 /* Summary+CoreDataProperties.swift in Sources */,
 				0F63E9622DB0E41600C30C54 /* Message+CoreDataProperties.swift in Sources */,

@@ -16,44 +16,22 @@
         <relationship name="analysissummary" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Summary" inverseName="analysis" inverseEntity="Summary"/>
     </entity>
     <entity name="Consistency" representedClassName="Consistency" syncable="YES">
-        <attribute name="speakerA" optional="YES" attributeType="Transformable"/>
-        <attribute name="speakerB" optional="YES" attributeType="Transformable"/>
-        <relationship name="consistencyevaluation" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SpeakerEvaluation" inverseName="consistency" inverseEntity="SpeakerEvaluation"/>
-        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="DetailedTranscriptAnalysis" inverseName="detailconsistency" inverseEntity="DetailedTranscriptAnalysis"/>
+        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="DetailedTranscriptAnalysis"/>
+        <relationship name="speakerA" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SpeakerEvaluation" inverseName="consistencyA" inverseEntity="SpeakerEvaluation"/>
+        <relationship name="speakerB" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SpeakerEvaluation" inverseName="consistencyB" inverseEntity="SpeakerEvaluation"/>
     </entity>
     <entity name="DetailedTranscriptAnalysis" representedClassName="DetailedTranscriptAnalysis" syncable="YES">
-        <attribute name="consistency" optional="YES" attributeType="Transformable"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="factualAccuracy" optional="YES" attributeType="Transformable"/>
-        <attribute name="incorrectUsage" optional="YES" attributeType="Transformable"/>
-        <attribute name="overlaps" optional="YES" attributeType="Transformable"/>
-        <attribute name="overlapTopics" optional="YES" attributeType="Transformable"/>
-        <attribute name="sentimentAnalysis" optional="YES" attributeType="Transformable"/>
-        <attribute name="speakingTime" optional="YES" attributeType="Transformable"/>
         <relationship name="analysis" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Analysis" inverseName="analysisdetailtranscript" inverseEntity="Analysis"/>
-        <relationship name="detailconsistency" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Consistency" inverseName="detailanaylsis" inverseEntity="Consistency"/>
-        <relationship name="detailfactualaccuracy" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="FactualAccuracy" inverseName="detailanaylsis" inverseEntity="FactualAccuracy"/>
-        <relationship name="detailincorrectusage" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="IncorrectUsage" inverseName="detailanaylsis" inverseEntity="IncorrectUsage"/>
-        <relationship name="detailoverlaps" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="Overlaps" inverseName="detailanaylsis" inverseEntity="Overlaps"/>
-        <relationship name="detailsentimentanalysis" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SentimentAnalysis" inverseName="detailanaylsis" inverseEntity="SentimentAnalysis"/>
-        <relationship name="detailspeakingtime" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SpeakingTime" inverseName="detailanaylsis" inverseEntity="SpeakingTime"/>
+        <relationship name="consistency" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Consistency"/>
+        <relationship name="factualAccuracy" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="FactualAccuracy"/>
+        <relationship name="sentimentAnalysis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SentimentAnalysis"/>
+        <relationship name="speakingTime" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SpeakingTime"/>
     </entity>
     <entity name="FactualAccuracy" representedClassName="FactualAccuracy" syncable="YES">
-        <attribute name="speakerA" optional="YES" attributeType="Transformable"/>
-        <attribute name="speakerB" optional="YES" attributeType="Transformable"/>
-        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailedTranscriptAnalysis" inverseName="detailfactualaccuracy" inverseEntity="DetailedTranscriptAnalysis"/>
-        <relationship name="factualevaluation" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SpeakerEvaluation" inverseName="factual" inverseEntity="SpeakerEvaluation"/>
-    </entity>
-    <entity name="IncorrectUsage" representedClassName="IncorrectUsage" syncable="YES">
-        <attribute name="speakerA" optional="YES" attributeType="Transformable"/>
-        <attribute name="speakerB" optional="YES" attributeType="Transformable"/>
-        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailedTranscriptAnalysis" inverseName="detailincorrectusage" inverseEntity="DetailedTranscriptAnalysis"/>
-        <relationship name="incorrectexample" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="IncorrectUsageExamples" inverseName="incorrect" inverseEntity="IncorrectUsageExamples"/>
-    </entity>
-    <entity name="IncorrectUsageExamples" representedClassName="IncorrectUsageExamples" syncable="YES">
-        <attribute name="count" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="examples" optional="YES" attributeType="Transformable"/>
-        <relationship name="incorrect" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="IncorrectUsage" inverseName="incorrectexample" inverseEntity="IncorrectUsage"/>
+        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailedTranscriptAnalysis"/>
+        <relationship name="speakerA" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SpeakerEvaluation" inverseName="factualA" inverseEntity="SpeakerEvaluation"/>
+        <relationship name="speakerB" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SpeakerEvaluation" inverseName="factualB" inverseEntity="SpeakerEvaluation"/>
     </entity>
     <entity name="Log" representedClassName="Log" syncable="YES">
         <attribute name="contents" optional="YES" attributeType="String"/>
@@ -70,11 +48,6 @@
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="analysis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Analysis" inverseName="analysismessages" inverseEntity="Analysis"/>
     </entity>
-    <entity name="Overlaps" representedClassName="Overlaps" syncable="YES">
-        <attribute name="count" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="totalDuration" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailedTranscriptAnalysis" inverseName="detailoverlaps" inverseEntity="DetailedTranscriptAnalysis"/>
-    </entity>
     <entity name="Poll" representedClassName="Poll" syncable="YES">
         <attribute name="contents" optional="YES" attributeType="String"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -85,28 +58,30 @@
         <relationship name="analysis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Analysis" inverseName="analysispolls" inverseEntity="Analysis"/>
     </entity>
     <entity name="SentimentAnalysis" representedClassName="SentimentAnalysis" syncable="YES">
-        <attribute name="speakerA" optional="YES" attributeType="Transformable"/>
-        <attribute name="speakerB" optional="YES" attributeType="Transformable"/>
-        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailedTranscriptAnalysis" inverseName="detailsentimentanalysis" inverseEntity="DetailedTranscriptAnalysis"/>
-        <relationship name="sentimentexample" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SentimentExamples" inverseName="sentientanalysis" inverseEntity="SentimentExamples"/>
+        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailedTranscriptAnalysis"/>
+        <relationship name="speakerA" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="SentimentExamples" inverseName="sentimentAnalysisA" inverseEntity="SentimentExamples"/>
+        <relationship name="speakerB" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SentimentExamples" inverseName="sentimentAnalysisB" inverseEntity="SentimentExamples"/>
     </entity>
     <entity name="SentimentExamples" representedClassName="SentimentExamples" syncable="YES">
         <attribute name="negativeExamples" optional="YES" attributeType="Transformable"/>
         <attribute name="negativeRatio" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="positiveExamples" optional="YES" attributeType="Transformable"/>
         <attribute name="positiveRatio" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <relationship name="sentientanalysis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SentimentAnalysis" inverseName="sentimentexample" inverseEntity="SentimentAnalysis"/>
+        <relationship name="sentimentAnalysisA" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SentimentAnalysis" inverseName="speakerA" inverseEntity="SentimentAnalysis"/>
+        <relationship name="sentimentAnalysisB" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SentimentAnalysis" inverseName="speakerB" inverseEntity="SentimentAnalysis"/>
     </entity>
     <entity name="SpeakerEvaluation" representedClassName="SpeakerEvaluation" syncable="YES">
         <attribute name="reasoning" optional="YES" attributeType="String"/>
         <attribute name="score" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="consistency" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Consistency" inverseName="consistencyevaluation" inverseEntity="Consistency"/>
-        <relationship name="factual" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="FactualAccuracy" inverseName="factualevaluation" inverseEntity="FactualAccuracy"/>
+        <relationship name="consistencyA" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Consistency" inverseName="speakerA" inverseEntity="Consistency"/>
+        <relationship name="consistencyB" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Consistency" inverseName="speakerB" inverseEntity="Consistency"/>
+        <relationship name="factualA" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="FactualAccuracy" inverseName="speakerA" inverseEntity="FactualAccuracy"/>
+        <relationship name="factualB" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="FactualAccuracy" inverseName="speakerB" inverseEntity="FactualAccuracy"/>
     </entity>
     <entity name="SpeakingTime" representedClassName="SpeakingTime" syncable="YES">
         <attribute name="speakerA" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="speakerB" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailedTranscriptAnalysis" inverseName="detailspeakingtime" inverseEntity="DetailedTranscriptAnalysis"/>
+        <relationship name="detailanaylsis" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DetailedTranscriptAnalysis"/>
     </entity>
     <entity name="Summary" representedClassName="Summary" syncable="YES">
         <attribute name="contents" optional="YES" attributeType="String"/>

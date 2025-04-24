@@ -2,7 +2,7 @@
 //  Analysis+CoreDataProperties.swift
 //  ConDemo
 //
-//  Created by seohuibaek on 4/23/25.
+//  Created by seohuibaek on 4/24/25.
 //
 //
 
@@ -24,11 +24,11 @@ extension Analysis {
     @NSManaged public var polls: NSObject?
     @NSManaged public var summary: NSObject?
     @NSManaged public var title: String?
+    @NSManaged public var analysisdetailtranscript: DetailedTranscriptAnalysis?
     @NSManaged public var analysislog: NSSet?
     @NSManaged public var analysismessages: NSSet?
     @NSManaged public var analysispolls: NSSet?
     @NSManaged public var analysissummary: NSSet?
-    @NSManaged public var analysisdetailtranscript: DetailedTranscriptAnalysis?
 
 }
 

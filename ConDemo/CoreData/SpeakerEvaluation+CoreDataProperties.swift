@@ -2,7 +2,7 @@
 //  SpeakerEvaluation+CoreDataProperties.swift
 //  ConDemo
 //
-//  Created by seohuibaek on 4/23/25.
+//  Created by seohuibaek on 4/24/25.
 //
 //
 
@@ -16,10 +16,12 @@ extension SpeakerEvaluation {
         return NSFetchRequest<SpeakerEvaluation>(entityName: "SpeakerEvaluation")
     }
 
-    @NSManaged public var score: Int64
     @NSManaged public var reasoning: String?
-    @NSManaged public var factual: FactualAccuracy?
-    @NSManaged public var consistency: Consistency?
+    @NSManaged public var score: Int64
+    @NSManaged public var consistencyA: Consistency?
+    @NSManaged public var factualA: FactualAccuracy?
+    @NSManaged public var consistencyB: Consistency?
+    @NSManaged public var factualB: FactualAccuracy?
 
 }
 

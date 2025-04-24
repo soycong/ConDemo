@@ -283,70 +283,67 @@ extension CoreDataManager {
         if let detailedData = data.detailedTranscriptAnalysisData {
             let detailedAnalysis = DetailedTranscriptAnalysis(context: context)
             
-            // 1. SpeakingTime 저장
+            // 1. SpeakingTime 저장 (변경 없음)
             let speakingTime = SpeakingTime(context: context)
             speakingTime.speakerA = detailedData.speakingTime.speakerA
             speakingTime.speakerB = detailedData.speakingTime.speakerB
+            speakingTime.detailanaylsis = detailedAnalysis  // 역방향 관계 설정
             detailedAnalysis.speakingTime = speakingTime
             
-            // 2. Overlaps 저장
-            let overlaps = Overlaps(context: context)
-            overlaps.count = Int64(detailedData.overlaps.count)
-            overlaps.totalDuration = detailedData.overlaps.totalDuration
-            detailedAnalysis.overlaps = overlaps
-            
-            // 3. overlapTopics 저장 ([String] -> NSObject)
-            do {
-                let topicsData = try JSONSerialization.data(withJSONObject: detailedData.overlapTopics)
-                detailedAnalysis.overlapTopics = topicsData as NSObject
-            } catch {
-                print("overlapTopics 변환 오류: \(error)")
-                detailedAnalysis.overlapTopics = "[]" as NSObject
-            }
-            
-            // 4. Consistency 저장
+            // 4. Consistency 저장 (관계 설정 변경)
             let consistency = Consistency(context: context)
+            consistency.detailanaylsis = detailedAnalysis  // 역방향 관계 설정
+            detailedAnalysis.consistency = consistency
             
             // SpeakerA
             let consistencySpeakerA = SpeakerEvaluation(context: context)
             consistencySpeakerA.score = Int64(detailedData.consistency.speakerA.score)
             consistencySpeakerA.reasoning = detailedData.consistency.speakerA.reasoning.replacingOccurrences(of: "\"", with: "")
+            consistencySpeakerA.consistencyA = consistency  // 역방향 관계 설정 (새로 추가)
             
             // SpeakerB
             let consistencySpeakerB = SpeakerEvaluation(context: context)
             consistencySpeakerB.score = Int64(detailedData.consistency.speakerB.score)
             consistencySpeakerB.reasoning = detailedData.consistency.speakerB.reasoning.replacingOccurrences(of: "\"", with: "")
+            consistencySpeakerB.consistencyB = consistency  // 역방향 관계 설정 (새로 추가)
             
+            // 직접 연결 (더 이상 NSObject로 형변환하지 않음)
             consistency.speakerA = consistencySpeakerA
             consistency.speakerB = consistencySpeakerB
-            detailedAnalysis.consistency = consistency
             
-            // 5. FactualAccuracy 저장
+            // 5. FactualAccuracy 저장 (관계 설정 변경)
             let factualAccuracy = FactualAccuracy(context: context)
+            factualAccuracy.detailanaylsis = detailedAnalysis  // 역방향 관계 설정
+            detailedAnalysis.factualAccuracy = factualAccuracy
             
             // SpeakerA
             let factualSpeakerA = SpeakerEvaluation(context: context)
             factualSpeakerA.score = Int64(detailedData.factualAccuracy.speakerA.score)
             factualSpeakerA.reasoning = detailedData.factualAccuracy.speakerA.reasoning.replacingOccurrences(of: "\"", with: "")
+            factualSpeakerA.factualA = factualAccuracy  // 역방향 관계 설정 (새로 추가)
             
             // SpeakerB
             let factualSpeakerB = SpeakerEvaluation(context: context)
             factualSpeakerB.score = Int64(detailedData.factualAccuracy.speakerB.score)
             factualSpeakerB.reasoning = detailedData.factualAccuracy.speakerB.reasoning.replacingOccurrences(of: "\"", with: "")
+            factualSpeakerB.factualB = factualAccuracy  // 역방향 관계 설정 (새로 추가)
             
+            // 직접 연결
             factualAccuracy.speakerA = factualSpeakerA
             factualAccuracy.speakerB = factualSpeakerB
-            detailedAnalysis.factualAccuracy = factualAccuracy
             
-            // 6. SentimentAnalysis 저장
+            // 6. SentimentAnalysis 저장 (관계 설정 변경)
             let sentimentAnalysis = SentimentAnalysis(context: context)
+            sentimentAnalysis.detailanaylsis = detailedAnalysis  // 역방향 관계 설정
+            detailedAnalysis.sentimentAnalysis = sentimentAnalysis
             
             // SpeakerA
             let sentimentSpeakerA = SentimentExamples(context: context)
             sentimentSpeakerA.positiveRatio = detailedData.sentimentAnalysis.speakerA.positiveRatio
             sentimentSpeakerA.negativeRatio = detailedData.sentimentAnalysis.speakerA.negativeRatio
+            sentimentSpeakerA.sentimentAnalysisA = sentimentAnalysis  // 역방향 관계 설정 (새로 추가)
             
-            // 예제 문장 저장 ([String] -> NSObject)
+            // 예제 문장 저장 (변경 없음)
             do {
                 let positiveExamplesData = try JSONSerialization.data(withJSONObject: detailedData.sentimentAnalysis.speakerA.positiveExamples)
                 sentimentSpeakerA.positiveExamples = positiveExamplesData as NSObject
@@ -359,10 +356,11 @@ extension CoreDataManager {
                 sentimentSpeakerA.negativeExamples = "[]" as NSObject
             }
             
-            // SpeakerB - 위와 동일한 방식
+            // SpeakerB
             let sentimentSpeakerB = SentimentExamples(context: context)
             sentimentSpeakerB.positiveRatio = detailedData.sentimentAnalysis.speakerB.positiveRatio
             sentimentSpeakerB.negativeRatio = detailedData.sentimentAnalysis.speakerB.negativeRatio
+            sentimentSpeakerB.sentimentAnalysisB = sentimentAnalysis  // 역방향 관계 설정 (새로 추가)
             
             do {
                 let positiveExamplesData = try JSONSerialization.data(withJSONObject: detailedData.sentimentAnalysis.speakerB.positiveExamples)
@@ -376,46 +374,16 @@ extension CoreDataManager {
                 sentimentSpeakerB.negativeExamples = "[]" as NSObject
             }
             
+            // 직접 연결
             sentimentAnalysis.speakerA = sentimentSpeakerA
             sentimentAnalysis.speakerB = sentimentSpeakerB
-            detailedAnalysis.sentimentAnalysis = sentimentAnalysis
             
-            // 7. IncorrectUsage 저장
-            let incorrectUsage = IncorrectUsage(context: context)
-            
-            // SpeakerA
-            let incorrectSpeakerA = IncorrectUsageExamples(context: context)
-            incorrectSpeakerA.count = Int64(detailedData.incorrectUsage.speakerA.count)
-            
-            do {
-                let examplesData = try JSONSerialization.data(withJSONObject: detailedData.incorrectUsage.speakerA.examples)
-                incorrectSpeakerA.examples = examplesData as NSObject
-            } catch {
-                print("incorrect examples 변환 오류: \(error)")
-                incorrectSpeakerA.examples = "[]" as NSObject
-            }
-            
-            // SpeakerB
-            let incorrectSpeakerB = IncorrectUsageExamples(context: context)
-            incorrectSpeakerB.count = Int64(detailedData.incorrectUsage.speakerB.count)
-            
-            do {
-                let examplesData = try JSONSerialization.data(withJSONObject: detailedData.incorrectUsage.speakerB.examples)
-                incorrectSpeakerB.examples = examplesData as NSObject
-            } catch {
-                print("incorrect examples 변환 오류: \(error)")
-                incorrectSpeakerB.examples = "[]" as NSObject
-            }
-            
-            incorrectUsage.speakerA = incorrectSpeakerA
-            incorrectUsage.speakerB = incorrectSpeakerB
-            detailedAnalysis.incorrectUsage = incorrectUsage
-            
-            // 8. 날짜 설정
+            // 8. 날짜 설정 (변경 없음)
             detailedAnalysis.date = detailedData.date
             
-            // 9. Analysis와 연결
+            // 9. Analysis와 연결 (변경 없음)
             detailedAnalysis.analysis = analysis
+            
         }
         
         // 10. 저장
@@ -427,5 +395,145 @@ extension CoreDataManager {
         } catch {
             print("코어 데이터 저장 실패: \(error)")
         }
+    }
+    
+    // 상세 분석 데이터 불러오기
+    func fetchDetailedAnalysisData(from analysis: Analysis) -> DetailedTranscriptAnalysisData? {
+        // Analysis에서 DetailedTranscriptAnalysis 가져오기
+        guard let detailedAnalysis = analysis.analysisdetailtranscript else { // 실제 관계 이름으로 수정 필요
+            print("해당 분석에 상세 대화 분석 데이터가 없습니다.")
+            return nil
+        }
+        
+        var detailedData = DetailedTranscriptAnalysisData()
+        
+        // 날짜 설정
+        detailedData.date = detailedAnalysis.date
+        
+        // 1. SpeakingTime 데이터
+        if let speakingTime = detailedAnalysis.speakingTime {
+            detailedData.speakingTime.speakerA = speakingTime.speakerA
+            detailedData.speakingTime.speakerB = speakingTime.speakerB
+        }
+        
+        // 2. Consistency 데이터
+        if let consistency = detailedAnalysis.consistency {
+            // SpeakerA - 이제 직접 SpeakerEvaluation 객체임
+            if let speakerA = consistency.speakerA {
+                detailedData.consistency.speakerA.score = Int(speakerA.score)
+                detailedData.consistency.speakerA.reasoning = speakerA.reasoning ?? ""
+            }
+            
+            // SpeakerB - 이제 직접 SpeakerEvaluation 객체임
+            if let speakerB = consistency.speakerB {
+                detailedData.consistency.speakerB.score = Int(speakerB.score)
+                detailedData.consistency.speakerB.reasoning = speakerB.reasoning ?? ""
+            }
+        }
+        
+        // 3. FactualAccuracy 데이터
+        if let factualAccuracy = detailedAnalysis.factualAccuracy {
+            // SpeakerA
+            if let speakerA = factualAccuracy.speakerA {
+                detailedData.factualAccuracy.speakerA.score = Int(speakerA.score)
+                detailedData.factualAccuracy.speakerA.reasoning = speakerA.reasoning ?? ""
+            }
+            
+            // SpeakerB
+            if let speakerB = factualAccuracy.speakerB {
+                detailedData.factualAccuracy.speakerB.score = Int(speakerB.score)
+                detailedData.factualAccuracy.speakerB.reasoning = speakerB.reasoning ?? ""
+            }
+        }
+        
+        // 4. SentimentAnalysis 데이터
+        if let sentimentAnalysis = detailedAnalysis.sentimentAnalysis {
+            // SpeakerA
+            if let speakerA = sentimentAnalysis.speakerA {
+                detailedData.sentimentAnalysis.speakerA.positiveRatio = speakerA.positiveRatio
+                detailedData.sentimentAnalysis.speakerA.negativeRatio = speakerA.negativeRatio
+                
+                // 긍정/부정 예제 (NSObject에서 변환)
+                if let positiveExamplesObj = speakerA.positiveExamples {
+                    do {
+                        // NSObject를 Data로 변환 시도
+                        if let data = positiveExamplesObj as? Data {
+                            if let examples = try JSONSerialization.jsonObject(with: data) as? [String] {
+                                detailedData.sentimentAnalysis.speakerA.positiveExamples = examples
+                            }
+                        }
+                        // 문자열로 저장된 경우
+                        else if let jsonString = positiveExamplesObj as? String, jsonString != "[]" {
+                            if let data = jsonString.data(using: .utf8),
+                               let examples = try JSONSerialization.jsonObject(with: data) as? [String] {
+                                detailedData.sentimentAnalysis.speakerA.positiveExamples = examples
+                            }
+                        }
+                    } catch {
+                        print("긍정 예제 파싱 오류: \(error)")
+                    }
+                }
+                
+                if let negativeExamplesObj = speakerA.negativeExamples {
+                    do {
+                        if let data = negativeExamplesObj as? Data {
+                            if let examples = try JSONSerialization.jsonObject(with: data) as? [String] {
+                                detailedData.sentimentAnalysis.speakerA.negativeExamples = examples
+                            }
+                        } else if let jsonString = negativeExamplesObj as? String, jsonString != "[]" {
+                            if let data = jsonString.data(using: .utf8),
+                               let examples = try JSONSerialization.jsonObject(with: data) as? [String] {
+                                detailedData.sentimentAnalysis.speakerA.negativeExamples = examples
+                            }
+                        }
+                    } catch {
+                        print("부정 예제 파싱 오류: \(error)")
+                    }
+                }
+            }
+            
+            // SpeakerB - SpeakerA와 동일한 패턴
+            if let speakerB = sentimentAnalysis.speakerB {
+                detailedData.sentimentAnalysis.speakerB.positiveRatio = speakerB.positiveRatio
+                detailedData.sentimentAnalysis.speakerB.negativeRatio = speakerB.negativeRatio
+                
+                // 긍정/부정 예제 (NSObject에서 변환)
+                if let positiveExamplesObj = speakerB.positiveExamples {
+                    do {
+                        if let data = positiveExamplesObj as? Data {
+                            if let examples = try JSONSerialization.jsonObject(with: data) as? [String] {
+                                detailedData.sentimentAnalysis.speakerB.positiveExamples = examples
+                            }
+                        } else if let jsonString = positiveExamplesObj as? String, jsonString != "[]" {
+                            if let data = jsonString.data(using: .utf8),
+                               let examples = try JSONSerialization.jsonObject(with: data) as? [String] {
+                                detailedData.sentimentAnalysis.speakerB.positiveExamples = examples
+                            }
+                        }
+                    } catch {
+                        print("긍정 예제 파싱 오류: \(error)")
+                    }
+                }
+                
+                if let negativeExamplesObj = speakerB.negativeExamples {
+                    do {
+                        if let data = negativeExamplesObj as? Data {
+                            if let examples = try JSONSerialization.jsonObject(with: data) as? [String] {
+                                detailedData.sentimentAnalysis.speakerB.negativeExamples = examples
+                            }
+                        } else if let jsonString = negativeExamplesObj as? String, jsonString != "[]" {
+                            if let data = jsonString.data(using: .utf8),
+                               let examples = try JSONSerialization.jsonObject(with: data) as? [String] {
+                                detailedData.sentimentAnalysis.speakerB.negativeExamples = examples
+                            }
+                        }
+                    } catch {
+                        print("부정 예제 파싱 오류: \(error)")
+                    }
+                }
+            }
+        }
+        
+        return detailedData
     }
 }

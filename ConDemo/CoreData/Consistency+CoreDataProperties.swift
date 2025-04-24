@@ -2,7 +2,7 @@
 //  Consistency+CoreDataProperties.swift
 //  ConDemo
 //
-//  Created by seohuibaek on 4/23/25.
+//  Created by seohuibaek on 4/24/25.
 //
 //
 
@@ -16,10 +16,9 @@ extension Consistency {
         return NSFetchRequest<Consistency>(entityName: "Consistency")
     }
 
-    @NSManaged public var speakerA: NSObject?
-    @NSManaged public var speakerB: NSObject?
+    @NSManaged public var speakerA: SpeakerEvaluation?
     @NSManaged public var detailanaylsis: DetailedTranscriptAnalysis?
-    @NSManaged public var consistencyevaluation: SpeakerEvaluation?
+    @NSManaged public var speakerB: SpeakerEvaluation?
 
 }
 
