@@ -27,13 +27,13 @@ class ChatGPTManager {
     private init() {
         LC.initSet([
             "OPENAI_API_KEY": APIKey.chatGPT,
-            "OPENAI_MODEL": "gpt-4-turbo"
+            "OPENAI_MODEL": "gpt-4.1-mini"
         ])
     }
     
     // MARK: - Functions
     private func createParameters(
-        model: String = "gpt-4-turbo",
+        model: String = "gpt-4.1",
         systemContent: String? = nil,
         userContent: String,
         temperature: Double = 0.6
@@ -264,23 +264,32 @@ class ChatGPTManager {
     // AWS Transcribe JSON을 받아 전체 분석 수행 (TranscribeManager에서 호출됨)
     func createAnalysisDataFromTranscript(transcriptJson: String, title: String = "") async throws -> AnalysisData {
         do {
+            // print("수신한 JSON: \(transcriptJson)")
+
             // 기본 분석 데이터 생성
             var analysisData = AnalysisData()
-            analysisData.date = Date()
-            analysisData.title = title.isEmpty ? "음성 대화 분석" : title
             
             // 메시지 데이터 추출
             let decoder = JSONDecoder()
-            let transcription = try decoder.decode(TranscriptionResponse.self, from: transcriptJson.data(using: .utf8)!)
-            analysisData.messages = transcription.getTranscript()
+            // let transcription = try decoder.decode(TranscriptionResponse.self, from: transcriptJson.data(using: .utf8)!)
+            let transcription = try TranscribeManager.shared.parseTranscriptionContent(transcriptJson)
+            let messages = transcription.getTranscript()
+            analysisData.messages = messages
+            //print("대화 내용 \(analysisData.messages)")
+            
+            let transcript = messages.map {
+                "\($0.isFromCurrentUser ? "나" : "상대방"): \($0.text)"
+            }.joined(separator: "\n")
             
             // 1. 커뮤니티 콘텐츠 분석 수행
-            let communityData = try await analyzeConversation(transcriptJson: transcriptJson)
+            let communityData = try await analyzeConversation(transcriptJson: transcript)
             
             // 2. 상세 트랜스크립트 분석 수행
             let detailedAnalysis = try await analyzeTranscriptJSON(transcriptJson: transcriptJson)
             
             // 3. 데이터 통합
+            analysisData.title = communityData.title.isEmpty ? "음성 대화 분석" : title
+            analysisData.date = Date()
             analysisData.contents = communityData.contents
             analysisData.level = communityData.level
             analysisData.polls = communityData.polls
@@ -358,6 +367,196 @@ class ChatGPTManager {
         
         return result
     }
+}
+
+
+// 통합버전
+extension ChatGPTManager {
+    func analyzeTranscriptComplete(transcriptJson: String) async throws -> AnalysisData {
+        do {
+            print("통합 분석 시작...")
+            
+            // 데모 객체 생성 (빈 객체로 시작)
+            let demoData = AnalysisData()
+            
+            // ObjectOutputParser 설정
+            var parser = ObjectOutputParser(demo: demoData)
+            
+            print("프롬프트 템플릿 설정 중...")
+            
+            // 프롬프트 템플릿 설정 - 통합 템플릿 사용
+            let template = Templates.englishTemplate
+            
+            let prompt = PromptTemplate(
+                input_variables: ["transcript"],
+                partial_variable: ["format_instructions": parser.get_format_instructions()],
+                template: template
+            )
+            
+            print("LLM 체인 생성 중...")
+            
+            // LLM 및 체인 설정
+            let llm = OpenAI(
+                temperature: 0.8
+            )
+            
+            let chain = LLMChain(
+                llm: llm,
+                prompt: prompt,
+                parser: parser,
+                inputKey: "transcript"
+            )
+            
+            print("분석 실행 중...")
+                        
+            // 분석 실행
+            let result = await chain.run(args: transcriptJson)
+            
+            print("LangChain Result: \(result)")
+            
+            print("결과 파싱 중...")
+            
+            // 결과 파싱
+            switch result {
+            case .object(let analysisData):
+                print("객체로 파싱 성공")
+                
+                if let data = analysisData as? AnalysisData {
+                    print("최종 AnalysisData로 변환환 성공")
+                    
+                    // 결과 유효성 검사 및 보정
+                    var resultData = data
+                    resultData = validateAndFixCompleteAnalysisData(resultData)
+                    
+                    return resultData
+                } else {
+                    print("최종 AnalysisData로 변환 실패: \(String(describing: analysisData))")
+                    throw NSError(domain: String(describing: ChatGPTManager.self), code: 2,
+                                  userInfo: [NSLocalizedDescriptionKey: "분석 데이터 변환 실패"])
+                }
+            default:
+                print("객체로 파싱 실패")
+                throw NSError(domain: String(describing: ChatGPTManager.self), code: 3,
+                              userInfo: [NSLocalizedDescriptionKey: "파싱 결과가 예상 형식과 다름"])
+            }
+        } catch {
+            print("통합 분석 과정에서 오류 발생: \(error)")
+            
+            if transcriptJson.isEmpty {
+                throw error // 트랜스크립트가 비어있다면 오류 그대로 전달
+            } else {
+                return createFallbackCompleteAnalysisData()
+            }
+        }
+    }
+    
+    // MARK: - 유효성 검사 및 폴백 데이터 생성
+    func validateAndFixCompleteAnalysisData(_ data: AnalysisData) -> AnalysisData {
+        var fixedData = data
+        
+        // 제목 검사
+        if fixedData.title.isEmpty {
+            fixedData.title = "대화 분석"
+        }
+        
+        // 레벨 검사 (1-10 범위로 보정)
+        if fixedData.level < 1 {
+            fixedData.level = 1
+        } else if fixedData.level > 10 {
+            fixedData.level = 10
+        }
+        
+        // 폴 데이터 검사
+        if fixedData.polls == nil || fixedData.polls!.isEmpty {
+            fixedData.polls = [
+                PollData(),
+                PollData(),
+                PollData()
+            ]
+        }
+        
+        // 요약 데이터 검사
+        if fixedData.summaries == nil || fixedData.summaries!.isEmpty {
+            fixedData.summaries = [
+                SummaryData(isCurrentUser: true),
+                SummaryData(isCurrentUser: false)
+            ]
+        }
+        
+        // 상세 분석 데이터 검사
+        if fixedData.detailedTranscriptAnalysisData == nil {
+            fixedData.detailedTranscriptAnalysisData = DetailedTranscriptAnalysisData()
+        }
+        
+        return fixedData
+    }
+    
+    // 폴백 데이터 생성
+    func createFallbackCompleteAnalysisData() -> AnalysisData {
+        var fallbackData = AnalysisData()
+        fallbackData.title = "분석 실패"
+        fallbackData.contents = "대화 분석 중 오류가 발생했습니다. 다시 시도해주세요."
+        fallbackData.level = 1
+        
+        // 기본 폴 데이터
+        var poll1 = PollData()
+        poll1.title = "분석 실패"
+        poll1.contents = "분석 과정에서 오류가 발생했습니다."
+        poll1.options = ["다시 시도하기", "나중에 시도하기", "문의하기", "취소하기"]
+        
+        fallbackData.polls = [poll1, poll1, poll1]
+        
+        // 기본 요약 데이터
+        let summary1 = SummaryData(
+            title: "분석 실패",
+            contents: "대화 내용 분석 중 오류가 발생했습니다.",
+            isCurrentUser: true
+        )
+        let summary2 = SummaryData(
+            title: "분석 실패",
+            contents: "대화 내용 분석 중 오류가 발생했습니다.",
+            isCurrentUser: false
+        )
+        
+        fallbackData.summaries = [summary1, summary2]
+        
+        // 기본 상세 분석 데이터
+        fallbackData.detailedTranscriptAnalysisData = DetailedTranscriptAnalysisData()
+        
+        return fallbackData
+    }
+    
+    // MARK: - 통합 함수 사용 예시 - 수정된 createAnalysisDataFromTranscript
+//    func createAnalysisDataFromTranscript(transcriptJson: String, title: String = "") async throws -> AnalysisData {
+//        do {
+//            print("수신한 JSON: \(transcriptJson)")
+//            
+//            // 기본 분석 데이터 생성
+//            var analysisData = AnalysisData()
+//            
+//            // 메시지 데이터 추출
+//            let transcription = try TranscribeManager.shared.parseTranscriptionContent(transcriptJson)
+//            analysisData.messages = transcription.getTranscript()
+//            
+//            // 통합된 분석 함수 호출 - 한 번의 API 호출로 모든 데이터 가져오기
+//            let completeData = try await analyzeTranscriptComplete(transcriptJson: transcriptJson)
+//            
+//            // 결과 데이터 복사
+//            analysisData.date = Date()
+//            analysisData.title = completeData.title
+//            analysisData.contents = completeData.contents
+//            analysisData.level = completeData.level
+//            analysisData.polls = completeData.polls
+//            analysisData.summaries = completeData.summaries
+//            analysisData.detailedTranscriptAnalysisData = completeData.detailedTranscriptAnalysisData
+//            analysisData.log = LogData(date: Date(), contents: "AWS Transcribe 음성 분석 완료")
+//            
+//            return analysisData
+//        } catch {
+//            print("트랜스크립트에서 AnalysisData 생성 중 오류: \(error)")
+//            throw error
+//        }
+//    }
 }
 
 // 오류 및 보정 함수
