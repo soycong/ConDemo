@@ -58,6 +58,9 @@ final class MessageViewController: UIViewController {
         
         viewModel.analysisTitle = analysisTitle
         navigationController?.interactivePopGestureRecognizer?.delegate = nil
+        
+        let messages = CoreDataManager.shared.fetchMessages(from: analysisTitle)
+        print("분석 제목 '\(analysisTitle)'에서 가져온 메시지 수: \(messages.count)")
     }
 
     override func viewDidDisappear(_ animated: Bool) {
