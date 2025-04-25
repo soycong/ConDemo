@@ -378,12 +378,12 @@ extension CoreDataManager {
             sentimentAnalysis.speakerA = sentimentSpeakerA
             sentimentAnalysis.speakerB = sentimentSpeakerB
             
-            // 8. 날짜 설정 (변경 없음)
+            // 8. 날짜 설정
             detailedAnalysis.date = detailedData.date
-            
-            // 9. Analysis와 연결 (변경 없음)
+
+            // Analysis와 연결 (1:N 관계 설정)
             detailedAnalysis.analysis = analysis
-            
+            analysis.addToAnalysisdetailtranscript(detailedAnalysis)
         }
         
         // 10. 저장
@@ -397,10 +397,10 @@ extension CoreDataManager {
         }
     }
     
-    // 상세 분석 데이터 불러오기
     func fetchDetailedAnalysisData(from analysis: Analysis) -> DetailedTranscriptAnalysisData? {
-        // Analysis에서 DetailedTranscriptAnalysis 가져오기
-        guard let detailedAnalysis = analysis.analysisdetailtranscript else { // 실제 관계 이름으로 수정 필요
+        // Analysis에서 DetailedTranscriptAnalysis 가져오기 (NSSet에서 첫 번째 객체 추출)
+        guard let detailedAnalysisSet = analysis.analysisdetailtranscript,
+              let detailedAnalysis = detailedAnalysisSet.allObjects.first as? DetailedTranscriptAnalysis else {
             print("해당 분석에 상세 대화 분석 데이터가 없습니다.")
             return nil
         }
@@ -409,6 +409,12 @@ extension CoreDataManager {
         
         // 날짜 설정
         detailedData.date = detailedAnalysis.date
+        
+        // 1. SpeakingTime 데이터
+        if let speakingTime = detailedAnalysis.speakingTime {
+            detailedData.speakingTime.speakerA = speakingTime.speakerA
+            detailedData.speakingTime.speakerB = speakingTime.speakerB
+        }
         
         // 1. SpeakingTime 데이터
         if let speakingTime = detailedAnalysis.speakingTime {

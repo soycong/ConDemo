@@ -24,11 +24,28 @@ extension Analysis {
     @NSManaged public var polls: NSObject?
     @NSManaged public var summary: NSObject?
     @NSManaged public var title: String?
-    @NSManaged public var analysisdetailtranscript: DetailedTranscriptAnalysis?
+    @NSManaged public var analysisdetailtranscript: NSSet?
     @NSManaged public var analysislog: NSSet?
     @NSManaged public var analysismessages: NSSet?
     @NSManaged public var analysispolls: NSSet?
     @NSManaged public var analysissummary: NSSet?
+
+}
+
+// MARK: Generated accessors for analysisdetailtranscript
+extension Analysis {
+
+    @objc(addAnalysisdetailtranscriptObject:)
+    @NSManaged public func addToAnalysisdetailtranscript(_ value: DetailedTranscriptAnalysis)
+
+    @objc(removeAnalysisdetailtranscriptObject:)
+    @NSManaged public func removeFromAnalysisdetailtranscript(_ value: DetailedTranscriptAnalysis)
+
+    @objc(addAnalysisdetailtranscript:)
+    @NSManaged public func addToAnalysisdetailtranscript(_ values: NSSet)
+
+    @objc(removeAnalysisdetailtranscript:)
+    @NSManaged public func removeFromAnalysisdetailtranscript(_ values: NSSet)
 
 }
 
