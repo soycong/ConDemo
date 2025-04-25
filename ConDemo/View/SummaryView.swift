@@ -129,7 +129,6 @@ final class SummaryView: UIScrollView {
         setupButtonTags()
         setupADimage()
         setupSwipeGestures()
-        setupViewModels()
     }
     
     // MARK: - Lifecycle
@@ -149,11 +148,9 @@ extension SummaryView {
         
         self.addSubview(contentView)
         
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        
         contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-            make.width.equalTo(self)
+            make.edges.equalTo(self.contentLayoutGuide)
+            make.width.equalTo(self.frameLayoutGuide)
         }
     }
     
@@ -210,18 +207,18 @@ extension SummaryView {
         }
         
         summaryLabel.snp.makeConstraints { make in
-            make.top.equalTo(summaryDateLabel.snp.bottom).offset(24)
+            make.top.equalTo(summaryDateLabel.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
         emotionLevelIndicator.snp.makeConstraints { make in
-            make.top.equalTo(summaryLabel.snp.bottom).offset(20)
+            make.top.equalTo(summaryLabel.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
         // Analysis 섹션 - 펼치기가 디폴트
         analysisLabel.snp.makeConstraints { make in
-            make.top.equalTo(emotionLevelIndicator.snp.bottom).offset(20)
+            make.top.equalTo(emotionLevelIndicator.snp.bottom).offset(40)
             make.horizontalEdges.equalToSuperview().inset(25)
         }
         
@@ -272,7 +269,11 @@ extension SummaryView {
         }
         
         buttonStackView.snp.makeConstraints { make in
-            make.top.equalTo(negativeWordsBarChartView.snp.bottom).offset(37)
+            if isAnalysisExpanded {
+                make.top.equalTo(negativeWordsBarChartView.snp.bottom).offset(50)
+            } else {
+                make.top.equalTo(analysisLabel.snp.bottom).offset(50)
+            }
             make.horizontalEdges.equalToSuperview().inset(25)
             make.bottom.equalToSuperview().offset(-20)
         }
@@ -371,35 +372,5 @@ extension SummaryView {
         }, completion: { _ in
             completion()
         })
-    }
-}
-
-extension SummaryView {
-    private func setupViewModels() {
-        let speakingViewModel = PieChartViewModel(pieData: SpeakingTimeData.dummies.randomElement()!)
-        speakingPieChartView.configure(with: speakingViewModel)
-        
-        let dummy = SentimentAnalysisData.dummies.randomElement()!
-        let positiveViewModel = BarChartViewModel(barData: dummy, title: "긍정적인 단어를 쓴 비율", isPositive: true)
-        positiveWordsBarChartView.configure(with: positiveViewModel)
-        
-        let negativeViewModel = BarChartViewModel(barData: dummy, title: "부정적인 단어를 쓴 비율", isPositive: false)
-        negativeWordsBarChartView.configure(with: negativeViewModel)
-        
-        let consistencyDummy = ConsistencyData.dummies.randomElement()!
-        let consistencyViewModel = DotRatingViewModel(
-            title: "주장의 일관성",
-            consistencyData: consistencyDummy,
-            ratingLabels: ["궤변", "무슨 말이야?", "계속 해봐", "맞는 말이네", "입만 살았네"]
-        )
-        consistencyChartView.configure(with: consistencyViewModel)
-        
-        let factualAccuracyDummy = FactualAccuracyData.dummies.randomElement()!
-        let factualAccuracyViewModel = DotRatingViewModel(
-            title: "사실 관계의 정확성",
-            factualAccuracyData: factualAccuracyDummy,
-            ratingLabels: ["벌구", "뇌피셜", "반맞반틀", "믿고갑니다", "아멘"]
-        )
-        factualAccuracyChartView.configure(with: factualAccuracyViewModel)
     }
 }

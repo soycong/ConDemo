@@ -252,3 +252,42 @@ final class MessageBubbleCell: UITableViewCell {
         }
     }
 }
+
+extension MessageBubbleCell {
+    // 화자 선택 기능을 위한 메서드
+    func configure(with message: MessageData, isHighlighted: Bool = false, isDimmed: Bool = false) {
+        configure(with: message)
+        
+        // 강조 표시 또는 흐리게 처리 적용
+        if isHighlighted {
+            // 강조 표시
+            bubbleBackgroundView.backgroundColor = .pointBlue
+            messageLabel.textColor = .white
+            audioButton.tintColor = .white
+            timeLabel.textColor = .white
+            
+            // 알파값 초기화
+            bubbleBackgroundView.alpha = 1.0
+            messageLabel.alpha = 1.0
+            messageImageView.alpha = 1.0
+            audioButton.alpha = 1.0
+            timeLabel.alpha = 1.0
+        } else if isDimmed {
+            // 흐리게 표시
+            // 원래 배경색 유지
+            bubbleBackgroundView.backgroundColor = .systemGray4
+            bubbleBackgroundView.alpha = 0.5
+            messageLabel.alpha = 0.5
+            messageImageView.alpha = 0.5
+            audioButton.alpha = 0.5
+            timeLabel.alpha = 0.5
+        } else {
+            // 일반 상태로 복원
+            bubbleBackgroundView.alpha = 1.0
+            messageLabel.alpha = 1.0
+            messageImageView.alpha = 1.0
+            audioButton.alpha = 1.0
+            timeLabel.alpha = 1.0
+        }
+    }
+}

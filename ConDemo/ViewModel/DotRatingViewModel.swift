@@ -8,8 +8,8 @@
 import UIKit
 
 final class DotRatingViewModel {
-    private var consistencyData: ConsistencyData?
-    private var factualAccuracyData: FactualAccuracyData?
+    private var consistency: Consistency?
+    private var factualAccuracy: FactualAccuracy?
     private let title: String
     private let ratingLabels: [String]
     
@@ -17,17 +17,17 @@ final class DotRatingViewModel {
     
     var myRating: Int {
         if title == "주장의 일관성" {
-            return consistencyData?.speakerA.score ?? 0
+            return Int(consistency!.speakerA!.score)
         } else {
-            return factualAccuracyData?.speakerA.score ?? 0
+            return Int(factualAccuracy!.speakerA!.score)
         }
     }
     
     var yourRating: Int {
         if title == "주장의 일관성" {
-            return consistencyData?.speakerB.score ?? 0
+            return Int(consistency!.speakerB!.score)
         } else {
-            return factualAccuracyData?.speakerB.score ?? 0
+            return Int(factualAccuracy!.speakerB!.score)
         }
     }
     
@@ -35,20 +35,20 @@ final class DotRatingViewModel {
         return ratingLabels
     }
     
-    init(title: String, consistencyData: ConsistencyData? = nil, factualAccuracyData: FactualAccuracyData? = nil, ratingLabels: [String]) {
+    init(title: String, consistency: Consistency? = nil, factualAccuracy: FactualAccuracy? = nil, ratingLabels: [String]) {
         self.title = title
-        self.consistencyData = consistencyData
-        self.factualAccuracyData = factualAccuracyData
+        self.consistency = consistency
+        self.factualAccuracy = factualAccuracy
         self.ratingLabels = ratingLabels
     }
 }
 
 extension DotRatingViewModel {
-    func configure(with consistencyData: ConsistencyData) {
-        self.consistencyData = consistencyData
+    func configure(with consistency: Consistency) {
+        self.consistency = consistency
     }
     
-    func configure(with factualAccuracyData: FactualAccuracyData) {
-        self.factualAccuracyData = factualAccuracyData
+    func configure(with factualAccuracy: FactualAccuracy) {
+        self.factualAccuracy = factualAccuracy
     }
 }

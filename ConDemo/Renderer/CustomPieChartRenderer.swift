@@ -84,7 +84,7 @@ final class CustomPieChartRenderer: PieChartRenderer {
                 ]
                 
                 let minutes = Int(pieEntry.y)
-                let timeText = "\(minutes)분"
+                let timeText = "\(minutes)초"
                 let timeSize = (timeText as NSString).size(withAttributes: timeAttributes)
                 
                 let timeRect = CGRect(
