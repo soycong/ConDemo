@@ -9,7 +9,7 @@
         <attribute name="polls" optional="YES" attributeType="Transformable"/>
         <attribute name="summary" optional="YES" attributeType="Transformable"/>
         <attribute name="title" optional="YES" attributeType="String"/>
-        <relationship name="analysisdetailtranscript" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="DetailedTranscriptAnalysis" inverseName="analysis" inverseEntity="DetailedTranscriptAnalysis"/>
+        <relationship name="analysisdetailtranscript" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DetailedTranscriptAnalysis" inverseName="analysis" inverseEntity="DetailedTranscriptAnalysis"/>
         <relationship name="analysislog" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Log" inverseName="analysis" inverseEntity="Log"/>
         <relationship name="analysismessages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Message" inverseName="analysis" inverseEntity="Message"/>
         <relationship name="analysispolls" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Poll" inverseName="analysis" inverseEntity="Poll"/>

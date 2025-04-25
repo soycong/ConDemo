@@ -297,21 +297,67 @@ extension SummaryViewController: CalendarViewDelegate {
     }
 }
 
+//extension SummaryViewController {
+//    private func setupViewModels() {
+//        let analysis = viewModel.analysis
+//        
+//        let speakingViewModel = PieChartViewModel(pieData: analysis?.analysisdetailtranscript?.speakingTime as! SpeakingTime)
+//        summaryView.speakingPieChartView.configure(with: speakingViewModel)
+//        
+//        let barData = analysis?.analysisdetailtranscript?.sentimentAnalysis as! SentimentAnalysis
+//        let positiveViewModel = BarChartViewModel(barData: barData, title: "긍정적인 단어를 쓴 비율", isPositive: true)
+//        summaryView.positiveWordsBarChartView.configure(with: positiveViewModel)
+//        
+//        let negativeViewModel = BarChartViewModel(barData: barData, title: "부정적인 단어를 쓴 비율", isPositive: false)
+//        summaryView.negativeWordsBarChartView.configure(with: negativeViewModel)
+//        
+//        let consistency = analysis?.analysisdetailtranscript?.consistency as! Consistency
+//        let consistencyViewModel = DotRatingViewModel(
+//            title: "주장의 일관성",
+//            consistency: consistency,
+//            ratingLabels: ["궤변", "무슨 말이야?", "계속 해봐", "맞는 말이네", "입만 살았네"]
+//        )
+//        summaryView.consistencyChartView.configure(with: consistencyViewModel)
+//        
+//        let factualAccuracy = analysis?.analysisdetailtranscript?.factualAccuracy as! FactualAccuracy
+//        let factualAccuracyViewModel = DotRatingViewModel(
+//            title: "사실 관계의 정확성",
+//            factualAccuracy: factualAccuracy,
+//            ratingLabels: ["벌구", "뇌피셜", "반맞반틀", "믿고갑니다", "아멘"]
+//        )
+//        summaryView.factualAccuracyChartView.configure(with: factualAccuracyViewModel)
+//    }
+//}
+
 extension SummaryViewController {
     private func setupViewModels() {
         let analysis = viewModel.analysis
         
-        let speakingViewModel = PieChartViewModel(pieData: analysis?.analysisdetailtranscript?.speakingTime as! SpeakingTime)
+        // analysisdetailtranscript는 NSSet이므로 가장 최근 객체를 가져옴
+        guard let detailedTranscriptSet = analysis?.analysisdetailtranscript,
+              let detailedTranscript = detailedTranscriptSet.allObjects.first as? DetailedTranscriptAnalysis else {
+            print("상세 분석 데이터가 없습니다.")
+            return
+        }
+        
+        // 이제 detailedTranscript에서 속성에 접근 가능
+        guard let speakingTime = detailedTranscript.speakingTime,
+              let sentimentAnalysis = detailedTranscript.sentimentAnalysis,
+              let consistency = detailedTranscript.consistency,
+              let factualAccuracy = detailedTranscript.factualAccuracy else {
+            print("분석 데이터의 일부가 누락되었습니다.")
+            return
+        }
+        
+        let speakingViewModel = PieChartViewModel(pieData: speakingTime)
         summaryView.speakingPieChartView.configure(with: speakingViewModel)
         
-        let barData = analysis?.analysisdetailtranscript?.sentimentAnalysis as! SentimentAnalysis
-        let positiveViewModel = BarChartViewModel(barData: barData, title: "긍정적인 단어를 쓴 비율", isPositive: true)
+        let positiveViewModel = BarChartViewModel(barData: sentimentAnalysis, title: "긍정적인 단어를 쓴 비율", isPositive: true)
         summaryView.positiveWordsBarChartView.configure(with: positiveViewModel)
         
-        let negativeViewModel = BarChartViewModel(barData: barData, title: "부정적인 단어를 쓴 비율", isPositive: false)
+        let negativeViewModel = BarChartViewModel(barData: sentimentAnalysis, title: "부정적인 단어를 쓴 비율", isPositive: false)
         summaryView.negativeWordsBarChartView.configure(with: negativeViewModel)
         
-        let consistency = analysis?.analysisdetailtranscript?.consistency as! Consistency
         let consistencyViewModel = DotRatingViewModel(
             title: "주장의 일관성",
             consistency: consistency,
@@ -319,7 +365,6 @@ extension SummaryViewController {
         )
         summaryView.consistencyChartView.configure(with: consistencyViewModel)
         
-        let factualAccuracy = analysis?.analysisdetailtranscript?.factualAccuracy as! FactualAccuracy
         let factualAccuracyViewModel = DotRatingViewModel(
             title: "사실 관계의 정확성",
             factualAccuracy: factualAccuracy,
