@@ -2,22 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CHATGPT_API_KEY</key>
-	<string>$(CHATGPT_API_KEY)</string>
-	<key>S3_BUCKET_NAME</key>
-	<string>$(S3_BUCKET_NAME)</string>
-	<key>AWS_SECRET_ACCESS_KEY</key>
-	<string>$(AWS_SECRET_ACCESS_KEY)</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Siri를 통해 녹음을 시작하기 위해 권한이 필요합니다</string>
+	<key>CFBundleDisplayName</key>
+	<string>트러블</string>
 	<key>AWS_ACCESS_KEY_ID</key>
 	<string>$(AWS_ACCESS_KEY_ID)</string>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
-	<key>UIFileSharingEnabled</key>
-	<true/>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>음성 녹음을 위해 마이크 접근 권한이 필요합니다.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>음성 스크립트 변환을 위해 접근 권한이 필요합니다.</string>
+	<key>AWS_SECRET_ACCESS_KEY</key>
+	<string>$(AWS_SECRET_ACCESS_KEY)</string>
+	<key>CHATGPT_API_KEY</key>
+	<string>$(CHATGPT_API_KEY)</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>StartRecordingIntentIntent</string>
+	</array>
+	<key>S3_BUCKET_NAME</key>
+	<string>$(S3_BUCKET_NAME)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Pretendard-Black.otf</string>
@@ -54,5 +54,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>

@@ -16,6 +16,8 @@
 		0F63E9612DB0E41600C30C54 /* Summary+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */; };
 		0F63E9622DB0E41600C30C54 /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */; };
 		0F6AF8752DB87BEE003B6735 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 0F6AF8742DB87BEE003B6735 /* DGCharts */; };
+		0FBB8F882DBF13F700D1D108 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FBB8F872DBF13F700D1D108 /* Intents.framework */; };
+		0FBB8F8F2DBF13F700D1D108 /* TROBLIntentsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 0FBB8F852DBF13F700D1D108 /* TROBLIntentsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		0FE4137A2DAFDB9200769656 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0FE413792DAFDB9200769656 /* OpenAI */; };
 		B33A68E22DB8734B008A7CE9 /* LangChain in Frameworks */ = {isa = PBXBuildFile; productRef = B33A68E12DB8734B008A7CE9 /* LangChain */; };
 		B3A44E0D2DA4CA2200C4872D /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B3A44E0C2DA4CA2200C4872D /* Alamofire */; };
@@ -32,11 +34,37 @@
 		B3FBF4462DBA32F0000D9E95 /* SentimentAnalysis+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3FBF4402DBA32F0000D9E95 /* SentimentAnalysis+CoreDataProperties.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0FBB8F8D2DBF13F700D1D108 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B3A44DE62DA4C37400C4872D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0FBB8F842DBF13F700D1D108;
+			remoteInfo = TROBLIntentsExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		0FBB8F942DBF13F700D1D108 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				0FBB8F8F2DBF13F700D1D108 /* TROBLIntentsExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0F63E95A2DB0E41600C30C54 /* Log+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Log+CoreDataProperties.swift"; path = "ConDemo/CoreData/Log+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0F63E95B2DB0E41600C30C54 /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Message+CoreDataProperties.swift"; path = "ConDemo/CoreData/Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Poll+CoreDataProperties.swift"; path = "ConDemo/CoreData/Poll+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Summary+CoreDataProperties.swift"; path = "ConDemo/CoreData/Summary+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		0FBB8F852DBF13F700D1D108 /* TROBLIntentsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TROBLIntentsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		0FBB8F872DBF13F700D1D108 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		B3A44DEE2DA4C37500C4872D /* ConDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ConDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3FBF41F2DBA2F85000D9E95 /* Analysis+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Analysis+CoreDataProperties.swift"; path = "ConDemo/CoreData/Analysis+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B3FBF4202DBA2F85000D9E95 /* Consistency+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Consistency+CoreDataProperties.swift"; path = "ConDemo/CoreData/Consistency+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -51,6 +79,28 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		0FBB8F932DBF13F700D1D108 /* Exceptions for "TROBLIntentsExtension" folder in "TROBLIntentsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 0FBB8F842DBF13F700D1D108 /* TROBLIntentsExtension */;
+		};
+		0FBB8F982DBF149700D1D108 /* Exceptions for "TROBLIntentsExtension" folder in "ConDemo" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				IntentHandler.swift,
+				StartRecordingIntent.intentdefinition,
+			);
+			target = B3A44DED2DA4C37500C4872D /* ConDemo */;
+		};
+		0FBB8F9A2DBF176400D1D108 /* Exceptions for "ConDemo" folder in "TROBLIntentsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				App/AppDelegate.swift,
+			);
+			target = 0FBB8F842DBF13F700D1D108 /* TROBLIntentsExtension */;
+		};
 		B3A44E032DA4C37600C4872D /* Exceptions for "ConDemo" folder in "ConDemo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -61,10 +111,20 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		0FBB8F892DBF13F700D1D108 /* TROBLIntentsExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				0FBB8F982DBF149700D1D108 /* Exceptions for "TROBLIntentsExtension" folder in "ConDemo" target */,
+				0FBB8F932DBF13F700D1D108 /* Exceptions for "TROBLIntentsExtension" folder in "TROBLIntentsExtension" target */,
+			);
+			path = TROBLIntentsExtension;
+			sourceTree = "<group>";
+		};
 		B3A44DF02DA4C37500C4872D /* ConDemo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				B3A44E032DA4C37600C4872D /* Exceptions for "ConDemo" folder in "ConDemo" target */,
+				0FBB8F9A2DBF176400D1D108 /* Exceptions for "ConDemo" folder in "TROBLIntentsExtension" target */,
 			);
 			path = ConDemo;
 			sourceTree = "<group>";
@@ -72,6 +132,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0FBB8F822DBF13F700D1D108 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0FBB8F882DBF13F700D1D108 /* Intents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B3A44DEB2DA4C37500C4872D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -91,6 +159,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0FBB8F862DBF13F700D1D108 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0FBB8F872DBF13F700D1D108 /* Intents.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B3A44DE52DA4C37400C4872D = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +185,8 @@
 				0F63E95C2DB0E41600C30C54 /* Poll+CoreDataProperties.swift */,
 				0F63E95D2DB0E41600C30C54 /* Summary+CoreDataProperties.swift */,
 				B3A44DF02DA4C37500C4872D /* ConDemo */,
+				0FBB8F892DBF13F700D1D108 /* TROBLIntentsExtension */,
+				0FBB8F862DBF13F700D1D108 /* Frameworks */,
 				B3A44DEF2DA4C37500C4872D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -117,6 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				B3A44DEE2DA4C37500C4872D /* ConDemo.app */,
+				0FBB8F852DBF13F700D1D108 /* TROBLIntentsExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -124,6 +203,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0FBB8F842DBF13F700D1D108 /* TROBLIntentsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0FBB8F902DBF13F700D1D108 /* Build configuration list for PBXNativeTarget "TROBLIntentsExtension" */;
+			buildPhases = (
+				0FBB8F812DBF13F700D1D108 /* Sources */,
+				0FBB8F822DBF13F700D1D108 /* Frameworks */,
+				0FBB8F832DBF13F700D1D108 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				0FBB8F892DBF13F700D1D108 /* TROBLIntentsExtension */,
+			);
+			name = TROBLIntentsExtension;
+			packageProductDependencies = (
+			);
+			productName = TROBLIntentsExtension;
+			productReference = 0FBB8F852DBF13F700D1D108 /* TROBLIntentsExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		B3A44DED2DA4C37500C4872D /* ConDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B3A44E042DA4C37600C4872D /* Build configuration list for PBXNativeTarget "ConDemo" */;
@@ -132,10 +233,12 @@
 				B3A44DEA2DA4C37500C4872D /* Sources */,
 				B3A44DEB2DA4C37500C4872D /* Frameworks */,
 				B3A44DEC2DA4C37500C4872D /* Resources */,
+				0FBB8F942DBF13F700D1D108 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				0FBB8F8E2DBF13F700D1D108 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B3A44DF02DA4C37500C4872D /* ConDemo */,
@@ -163,9 +266,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1610;
+				LastSwiftUpdateCheck = 1630;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
+					0FBB8F842DBF13F700D1D108 = {
+						CreatedOnToolsVersion = 16.3;
+					};
 					B3A44DED2DA4C37500C4872D = {
 						CreatedOnToolsVersion = 16.1;
 					};
@@ -195,11 +301,19 @@
 			projectRoot = "";
 			targets = (
 				B3A44DED2DA4C37500C4872D /* ConDemo */,
+				0FBB8F842DBF13F700D1D108 /* TROBLIntentsExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0FBB8F832DBF13F700D1D108 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B3A44DEC2DA4C37500C4872D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -230,6 +344,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0FBB8F812DBF13F700D1D108 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B3A44DEA2DA4C37500C4872D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -253,7 +374,67 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		0FBB8F8E2DBF13F700D1D108 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0FBB8F842DBF13F700D1D108 /* TROBLIntentsExtension */;
+			targetProxy = 0FBB8F8D2DBF13F700D1D108 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0FBB8F912DBF13F700D1D108 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YBKAN7VADJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TROBLIntentsExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TROBLIntentsExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.soy.ConDemo.TROBLIntentsExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0FBB8F922DBF13F700D1D108 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = YBKAN7VADJ;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TROBLIntentsExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = TROBLIntentsExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.soy.ConDemo.TROBLIntentsExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		B3A44E052DA4C37600C4872D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = B3A44DF02DA4C37500C4872D /* ConDemo */;
@@ -263,10 +444,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5KGCPRX2P8;
+				DEVELOPMENT_TEAM = YBKAN7VADJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ConDemo/App/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = OurVoices;
+				INFOPLIST_KEY_CFBundleDisplayName = "트러블";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "음성 녹음을 위해 마이크 접근 권한이 필요합니다.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "음성 스크립트 변환을 위해 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -298,10 +482,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5KGCPRX2P8;
+				DEVELOPMENT_TEAM = YBKAN7VADJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ConDemo/App/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = OurVoices;
+				INFOPLIST_KEY_CFBundleDisplayName = "트러블";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "음성 녹음을 위해 마이크 접근 권한이 필요합니다.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "음성 스크립트 변환을 위해 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -450,6 +637,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0FBB8F902DBF13F700D1D108 /* Build configuration list for PBXNativeTarget "TROBLIntentsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0FBB8F912DBF13F700D1D108 /* Debug */,
+				0FBB8F922DBF13F700D1D108 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		B3A44DE92DA4C37400C4872D /* Build configuration list for PBXProject "ConDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

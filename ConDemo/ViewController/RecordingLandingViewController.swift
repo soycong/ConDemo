@@ -70,7 +70,7 @@ final class RecordingLandingViewController: UIViewController {
 }
 
 extension RecordingLandingViewController {
-    private func checkMicrophoneAuthorizationStatus(completion: @escaping () -> Void) {
+    public func checkMicrophoneAuthorizationStatus(completion: @escaping () -> Void) {
         viewModel.onPermissionDenied = { [weak self] in
             self?.showDeniedAlert(title: "마이크 접근 권한 필요",
                                   message: "녹음을 위해 마이크 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
